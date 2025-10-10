@@ -818,7 +818,7 @@ class propluvia extends eqLogic {
     $typeRestriction = $this->getConfiguration('typeRestriction');
     $eqName = $this->getName();
     log::add(__CLASS__, 'debug', ' ');
-    log::add(__CLASS__, 'debug', '*********** PROPLUVIA ['.$eqName.'] ***********');
+    log::add(__CLASS__, 'debug', '*********** VigiEau ['.$eqName.'] ***********');
     
     //récupération nom commune
     $url = 'https://geo.api.gouv.fr/communes?code='.$codeInseeCommune.'&fields=code,nom,departement';
@@ -873,8 +873,8 @@ class propluvia extends eqLogic {
     if(!is_array($jsonData)){
         log::add(__CLASS__, 'error', 'le site \'https://api.vigieau.beta.gouv.fr\' renvoie une erreur ou n\'est pas accessible');
     } else {
-      //sauvegarde date et heure de récupérations des info Propluvia
-      $this->setConfiguration('lastActuPropluvia', time())->save();
+      //sauvegarde date et heure de récupérations des info VigiEau
+      $this->setConfiguration('lastActuVigiEau', time())->save();
       if (count($jsonData) === 0) {
         log::add(__CLASS__, 'info', 'Aucune donnée trouvée à la date du '.$dateFormat. ' pour la commune '.$nomCommune);
 
@@ -1210,8 +1210,8 @@ class propluvia extends eqLogic {
       }
 
     }
-    $lastActuPropluvia = $this->getConfiguration('lastActuPropluvia','');
-    $replace['#lastActuPropluvia#'] = 'Données PROPLUVIA importées le '.date('d/m/Y à H:i:s', $lastActuPropluvia);
+    $lastActuVigiEau = $this->getConfiguration('lastActuVigiEau','');
+    $replace['#lastActuVigiEau#'] = 'Données VigiEau importées le '.date('d/m/Y à H:i:s', $lastActuVigiEau);
 
     /* plusieurs lignes séparées pour comprendre */
     if ($typeRestriction == 'sup') {
