@@ -1,8 +1,8 @@
 {
 	"id" : "propluvia",
-	"name" : "Propluvia",
+      "name" : "VigiEau",
 	"description" : {
-		"fr_FR": "Ce plugin permet de remonter les informations du site de l'information sécheresse du Gouvernement Propluvia https://propluvia.developpement-durable.gouv.fr/ via l'API du site https://eau.api.agriculture.gouv.fr."
+              "fr_FR": "Ce plugin permet de remonter les informations du site de l'information sécheresse du Gouvernement VigiEau https://propluvia.developpement-durable.gouv.fr/ via l'API du site https://eau.api.agriculture.gouv.fr."
 	},
 	"licence" : "AGPL",
 	"author" : "elmer69 & OUARZA",
@@ -11,10 +11,10 @@
 	"hasDependency" : false,
 	"hasOwnDeamon" : false,
 	"maxDependancyInstallTime" : 0,
-	"changelog" : "https://github.com/OUARZA/Propluvia/blob/stable/docs/#language#/changelog.md",
-	"documentation" : "https://github.com/OUARZA/Propluvia/blob/stable/docs/#language#/index.md",
-	"changelog_beta" : "https://github.com/OUARZA/Propluvia/blob/beta/docs/#language#/changelog.md",
-	"documentation_beta" : "https://github.com/OUARZA/Propluvia/blob/beta/docs/#language#/index.md",
+     "changelog" : "https://github.com/OUARZA/VigiEau/blob/stable/docs/#language#/changelog.md",
+     "documentation" : "https://github.com/OUARZA/VigiEau/blob/stable/docs/#language#/index.md",
+     "changelog_beta" : "https://github.com/OUARZA/VigiEau/blob/beta/docs/#language#/changelog.md",
+     "documentation_beta" : "https://github.com/OUARZA/VigiEau/blob/beta/docs/#language#/index.md",
 	"link" : {
 		"forum":"https://community.jeedom.com/tag/plugin-propluvia",
 		"video" : "Lien vers une video"
