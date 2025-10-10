@@ -1,4 +1,4 @@
-# Changelog plugin Propluvia
+# Changelog plugin VigiEau
 
 >**IMPORTANT**
 >
@@ -6,9 +6,9 @@
 
 # 16/09/2023
 Nettoyage du code : il est donc demandé de procéder comme suit:
-1. Supprimer tous les équipements Propluvia
+1. Supprimer tous les équipements VigiEau
 2. Réaliser la mise à jour
-3. Recréer tous les équipements Propluvia
+3. Recréer tous les équipements VigiEau
 
 # 28/08/2023
 - Suppression de la taille fixe du Widget
@@ -33,7 +33,7 @@ Nettoyage du code : il est donc demandé de procéder comme suit:
 - Corrections mineures du code
 
 # 07/08/2023
-- Ajout de la date et heure de récupération des informations Propluvia 
+- Ajout de la date et heure de récupération des informations VigiEau
 
 # 06/08/2023
 - Suppression des commandes spécifiques inutiles
