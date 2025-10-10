@@ -18,7 +18,7 @@
 /* * ***************************Includes********************************* */
 require_once __DIR__  . '/../../../../core/php/core.inc.php';
 
-class propluvia extends eqLogic {  
+class vigieau extends eqLogic {  
 
   
   
@@ -71,8 +71,8 @@ class propluvia extends eqLogic {
     $cronHeure = config::byKey('cronHeure', __CLASS__);
     if (!empty($cronHeure) && date('G') != $cronHeure) return;
  
-    foreach (eqLogic::byType(__CLASS__, true) as $propluvia) {
-      $propluvia->pullpropluvia();
+    foreach (eqLogic::byType(__CLASS__, true) as $vigieau) {
+      $vigieau->pullvigieau();
       sleep(15);
     }  
   }
@@ -140,7 +140,7 @@ class propluvia extends eqLogic {
 
     $refresh = $this->getCmd(null, 'refresh');
     if (!is_object($refresh)) {
-      $refresh = new propluviaCmd();
+      $refresh = new vigieauCmd();
       $refresh->setName(__('Rafraichir', __FILE__));
     }
     $refresh->setEqLogic_id($this->getId());
@@ -154,7 +154,7 @@ class propluvia extends eqLogic {
   private function createOrUpdateInfoCommand($logicalId, $definition) {
     $cmd = $this->getCmd(null, $logicalId);
     if (!is_object($cmd)) {
-      $cmd = new propluviaCmd();
+      $cmd = new vigieauCmd();
       $cmd->setLogicalId($logicalId);
       $cmd->setEqLogic_id($this->getId());
       $cmd->setType('info');
@@ -809,7 +809,7 @@ class propluvia extends eqLogic {
     }
   }
 
-  public function pullpropluvia() {
+  public function pullvigieau() {
     $date = date('Y-m-d');
 	$dateFormat = date('d/m/Y');
     $codeInseeCommune = $this->getConfiguration('codeInseeCommune');
@@ -842,7 +842,7 @@ class propluvia extends eqLogic {
       log::add(__CLASS__, 'error', 'Code INSEE de commune ('.$codeInseeCommune.') invalide');
     }
 
-    //récupération info zones Vigieau
+    //récupération info zones VigiEau
     $profil = '';
     $profilMapping = array(
       'particulier' => 'particulier',
@@ -1215,25 +1215,25 @@ class propluvia extends eqLogic {
 
     /* plusieurs lignes séparées pour comprendre */
     if ($typeRestriction == 'sup') {
-      $getTemplate = getTemplate('core', $version, 'propluvia_sup.template', __CLASS__); // on récupère le template 'propluvia.template' du plugin.
+      $getTemplate = getTemplate('core', $version, 'vigieau_sup.template', __CLASS__); // on récupère le template 'vigieau.template' du plugin.
       $template_replace = template_replace($replace, $getTemplate); // on remplace les tags
       $postToHtml = $this->postToHtml($_version,$template_replace); // on met en cache le widget, si la config de l'user le permet.
       return $postToHtml; // renvoie le code du template du widget.
     }
     if ($typeRestriction == 'sou') {
-      $getTemplate = getTemplate('core', $version, 'propluvia_sou.template', __CLASS__); // on récupère le template 'propluvia.template' du plugin.
+      $getTemplate = getTemplate('core', $version, 'vigieau_sou.template', __CLASS__); // on récupère le template 'vigieau.template' du plugin.
       $template_replace = template_replace($replace, $getTemplate); // on remplace les tags
       $postToHtml = $this->postToHtml($_version,$template_replace); // on met en cache le widget, si la config de l'user le permet.
       return $postToHtml; // renvoie le code du template du widget.
     }
     if ($typeRestriction == 'aep') {
-      $getTemplate = getTemplate('core', $version, 'propluvia_aep.template', __CLASS__); // on récupère le template 'propluvia.template' du plugin.
+      $getTemplate = getTemplate('core', $version, 'vigieau_aep.template', __CLASS__); // on récupère le template 'vigieau.template' du plugin.
       $template_replace = template_replace($replace, $getTemplate); // on remplace les tags
       $postToHtml = $this->postToHtml($_version,$template_replace); // on met en cache le widget, si la config de l'user le permet.
       return $postToHtml; // renvoie le code du template du widget.
     }
     if ($typeRestriction == 'all') {
-      $getTemplate = getTemplate('core', $version, 'propluvia_all.template', __CLASS__); // on récupère le template 'propluvia.template' du plugin.
+      $getTemplate = getTemplate('core', $version, 'vigieau_all.template', __CLASS__); // on récupère le template 'vigieau.template' du plugin.
       $template_replace = template_replace($replace, $getTemplate); // on remplace les tags
       $postToHtml = $this->postToHtml($_version,$template_replace); // on met en cache le widget, si la config de l'user le permet.
       return $postToHtml; // renvoie le code du template du widget.
@@ -1241,7 +1241,7 @@ class propluvia extends eqLogic {
   
   /* 
   // Ces 4 lignes ci-dessus peuvent être concaténer comme ceci : 
-  return $this->postToHtml($_version, template_replace($replace, getTemplate('core', $version, 'propluvia.template' , __CLASS__)));
+  return $this->postToHtml($_version, template_replace($replace, getTemplate('core', $version, 'vigieau.template' , __CLASS__)));
   */
   
   }
@@ -1267,7 +1267,7 @@ class propluvia extends eqLogic {
 
 }
 
-class propluviaCmd extends cmd {
+class vigieauCmd extends cmd {
   /*     * *************************Attributs****************************** */
 
   /*
@@ -1291,7 +1291,7 @@ class propluviaCmd extends cmd {
   	$eqlogic = $this->getEqLogic(); //récupère l'éqlogic de la commande $this
   	switch ($this->getLogicalId()) { //vérifie le logicalid de la commande
     	case 'refresh': // LogicalId de la commande rafraîchir que l’on a créé dans la méthode Postsave de la classe vdm .
-    	$eqlogic->pullpropluvia();
+    	$eqlogic->pullvigieau();
      	break;
   	}
   }
