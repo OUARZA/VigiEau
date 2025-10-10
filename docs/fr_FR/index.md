@@ -1,6 +1,6 @@
 # Plugin VigiEau
 
-Ce plugin permet de remonter les informations du site de l'information sécheresse du Gouvernement [**VigiEau**](https://propluvia.developpement-durable.gouv.fr/propluviapublic/recherche-particulier) via l'API du site https://eau.api.agriculture.gouv.fr.
+Ce plugin permet de remonter les informations du site de l'information sécheresse du Gouvernement [**VigiEau**](https://vigieau.developpement-durable.gouv.fr/vigieaupublic/recherche-particulier) via l'API du site https://eau.api.agriculture.gouv.fr.
 
 ## Installation
 1. Le plugin s'installe comme n'importe quel autre plugin sur Jeedom via le Market.<br/>

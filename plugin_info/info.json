@@ -1,8 +1,8 @@
 {
-	"id" : "propluvia",
+	"id" : "vigieau",
       "name" : "VigiEau",
 	"description" : {
-              "fr_FR": "Ce plugin permet de remonter les informations du site de l'information sécheresse du Gouvernement VigiEau https://propluvia.developpement-durable.gouv.fr/ via l'API du site https://eau.api.agriculture.gouv.fr."
+              "fr_FR": "Ce plugin permet de remonter les informations du site de l'information sécheresse du Gouvernement VigiEau https://vigieau.developpement-durable.gouv.fr/ via l'API du site https://eau.api.agriculture.gouv.fr."
 	},
 	"licence" : "AGPL",
 	"author" : "elmer69 & OUARZA",
@@ -16,7 +16,7 @@
      "changelog_beta" : "https://github.com/OUARZA/VigiEau/blob/beta/docs/#language#/changelog.md",
      "documentation_beta" : "https://github.com/OUARZA/VigiEau/blob/beta/docs/#language#/index.md",
 	"link" : {
-		"forum":"https://community.jeedom.com/tag/plugin-propluvia",
+		"forum":"https://community.jeedom.com/tag/plugin-vigieau",
 		"video" : "Lien vers une video"
 	},
 	"language": [

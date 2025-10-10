@@ -146,7 +146,7 @@ function addCmdToTable(_cmd) {
     }
 }
 
-var propluviaUsageFilterManager = {
+var vigieauUsageFilterManager = {
   currentEqId: null,
   refresh: function (force) {
     var $eqIdInput = $('.eqLogicAttr[data-l1key=id]');
@@ -166,7 +166,7 @@ var propluviaUsageFilterManager = {
     var self = this;
     $.ajax({
       type: 'POST',
-      url: 'plugins/propluvia/core/ajax/propluvia.ajax.php',
+      url: 'plugins/vigieau/core/ajax/vigieau.ajax.php',
       dataType: 'json',
       data: {
         action: 'getUsageOptions',
@@ -255,7 +255,7 @@ var propluviaUsageFilterManager = {
     }
     $container.find('.usage-filter-checkbox').each(function () {
       var $checkbox = $(this);
-      var optionKeys = propluviaUsageFilterManager.parseKeys($checkbox.attr('data-usage-keys'));
+      var optionKeys = vigieauUsageFilterManager.parseKeys($checkbox.attr('data-usage-keys'));
       if (!optionKeys.length) {
         $checkbox.prop('checked', false);
         return;
@@ -286,7 +286,7 @@ var propluviaUsageFilterManager = {
     var checkedKeysMap = {};
     $container.find('.usage-filter-checkbox').each(function () {
       var $checkbox = $(this);
-      var keys = propluviaUsageFilterManager.parseKeys($checkbox.attr('data-usage-keys'));
+      var keys = vigieauUsageFilterManager.parseKeys($checkbox.attr('data-usage-keys'));
       if (!keys.length) {
         return;
       }
@@ -363,34 +363,34 @@ var propluviaUsageFilterManager = {
 };
 
 $(document).on('change', '.eqLogicAttr[data-l1key=id]', function () {
-  propluviaUsageFilterManager.currentEqId = null;
-  propluviaUsageFilterManager.refresh(true);
+  vigieauUsageFilterManager.currentEqId = null;
+  vigieauUsageFilterManager.refresh(true);
 });
 
 $(document).on('click', '#usageFilterReload', function (e) {
   e.preventDefault();
-  propluviaUsageFilterManager.currentEqId = null;
-  propluviaUsageFilterManager.refresh(true);
+  vigieauUsageFilterManager.currentEqId = null;
+  vigieauUsageFilterManager.refresh(true);
 });
 
 $(document).on('click', '#usageFilterSelectAll', function (e) {
   e.preventDefault();
   var $container = $('#usageFilterCheckboxes');
   $container.find('.usage-filter-checkbox').prop('checked', true);
-  propluviaUsageFilterManager.syncHiddenFromCheckboxes(false);
+  vigieauUsageFilterManager.syncHiddenFromCheckboxes(false);
 });
 
 $(document).on('click', '#usageFilterClear', function (e) {
   e.preventDefault();
   var $container = $('#usageFilterCheckboxes');
   $container.find('.usage-filter-checkbox').prop('checked', false);
-  propluviaUsageFilterManager.syncHiddenFromCheckboxes(false);
+  vigieauUsageFilterManager.syncHiddenFromCheckboxes(false);
 });
 
 $(document).on('change', '#usageFilterCheckboxes .usage-filter-checkbox', function () {
-  propluviaUsageFilterManager.syncHiddenFromCheckboxes(false);
+  vigieauUsageFilterManager.syncHiddenFromCheckboxes(false);
 });
 
 $(document).ready(function () {
-  propluviaUsageFilterManager.refresh(false);
+  vigieauUsageFilterManager.refresh(false);
 });
