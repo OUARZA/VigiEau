@@ -142,13 +142,36 @@
     }
   }
 
+  function setExpandedState(target, expanded) {
+    if (!target) {
+      return;
+    }
+    if (expanded) {
+      target.classList.remove('is-collapsed');
+      target.classList.add('is-expanded');
+      target.setAttribute('aria-hidden', 'false');
+    } else {
+      target.classList.remove('is-expanded');
+      target.classList.add('is-collapsed');
+      target.setAttribute('aria-hidden', 'true');
+    }
+  }
+
   function initWidgetElement(widget) {
     if (!widget || widget.getAttribute('data-vigieau-ready') === '1') {
       return;
     }
 
+    var contents = toArray(widget.querySelectorAll('.mesures-content'));
+    contents.forEach(function (content) {
+      enhanceContent(content);
+    });
+
     var toggles = toArray(widget.querySelectorAll('.mesures-toggle'));
     if (toggles.length === 0) {
+      contents.forEach(function (content) {
+        setExpandedState(content, true);
+      });
       widget.setAttribute('data-vigieau-ready', '1');
       return;
     }
@@ -162,20 +185,17 @@
         return;
       }
 
-      enhanceContent(target);
-
       button.textContent = collapsedLabel;
       button.setAttribute('aria-expanded', 'false');
       button.dataset.collapsedLabel = collapsedLabel;
       button.dataset.expandedLabel = expandedLabel;
 
-      target.classList.remove('is-expanded');
-      target.setAttribute('aria-hidden', 'true');
+      setExpandedState(target, false);
 
       button.addEventListener('click', function (event) {
         event.preventDefault();
-        var isExpanded = target.classList.toggle('is-expanded');
-        target.setAttribute('aria-hidden', isExpanded ? 'false' : 'true');
+        var isExpanded = !target.classList.contains('is-expanded');
+        setExpandedState(target, isExpanded);
         button.setAttribute('aria-expanded', isExpanded ? 'true' : 'false');
         button.textContent = isExpanded ? expandedLabel : collapsedLabel;
         button.classList.toggle('is-open', isExpanded);
