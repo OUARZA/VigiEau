@@ -138,6 +138,8 @@ class vigieau extends eqLogic {
       }
     }
 
+    $this->ensureUsageCommands();
+
     $refresh = $this->getCmd(null, 'refresh');
     if (!is_object($refresh)) {
       $refresh = new vigieauCmd();
@@ -263,6 +265,303 @@ class vigieau extends eqLogic {
       return 'display_id_'.$usage['id'];
     }
     return '';
+  }
+
+  private function normalizeUsageStatusValue($value) {
+    if (!is_string($value) && !is_numeric($value)) {
+      return '';
+    }
+    $stringValue = trim((string) $value);
+    if ($stringValue === '') {
+      return '';
+    }
+    $normalized = $this->slugifyUsageLabel($stringValue);
+    if ($normalized !== '') {
+      return $normalized;
+    }
+    $lower = strtolower($stringValue);
+    return str_replace(array(' ', '-'), '_', $lower);
+  }
+
+  private function isTruthyValue($value) {
+    if (is_bool($value)) {
+      return $value;
+    }
+    if (is_numeric($value)) {
+      return (float) $value != 0.0;
+    }
+    if (is_string($value)) {
+      $normalized = strtolower(trim($value));
+      return in_array($normalized, array('1', 'true', 'vrai', 'oui', 'yes', 'on'), true);
+    }
+    return false;
+  }
+
+  private function shouldIncludeUsage($usage, $enabledUsageKeys, $audienceField) {
+    if (!is_array($usage)) {
+      return false;
+    }
+    if (!empty($enabledUsageKeys)) {
+      $usageKey = $this->buildUsageKey($usage);
+      if ($usageKey === '' || !in_array($usageKey, $enabledUsageKeys, true)) {
+        return false;
+      }
+    }
+    if ($audienceField !== '') {
+      $audienceValue = isset($usage[$audienceField]) ? $usage[$audienceField] : false;
+      if (!$this->isTruthyValue($audienceValue)) {
+        return false;
+      }
+    }
+    return true;
+  }
+
+  private function formatUsageMessage($usage) {
+    if (!is_array($usage)) {
+      return '';
+    }
+    $nomUsage = isset($usage['nom']) ? trim((string) $usage['nom']) : '';
+    $description = isset($usage['description']) ? trim((string) $usage['description']) : '';
+    if ($description !== '') {
+      $description = str_replace(array("\r\n", "\n", "\r"), ' ', $description);
+      $description = preg_replace('/\s+/u', ' ', $description);
+    }
+    if ($nomUsage === '' && $description === '') {
+      return '';
+    }
+    if ($nomUsage !== '' && $description !== '') {
+      return '<b>'.$nomUsage.'</b> : '.$description;
+    }
+    return $nomUsage !== '' ? $nomUsage : $description;
+  }
+
+  private function getUsageDisplayName($usage) {
+    if (!is_array($usage)) {
+      return '';
+    }
+    $nom = isset($usage['nom']) ? trim((string) $usage['nom']) : '';
+    if ($nom !== '') {
+      return $nom;
+    }
+    $thematique = isset($usage['thematique']) ? trim((string) $usage['thematique']) : '';
+    if ($thematique !== '') {
+      return $thematique;
+    }
+    if (isset($usage['id'])) {
+      $id = trim((string) $usage['id']);
+      if ($id !== '') {
+        return sprintf(__('Usage %s', __FILE__), $id);
+      }
+    }
+    return __('Usage inconnu', __FILE__);
+  }
+
+  private function getDefinedUsages() {
+    return array(
+      '1880197' => array(
+        'id' => 1880197,
+        'nom' => "Alimentation de bassins pour l’agrément des animaux, dont le manque d’eau est susceptible de présenter des risques",
+        'thematique' => 'Remplir ou vidanger',
+        'description' => "Sensibilisation des usagers aux règles de bon usage d'économie d'eau",
+      ),
+      '1880198' => array(
+        'id' => 1880198,
+        'nom' => 'Arrosage de jeunes plants ligneux, chantiers paysagistes',
+        'thematique' => 'Arroser',
+        'description' => "Sensibilisation des usagers aux règles de bon usage d’économie d’eau",
+      ),
+      '1880201' => array(
+        'id' => 1880201,
+        'nom' => 'Arrosage des départs et des greens de golf',
+        'thematique' => 'Arroser',
+        'description' => "Sensibilisation des usagers aux règles de bon usage d’économie d’eau",
+      ),
+      '1880202' => array(
+        'id' => 1880202,
+        'nom' => 'Arrosage des espaces verts, pelouses, jardins d’agrément, des massifs de fleurs, jardinières',
+        'thematique' => 'Arroser',
+        'description' => "L’eau est un bien commun, chaque citoyen doit faire preuve de civisme pour éviter de porter atteinte à cette ressource indispensable. Chacun d’entre nous est invité à prendre toute disposition pour avoir une gestion économe de l’eau.",
+      ),
+      '1880204' => array(
+        'id' => 1880204,
+        'nom' => 'Arrosage des jardins potagers et des vergers vivriers',
+        'thematique' => 'Arroser',
+        'description' => "Sensibilisation des usagers aux règles de bon usage d’économie d’eau",
+      ),
+      '1880206' => array(
+        'id' => 1880206,
+        'nom' => 'Arrosage des terrains de golf',
+        'thematique' => 'Arroser',
+        'description' => "Sensibilisation des usagers aux règles de bon usage d’économie d’eau",
+      ),
+      '1880214' => array(
+        'id' => 1880214,
+        'nom' => 'Lavage des véhicules dans des installations professionnelles',
+        'thematique' => 'Nettoyer',
+        'description' => "Sensibilisation des usagers aux règles de bon usage d’économie d’eau",
+      ),
+      '1880215' => array(
+        'id' => 1880215,
+        'nom' => 'Lavage des véhicules des particuliers, hors des installations professionnelles',
+        'thematique' => 'Nettoyer',
+        'description' => "Sensibilisation des usagers aux règles de bon usage d’économie d’eau",
+      ),
+      '1880217' => array(
+        'id' => 1880217,
+        'nom' => 'Nettoyage de bâtiments, hangars, locaux de stockage (hors nécessité de salubrité et sanitaire)',
+        'thematique' => 'Nettoyer',
+        'description' => "Sensibilisation des usagers aux règles de bon usage d’économie d’eau",
+      ),
+      '1880218' => array(
+        'id' => 1880218,
+        'nom' => 'Nettoyage de façades et de toits',
+        'thematique' => 'Nettoyer',
+        'description' => "Sensibilisation des usagers aux règles de bon usage d’économie d’eau",
+      ),
+      '1880220' => array(
+        'id' => 1880220,
+        'nom' => 'Nettoyage de terrasses, de cours, de petits ouvrages (caveaux, portails, …), ...',
+        'thematique' => 'Nettoyer',
+        'description' => "Sensibilisation des usagers aux règles de bon usage d’économie d’eau",
+      ),
+      '1880221' => array(
+        'id' => 1880221,
+        'nom' => 'Piscines à usage unifamilial, de plus de 1 m3',
+        'thematique' => 'Remplir ou vidanger',
+        'description' => "Sensibilisation du grand public aux règles de bon usage d’économie d’eau",
+      ),
+    );
+  }
+
+  private function ensureUsageCommands() {
+    $usages = $this->getDefinedUsages();
+    $expected = array();
+
+    $this->createOrUpdateInfoCommand('usages_restreints', array(
+      'name' => __('Usages restreints', __FILE__),
+      'subType' => 'string',
+      'order' => 198,
+    ));
+    $expected['usages_restreints'] = true;
+
+    $index = 0;
+    foreach ($usages as $usageId => $usage) {
+      $displayName = isset($usage['nom']) ? $usage['nom'] : sprintf(__('Usage %s', __FILE__), $usageId);
+      $textLogicalId = 'usage_'.$usageId.'_texte';
+      $restrictionLogicalId = 'usage_'.$usageId.'_restriction';
+
+      $this->createOrUpdateInfoCommand($textLogicalId, array(
+        'name' => sprintf(__('Usage - %s', __FILE__), $displayName),
+        'subType' => 'string',
+        'order' => 200 + ($index * 2),
+      ));
+      $this->createOrUpdateInfoCommand($restrictionLogicalId, array(
+        'name' => sprintf(__('Restriction - %s', __FILE__), $displayName),
+        'subType' => 'binary',
+        'order' => 200 + ($index * 2) + 1,
+      ));
+
+      $expected[$textLogicalId] = true;
+      $expected[$restrictionLogicalId] = true;
+      $index++;
+    }
+
+    foreach ($this->getCmd('info') as $cmd) {
+      if (!is_object($cmd)) {
+        continue;
+      }
+      $logicalId = $cmd->getLogicalId();
+      if (!is_string($logicalId)) {
+        continue;
+      }
+      if (strpos($logicalId, 'usage_') === 0 || $logicalId === 'usages_restreints') {
+        if (!isset($expected[$logicalId])) {
+          $cmd->remove();
+        }
+      }
+    }
+  }
+
+  private function getUsageFallbackMessage($usage) {
+    $message = $this->formatUsageMessage($usage);
+    if ($message !== '') {
+      return $message;
+    }
+    $nomUsage = isset($usage['nom']) ? trim((string) $usage['nom']) : '';
+    if ($nomUsage !== '') {
+      return $nomUsage;
+    }
+    $description = isset($usage['description']) ? trim((string) $usage['description']) : '';
+    if ($description !== '') {
+      return $description;
+    }
+    return '';
+  }
+
+  private function isUsageRestricted($usage) {
+    if (!is_array($usage)) {
+      return false;
+    }
+
+    $booleanKeys = array('restriction', 'restrictionActive', 'estInterdiction', 'interdiction', 'estRestriction', 'usageRestreint', 'restriction_en_cours', 'restreint', 'isRestricted');
+    foreach ($booleanKeys as $key) {
+      if (!array_key_exists($key, $usage)) {
+        continue;
+      }
+      if ($this->isTruthyValue($usage[$key])) {
+        return true;
+      }
+      $value = $usage[$key];
+      if ($value === false || $value === 0 || $value === '0') {
+        continue;
+      }
+    }
+
+    $numericKeys = array('niveauRestriction', 'niveau_restriction', 'niveau', 'severite', 'gravite', 'niveauGravite');
+    foreach ($numericKeys as $key) {
+      if (!array_key_exists($key, $usage)) {
+        continue;
+      }
+      $value = $usage[$key];
+      if (is_numeric($value)) {
+        if ((float) $value > 0) {
+          return true;
+        }
+        continue;
+      }
+      $normalized = $this->normalizeUsageStatusValue($value);
+      if ($normalized === '') {
+        continue;
+      }
+      if (!in_array($normalized, array('aucune', 'aucun', 'autorise', 'autorisee', 'autorisation', 'sans_restriction', 'non', 'neant'), true)) {
+        return true;
+      }
+    }
+
+    $stringKeys = array('typeRestriction', 'statut', 'status', 'etat', 'phase');
+    foreach ($stringKeys as $key) {
+      if (!array_key_exists($key, $usage)) {
+        continue;
+      }
+      $normalized = $this->normalizeUsageStatusValue($usage[$key]);
+      if ($normalized === '') {
+        continue;
+      }
+      if (!in_array($normalized, array('aucune', 'aucun', 'autorise', 'autorisee', 'autorisation', 'sans_restriction', 'non', 'neant'), true)) {
+        return true;
+      }
+    }
+
+    if (isset($usage['description'])) {
+      $description = strtolower((string) $usage['description']);
+      if ($description !== '') {
+        if (strpos($description, 'interdiction') !== false || strpos($description, 'interdit') !== false) {
+          return true;
+        }
+      }
+    }
+
+    return false;
   }
 
   private function slugifyUsageLabel($label) {
@@ -473,113 +772,120 @@ class vigieau extends eqLogic {
   private function getZoneCommandDefinitions() {
     return array(
       'SUP' => array(
-        'nom_zone_sup' => array(
-          'name' => __('Nom zone SUP', __FILE__),
-          'subType' => 'string',
-          'order' => 9,
-          'default' => '',
-          'valueKey' => 'nom'
+          'nom_zone_sup' => array(
+            'name' => __('Nom zone SUP', __FILE__),
+            'subType' => 'string',
+            'order' => 9,
+            'default' => '',
+            'valueKey' => 'nom'
+          ),
+          'nom_restriction_sup' => array(
+            'name' => __('Nom restriction zone SUP', __FILE__),
+            'subType' => 'string',
+            'order' => 10,
+            'default' => '',
+            'valueKey' => 'label'
+          ),
+          'niveau_restriction_sup' => array(
+            'name' => __('Niveau restriction zone SUP', __FILE__),
+            'subType' => 'numeric',
+            'order' => 11,
+            'default' => 0,
+            'valueKey' => 'niveau'
+          ),
+          'editorial_zone_sup' => array(
+            'name' => __('Editorial zone SUP', __FILE__),
+            'subType' => 'string',
+            'order' => 12,
+            'default' => '',
+            'valueKey' => 'editorial'
+          ),
+          'editorial_zone_sup_restreint' => array(
+            'name' => __('Usages restreints zone SUP', __FILE__),
+            'subType' => 'string',
+            'order' => 13,
+            'default' => __('Aucune restriction détectée', __FILE__),
+            'valueKey' => 'restrictedEditorial'
+          ),
+          'niveau_gravite_sup' => array(
+            'name' => __('Niveau gravité zone SUP', __FILE__),
+            'subType' => 'string',
+            'order' => 14,
+            'default' => '',
+            'valueKey' => 'niveauGravite'
+          ),
+          'id_zone_sup' => array(
+            'name' => __('ID zone SUP', __FILE__),
+            'subType' => 'numeric',
+            'order' => 15,
+            'default' => 0,
+            'valueKey' => 'id'
+          ),
+          'id_sandre_zone_sup' => array(
+            'name' => __('ID Sandre zone SUP', __FILE__),
+            'subType' => 'numeric',
+            'order' => 16,
+            'default' => 0,
+            'valueKey' => 'idSandre'
+          ),
+          'code_zone_sup' => array(
+            'name' => __('Code zone SUP', __FILE__),
+            'subType' => 'string',
+            'order' => 17,
+            'default' => '',
+            'valueKey' => 'code'
+          ),
+          'type_zone_sup' => array(
+            'name' => __('Type zone SUP', __FILE__),
+            'subType' => 'string',
+            'order' => 18,
+            'default' => '',
+            'valueKey' => 'type'
+          ),
+          'ressource_influencee_sup' => array(
+            'name' => __('Ressource influencée zone SUP', __FILE__),
+            'subType' => 'binary',
+            'order' => 19,
+            'default' => 0,
+            'valueKey' => 'ressourceInfluencee'
+          ),
+          'usages_zone_sup' => array(
+            'name' => __('Usages zone SUP', __FILE__),
+            'subType' => 'string',
+            'order' => 20,
+            'default' => '[]',
+            'valueKey' => 'usages'
+          ),
+          'gid_zone_sup' => array(
+            'name' => __('GID zone SUP', __FILE__),
+            'subType' => 'numeric',
+            'order' => 21,
+            'default' => 0,
+            'valueKey' => 'gid'
+          ),
+          'cdzas_zone_sup' => array(
+            'name' => __('Code ZAS zone SUP', __FILE__),
+            'subType' => 'string',
+            'order' => 22,
+            'default' => '',
+            'valueKey' => 'CdZAS'
+          ),
+          'lbzas_zone_sup' => array(
+            'name' => __('Libellé ZAS zone SUP', __FILE__),
+            'subType' => 'string',
+            'order' => 23,
+            'default' => '',
+            'valueKey' => 'LbZAS'
+          ),
+          'typezas_zone_sup' => array(
+            'name' => __('Type ZAS zone SUP', __FILE__),
+            'subType' => 'string',
+            'order' => 24,
+            'default' => '',
+            'valueKey' => 'TypeZAS'
+          ),
         ),
-        'nom_restriction_sup' => array(
-          'name' => __('Nom restriction zone SUP', __FILE__),
-          'subType' => 'string',
-          'order' => 10,
-          'default' => '',
-          'valueKey' => 'label'
-        ),
-        'niveau_restriction_sup' => array(
-          'name' => __('Niveau restriction zone SUP', __FILE__),
-          'subType' => 'numeric',
-          'order' => 11,
-          'default' => 0,
-          'valueKey' => 'niveau'
-        ),
-        'editorial_zone_sup' => array(
-          'name' => __('Editorial zone SUP', __FILE__),
-          'subType' => 'string',
-          'order' => 12,
-          'default' => '',
-          'valueKey' => 'editorial'
-        ),
-        'niveau_gravite_sup' => array(
-          'name' => __('Niveau gravité zone SUP', __FILE__),
-          'subType' => 'string',
-          'order' => 13,
-          'default' => '',
-          'valueKey' => 'niveauGravite'
-        ),
-        'id_zone_sup' => array(
-          'name' => __('ID zone SUP', __FILE__),
-          'subType' => 'numeric',
-          'order' => 14,
-          'default' => 0,
-          'valueKey' => 'id'
-        ),
-        'id_sandre_zone_sup' => array(
-          'name' => __('ID Sandre zone SUP', __FILE__),
-          'subType' => 'numeric',
-          'order' => 15,
-          'default' => 0,
-          'valueKey' => 'idSandre'
-        ),
-        'code_zone_sup' => array(
-          'name' => __('Code zone SUP', __FILE__),
-          'subType' => 'string',
-          'order' => 16,
-          'default' => '',
-          'valueKey' => 'code'
-        ),
-        'type_zone_sup' => array(
-          'name' => __('Type zone SUP', __FILE__),
-          'subType' => 'string',
-          'order' => 17,
-          'default' => '',
-          'valueKey' => 'type'
-        ),
-        'ressource_influencee_sup' => array(
-          'name' => __('Ressource influencée zone SUP', __FILE__),
-          'subType' => 'binary',
-          'order' => 18,
-          'default' => 0,
-          'valueKey' => 'ressourceInfluencee'
-        ),
-        'usages_zone_sup' => array(
-          'name' => __('Usages zone SUP', __FILE__),
-          'subType' => 'string',
-          'order' => 19,
-          'default' => '[]',
-          'valueKey' => 'usages'
-        ),
-        'gid_zone_sup' => array(
-          'name' => __('GID zone SUP', __FILE__),
-          'subType' => 'numeric',
-          'order' => 20,
-          'default' => 0,
-          'valueKey' => 'gid'
-        ),
-        'cdzas_zone_sup' => array(
-          'name' => __('Code ZAS zone SUP', __FILE__),
-          'subType' => 'string',
-          'order' => 21,
-          'default' => '',
-          'valueKey' => 'CdZAS'
-        ),
-        'lbzas_zone_sup' => array(
-          'name' => __('Libellé ZAS zone SUP', __FILE__),
-          'subType' => 'string',
-          'order' => 22,
-          'default' => '',
-          'valueKey' => 'LbZAS'
-        ),
-        'typezas_zone_sup' => array(
-          'name' => __('Type ZAS zone SUP', __FILE__),
-          'subType' => 'string',
-          'order' => 23,
-          'default' => '',
-          'valueKey' => 'TypeZAS'
-        ),
-      ),
-      'SOU' => array(
+        'SOU' => array(
         'nom_zone_sou' => array(
           'name' => __('Nom zone SOU', __FILE__),
           'subType' => 'string',
@@ -601,91 +907,98 @@ class vigieau extends eqLogic {
           'default' => 0,
           'valueKey' => 'niveau'
         ),
-        'editorial_zone_sou' => array(
-          'name' => __('Editorial zone SOU', __FILE__),
-          'subType' => 'string',
-          'order' => 27,
-          'default' => '',
-          'valueKey' => 'editorial'
+          'editorial_zone_sou' => array(
+            'name' => __('Editorial zone SOU', __FILE__),
+            'subType' => 'string',
+            'order' => 27,
+            'default' => '',
+            'valueKey' => 'editorial'
+          ),
+          'editorial_zone_sou_restreint' => array(
+            'name' => __('Usages restreints zone SOU', __FILE__),
+            'subType' => 'string',
+            'order' => 28,
+            'default' => __('Aucune restriction détectée', __FILE__),
+            'valueKey' => 'restrictedEditorial'
+          ),
+          'niveau_gravite_sou' => array(
+            'name' => __('Niveau gravité zone SOU', __FILE__),
+            'subType' => 'string',
+            'order' => 29,
+            'default' => '',
+            'valueKey' => 'niveauGravite'
+          ),
+          'id_zone_sou' => array(
+            'name' => __('ID zone SOU', __FILE__),
+            'subType' => 'numeric',
+            'order' => 30,
+            'default' => 0,
+            'valueKey' => 'id'
+          ),
+          'id_sandre_zone_sou' => array(
+            'name' => __('ID Sandre zone SOU', __FILE__),
+            'subType' => 'numeric',
+            'order' => 31,
+            'default' => 0,
+            'valueKey' => 'idSandre'
+          ),
+          'code_zone_sou' => array(
+            'name' => __('Code zone SOU', __FILE__),
+            'subType' => 'string',
+            'order' => 32,
+            'default' => '',
+            'valueKey' => 'code'
+          ),
+          'type_zone_sou' => array(
+            'name' => __('Type zone SOU', __FILE__),
+            'subType' => 'string',
+            'order' => 33,
+            'default' => '',
+            'valueKey' => 'type'
+          ),
+          'ressource_influencee_sou' => array(
+            'name' => __('Ressource influencée zone SOU', __FILE__),
+            'subType' => 'binary',
+            'order' => 34,
+            'default' => 0,
+            'valueKey' => 'ressourceInfluencee'
+          ),
+          'usages_zone_sou' => array(
+            'name' => __('Usages zone SOU', __FILE__),
+            'subType' => 'string',
+            'order' => 35,
+            'default' => '[]',
+            'valueKey' => 'usages'
+          ),
+          'gid_zone_sou' => array(
+            'name' => __('GID zone SOU', __FILE__),
+            'subType' => 'numeric',
+            'order' => 36,
+            'default' => 0,
+            'valueKey' => 'gid'
+          ),
+          'cdzas_zone_sou' => array(
+            'name' => __('Code ZAS zone SOU', __FILE__),
+            'subType' => 'string',
+            'order' => 37,
+            'default' => '',
+            'valueKey' => 'CdZAS'
+          ),
+          'lbzas_zone_sou' => array(
+            'name' => __('Libellé ZAS zone SOU', __FILE__),
+            'subType' => 'string',
+            'order' => 38,
+            'default' => '',
+            'valueKey' => 'LbZAS'
+          ),
+          'typezas_zone_sou' => array(
+            'name' => __('Type ZAS zone SOU', __FILE__),
+            'subType' => 'string',
+            'order' => 39,
+            'default' => '',
+            'valueKey' => 'TypeZAS'
+          ),
         ),
-        'niveau_gravite_sou' => array(
-          'name' => __('Niveau gravité zone SOU', __FILE__),
-          'subType' => 'string',
-          'order' => 28,
-          'default' => '',
-          'valueKey' => 'niveauGravite'
-        ),
-        'id_zone_sou' => array(
-          'name' => __('ID zone SOU', __FILE__),
-          'subType' => 'numeric',
-          'order' => 29,
-          'default' => 0,
-          'valueKey' => 'id'
-        ),
-        'id_sandre_zone_sou' => array(
-          'name' => __('ID Sandre zone SOU', __FILE__),
-          'subType' => 'numeric',
-          'order' => 30,
-          'default' => 0,
-          'valueKey' => 'idSandre'
-        ),
-        'code_zone_sou' => array(
-          'name' => __('Code zone SOU', __FILE__),
-          'subType' => 'string',
-          'order' => 31,
-          'default' => '',
-          'valueKey' => 'code'
-        ),
-        'type_zone_sou' => array(
-          'name' => __('Type zone SOU', __FILE__),
-          'subType' => 'string',
-          'order' => 32,
-          'default' => '',
-          'valueKey' => 'type'
-        ),
-        'ressource_influencee_sou' => array(
-          'name' => __('Ressource influencée zone SOU', __FILE__),
-          'subType' => 'binary',
-          'order' => 33,
-          'default' => 0,
-          'valueKey' => 'ressourceInfluencee'
-        ),
-        'usages_zone_sou' => array(
-          'name' => __('Usages zone SOU', __FILE__),
-          'subType' => 'string',
-          'order' => 34,
-          'default' => '[]',
-          'valueKey' => 'usages'
-        ),
-        'gid_zone_sou' => array(
-          'name' => __('GID zone SOU', __FILE__),
-          'subType' => 'numeric',
-          'order' => 35,
-          'default' => 0,
-          'valueKey' => 'gid'
-        ),
-        'cdzas_zone_sou' => array(
-          'name' => __('Code ZAS zone SOU', __FILE__),
-          'subType' => 'string',
-          'order' => 36,
-          'default' => '',
-          'valueKey' => 'CdZAS'
-        ),
-        'lbzas_zone_sou' => array(
-          'name' => __('Libellé ZAS zone SOU', __FILE__),
-          'subType' => 'string',
-          'order' => 37,
-          'default' => '',
-          'valueKey' => 'LbZAS'
-        ),
-        'typezas_zone_sou' => array(
-          'name' => __('Type ZAS zone SOU', __FILE__),
-          'subType' => 'string',
-          'order' => 38,
-          'default' => '',
-          'valueKey' => 'TypeZAS'
-        ),
-      ),
       'AEP' => array(
         'nom_zone_aep' => array(
           'name' => __('Nom zone AEP', __FILE__),
@@ -708,90 +1021,97 @@ class vigieau extends eqLogic {
           'default' => 0,
           'valueKey' => 'niveau'
         ),
-        'editorial_zone_aep' => array(
-          'name' => __('Editorial zone AEP', __FILE__),
-          'subType' => 'string',
-          'order' => 42,
-          'default' => '',
-          'valueKey' => 'editorial'
-        ),
-        'niveau_gravite_aep' => array(
-          'name' => __('Niveau gravité zone AEP', __FILE__),
-          'subType' => 'string',
-          'order' => 43,
-          'default' => '',
-          'valueKey' => 'niveauGravite'
-        ),
-        'id_zone_aep' => array(
-          'name' => __('ID zone AEP', __FILE__),
-          'subType' => 'numeric',
-          'order' => 44,
-          'default' => 0,
-          'valueKey' => 'id'
-        ),
-        'id_sandre_zone_aep' => array(
-          'name' => __('ID Sandre zone AEP', __FILE__),
-          'subType' => 'numeric',
-          'order' => 45,
-          'default' => 0,
-          'valueKey' => 'idSandre'
-        ),
-        'code_zone_aep' => array(
-          'name' => __('Code zone AEP', __FILE__),
-          'subType' => 'string',
-          'order' => 46,
-          'default' => '',
-          'valueKey' => 'code'
-        ),
-        'type_zone_aep' => array(
-          'name' => __('Type zone AEP', __FILE__),
-          'subType' => 'string',
-          'order' => 47,
-          'default' => '',
-          'valueKey' => 'type'
-        ),
-        'ressource_influencee_aep' => array(
-          'name' => __('Ressource influencée zone AEP', __FILE__),
-          'subType' => 'binary',
-          'order' => 48,
-          'default' => 0,
-          'valueKey' => 'ressourceInfluencee'
-        ),
-        'usages_zone_aep' => array(
-          'name' => __('Usages zone AEP', __FILE__),
-          'subType' => 'string',
-          'order' => 49,
-          'default' => '[]',
-          'valueKey' => 'usages'
-        ),
-        'gid_zone_aep' => array(
-          'name' => __('GID zone AEP', __FILE__),
-          'subType' => 'numeric',
-          'order' => 50,
-          'default' => 0,
-          'valueKey' => 'gid'
-        ),
-        'cdzas_zone_aep' => array(
-          'name' => __('Code ZAS zone AEP', __FILE__),
-          'subType' => 'string',
-          'order' => 51,
-          'default' => '',
-          'valueKey' => 'CdZAS'
-        ),
-        'lbzas_zone_aep' => array(
-          'name' => __('Libellé ZAS zone AEP', __FILE__),
-          'subType' => 'string',
-          'order' => 52,
-          'default' => '',
-          'valueKey' => 'LbZAS'
-        ),
-        'typezas_zone_aep' => array(
-          'name' => __('Type ZAS zone AEP', __FILE__),
-          'subType' => 'string',
-          'order' => 53,
-          'default' => '',
-          'valueKey' => 'TypeZAS'
-        ),
+          'editorial_zone_aep' => array(
+            'name' => __('Editorial zone AEP', __FILE__),
+            'subType' => 'string',
+            'order' => 42,
+            'default' => '',
+            'valueKey' => 'editorial'
+          ),
+          'editorial_zone_aep_restreint' => array(
+            'name' => __('Usages restreints zone AEP', __FILE__),
+            'subType' => 'string',
+            'order' => 43,
+            'default' => __('Aucune restriction détectée', __FILE__),
+            'valueKey' => 'restrictedEditorial'
+          ),
+          'niveau_gravite_aep' => array(
+            'name' => __('Niveau gravité zone AEP', __FILE__),
+            'subType' => 'string',
+            'order' => 44,
+            'default' => '',
+            'valueKey' => 'niveauGravite'
+          ),
+          'id_zone_aep' => array(
+            'name' => __('ID zone AEP', __FILE__),
+            'subType' => 'numeric',
+            'order' => 45,
+            'default' => 0,
+            'valueKey' => 'id'
+          ),
+          'id_sandre_zone_aep' => array(
+            'name' => __('ID Sandre zone AEP', __FILE__),
+            'subType' => 'numeric',
+            'order' => 46,
+            'default' => 0,
+            'valueKey' => 'idSandre'
+          ),
+          'code_zone_aep' => array(
+            'name' => __('Code zone AEP', __FILE__),
+            'subType' => 'string',
+            'order' => 47,
+            'default' => '',
+            'valueKey' => 'code'
+          ),
+          'type_zone_aep' => array(
+            'name' => __('Type zone AEP', __FILE__),
+            'subType' => 'string',
+            'order' => 48,
+            'default' => '',
+            'valueKey' => 'type'
+          ),
+          'ressource_influencee_aep' => array(
+            'name' => __('Ressource influencée zone AEP', __FILE__),
+            'subType' => 'binary',
+            'order' => 49,
+            'default' => 0,
+            'valueKey' => 'ressourceInfluencee'
+          ),
+          'usages_zone_aep' => array(
+            'name' => __('Usages zone AEP', __FILE__),
+            'subType' => 'string',
+            'order' => 50,
+            'default' => '[]',
+            'valueKey' => 'usages'
+          ),
+          'gid_zone_aep' => array(
+            'name' => __('GID zone AEP', __FILE__),
+            'subType' => 'numeric',
+            'order' => 51,
+            'default' => 0,
+            'valueKey' => 'gid'
+          ),
+          'cdzas_zone_aep' => array(
+            'name' => __('Code ZAS zone AEP', __FILE__),
+            'subType' => 'string',
+            'order' => 52,
+            'default' => '',
+            'valueKey' => 'CdZAS'
+          ),
+          'lbzas_zone_aep' => array(
+            'name' => __('Libellé ZAS zone AEP', __FILE__),
+            'subType' => 'string',
+            'order' => 53,
+            'default' => '',
+            'valueKey' => 'LbZAS'
+          ),
+          'typezas_zone_aep' => array(
+            'name' => __('Type ZAS zone AEP', __FILE__),
+            'subType' => 'string',
+            'order' => 54,
+            'default' => '',
+            'valueKey' => 'TypeZAS'
+          ),
       ),
     );
   }
@@ -875,6 +1195,9 @@ class vigieau extends eqLogic {
     } else {
       //sauvegarde date et heure de récupérations des info VigiEau
       $this->setConfiguration('lastActuVigiEau', time())->save();
+      $this->ensureUsageCommands();
+      $usageDefinitions = $this->getDefinedUsages();
+
       if (count($jsonData) === 0) {
         log::add(__CLASS__, 'info', 'Aucune donnée trouvée à la date du '.$dateFormat. ' pour la commune '.$nomCommune);
 
@@ -892,6 +1215,12 @@ class vigieau extends eqLogic {
             $this->updateCommandIfExists($logicalId, isset($definition['default']) ? $definition['default'] : '');
           }
         }
+
+        foreach ($usageDefinitions as $usageId => $usageDefinition) {
+          $this->updateCommandIfExists('usage_'.$usageId.'_texte', __('Aucune information disponible', __FILE__));
+          $this->updateCommandIfExists('usage_'.$usageId.'_restriction', 0);
+        }
+        $this->updateCommandIfExists('usages_restreints', __('Aucune restriction détectée', __FILE__));
       } else {
         $levelMapping = array(
           'vigilance' => array('label' => __('Vigilance', __FILE__), 'value' => 1),
@@ -904,47 +1233,15 @@ class vigieau extends eqLogic {
 
         $enabledUsageKeys = $this->getEnabledUsageKeys();
         $audienceField = $this->getAudienceFieldForType($typeInfo);
-        $self = $this;
-        $buildEditorial = function ($usages) use ($enabledUsageKeys, $self, $audienceField) {
-          $messages = array();
-          foreach ($usages as $usage) {
-            if (!is_array($usage)) {
-              continue;
-            }
-            $usageKey = $self->buildUsageKey($usage);
-            if (!empty($enabledUsageKeys)) {
-              if ($usageKey === '' || !in_array($usageKey, $enabledUsageKeys, true)) {
-                continue;
-              }
-            }
-            $shouldAdd = true;
-            if ($audienceField !== '') {
-              $audienceValue = isset($usage[$audienceField]) ? $usage[$audienceField] : false;
-              $shouldAdd = ($audienceValue === true || $audienceValue === 1 || $audienceValue === '1' || $audienceValue === 'true');
-            }
-            if (!$shouldAdd) {
-              continue;
-            }
-            $nomUsage = isset($usage['nom']) ? trim($usage['nom']) : '';
-            $description = isset($usage['description']) ? trim($usage['description']) : '';
-            if ($nomUsage === '' && $description === '') {
-              continue;
-            }
-            if ($description !== '') {
-              $description = str_replace(array("\r\n", "\n", "\r"), ' ', $description);
-              $description = preg_replace('/\s+/u', ' ', $description);
-            }
-            if ($nomUsage !== '' && $description !== '') {
-              $messages[] = '<b>'.$nomUsage.'</b> : '.$description;
-            } else {
-              $messages[] = $nomUsage.$description;
-            }
-          }
-          if (count($messages) === 0) {
-            return __('Aucune information disponible', __FILE__);
-          }
-          return implode('<br/><br/>', $messages);
-        };
+
+        $usageValues = array();
+        foreach ($usageDefinitions as $usageId => $usageDefinition) {
+          $usageValues[$usageId] = array(
+            'message' => '',
+            'restricted' => 0,
+            'restrictedMessages' => array(),
+          );
+        }
 
         $zoneCommandDefinitions = $this->getZoneCommandDefinitions();
         $zoneValues = array();
@@ -954,6 +1251,7 @@ class vigieau extends eqLogic {
             'niveau' => 0,
             'label' => '',
             'editorial' => '',
+            'restrictedEditorial' => __('Aucune restriction détectée', __FILE__),
             'niveauGravite' => '',
             'id' => 0,
             'idSandre' => 0,
@@ -1035,7 +1333,45 @@ class vigieau extends eqLogic {
             $nomNiveau = ucfirst($niveauGraviteKey);
           }
 
-          $editorial = $buildEditorial($usages);
+          $messages = array();
+          $restrictedMessages = array();
+          foreach ($usages as $usage) {
+            if (!$this->shouldIncludeUsage($usage, $enabledUsageKeys, $audienceField)) {
+              continue;
+            }
+
+            $message = $this->formatUsageMessage($usage);
+            if ($message === '') {
+              $message = $this->getUsageFallbackMessage($usage);
+            }
+            if ($message === '') {
+              continue;
+            }
+
+            $messages[] = $message;
+
+            $usageId = isset($usage['id']) ? (string) $usage['id'] : '';
+            $isRestricted = $this->isUsageRestricted($usage) ? 1 : 0;
+            if ($isRestricted) {
+              $restrictedMessages[] = $message;
+            }
+
+            if ($usageId !== '' && isset($usageValues[$usageId])) {
+              $existingMessage = isset($usageValues[$usageId]['message']) ? trim((string) $usageValues[$usageId]['message']) : '';
+              if ($existingMessage === '' || ($isRestricted && empty($usageValues[$usageId]['restricted']))) {
+                $usageValues[$usageId]['message'] = $message;
+              }
+              if ($isRestricted) {
+                $usageValues[$usageId]['restricted'] = 1;
+                if (!in_array($message, $usageValues[$usageId]['restrictedMessages'], true)) {
+                  $usageValues[$usageId]['restrictedMessages'][] = $message;
+                }
+              }
+            }
+          }
+
+          $editorial = empty($messages) ? __('Aucune information disponible', __FILE__) : implode('<br/><br/>', $messages);
+          $restrictedEditorial = empty($restrictedMessages) ? __('Aucune restriction détectée', __FILE__) : implode('<br/><br/>', $restrictedMessages);
           $usagesJson = '[]';
           if (!empty($usages)) {
             $usagesJsonEncoded = json_encode($usages, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
@@ -1047,12 +1383,14 @@ class vigieau extends eqLogic {
           log::add(__CLASS__, 'debug', '----------'.strtoupper($nomZone.' ['.$typeZone.']').'----------');
           log::add(__CLASS__, 'debug', 'Niveau >> '.$nomNiveau.' ('.$niveauRestriction.')');
           log::add(__CLASS__, 'debug', strip_tags(str_replace('<br/>', ' | ', $editorial)));
+          log::add(__CLASS__, 'debug', 'Restreints >> '.strip_tags(str_replace('<br/>', ' | ', $restrictedEditorial)));
 
           $zoneValues[$typeZone] = array(
             'nom' => $nomZone,
             'niveau' => $niveauRestriction,
             'label' => $nomNiveau,
             'editorial' => $editorial,
+            'restrictedEditorial' => $restrictedEditorial,
             'niveauGravite' => $niveauGraviteRaw,
             'id' => isset($zone['id']) ? intval($zone['id']) : 0,
             'idSandre' => isset($zone['idSandre']) ? intval($zone['idSandre']) : 0,
@@ -1075,6 +1413,36 @@ class vigieau extends eqLogic {
         log::add(__CLASS__, 'debug', 'Commune                : '.$nomCommune);
         log::add(__CLASS__, 'debug', 'url pdf arrêté         : '.$urlPdf);
         log::add(__CLASS__, 'debug', 'url pdf arrêté cadre   : '.$urlPdfCadre);
+
+        $restrictedSummaryMessages = array();
+        foreach ($usageValues as $usageId => $usageValue) {
+          $messageValue = isset($usageValue['message']) ? trim((string) $usageValue['message']) : '';
+          if ($messageValue === '') {
+            $messageValue = __('Aucune information disponible', __FILE__);
+          }
+
+          $this->updateCommandIfExists('usage_'.$usageId.'_texte', $messageValue);
+
+          $isRestricted = isset($usageValue['restricted']) ? intval($usageValue['restricted']) : 0;
+          $this->updateCommandIfExists('usage_'.$usageId.'_restriction', $isRestricted);
+
+          if ($isRestricted === 1) {
+            $messagesList = isset($usageValue['restrictedMessages']) && is_array($usageValue['restrictedMessages']) ? $usageValue['restrictedMessages'] : array();
+            if (empty($messagesList)) {
+              $messagesList = array($messageValue);
+            }
+            foreach ($messagesList as $restrictedMessage) {
+              $trimmed = trim((string) $restrictedMessage);
+              if ($trimmed !== '') {
+                $restrictedSummaryMessages[] = $trimmed;
+              }
+            }
+          }
+        }
+
+        $restrictedSummaryMessages = array_values(array_unique($restrictedSummaryMessages));
+        $restrictedSummary = empty($restrictedSummaryMessages) ? __('Aucune restriction détectée', __FILE__) : implode('<br/><br/>', $restrictedSummaryMessages);
+        $this->updateCommandIfExists('usages_restreints', $restrictedSummary);
 
         $this->updateCommandIfExists('departement', $codeInseeDepartement);
         $this->updateCommandIfExists('numero_arrete', $numeroArrete);
