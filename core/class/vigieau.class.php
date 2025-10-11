@@ -138,7 +138,7 @@ class vigieau extends eqLogic {
       }
     }
 
-    $this->ensureUsageCommands();
+    $this->ensureUsageCommands($this->getDefinedUsages());
 
     $refresh = $this->getCmd(null, 'refresh');
     if (!is_object($refresh)) {
@@ -359,7 +359,7 @@ class vigieau extends eqLogic {
     return __('Usage inconnu', __FILE__);
   }
 
-  private function getDefinedUsages() {
+  private function getDefaultUsageDefinitions() {
     return array(
       '1880197' => array(
         'id' => 1880197,
@@ -436,8 +436,125 @@ class vigieau extends eqLogic {
     );
   }
 
-  private function ensureUsageCommands() {
-    $usages = $this->getDefinedUsages();
+  private function getDefinedUsages() {
+    $stored = $this->getConfiguration('usageDefinitions', array());
+    if (is_string($stored) && $stored !== '') {
+      $decoded = json_decode($stored, true);
+      $stored = is_array($decoded) ? $decoded : array();
+    }
+
+    $usages = array();
+    if (is_array($stored)) {
+      foreach ($stored as $definition) {
+        if (!is_array($definition)) {
+          continue;
+        }
+        $key = '';
+        if (isset($definition['key'])) {
+          $key = trim((string) $definition['key']);
+        }
+        if ($key === '') {
+          $key = $this->buildUsageKey($definition);
+        }
+        if ($key === '') {
+          continue;
+        }
+        $usages[$key] = array(
+          'key' => $key,
+          'id' => isset($definition['id']) ? (string) $definition['id'] : '',
+          'nom' => isset($definition['nom']) ? (string) $definition['nom'] : '',
+          'thematique' => isset($definition['thematique']) ? (string) $definition['thematique'] : '',
+          'description' => isset($definition['description']) ? (string) $definition['description'] : '',
+        );
+      }
+    }
+
+    if (!empty($usages)) {
+      return $usages;
+    }
+
+    return $this->getDefaultUsageDefinitions();
+  }
+
+  private function saveUsageDefinitions($usageDefinitions) {
+    $prepared = array();
+    if (is_array($usageDefinitions)) {
+      foreach ($usageDefinitions as $key => $definition) {
+        if (!is_array($definition)) {
+          continue;
+        }
+        $usageKey = is_string($key) && $key !== '' ? $key : (isset($definition['key']) ? (string) $definition['key'] : $this->buildUsageKey($definition));
+        if ($usageKey === '') {
+          continue;
+        }
+        $prepared[] = array(
+          'key' => $usageKey,
+          'id' => isset($definition['id']) ? (string) $definition['id'] : '',
+          'nom' => isset($definition['nom']) ? (string) $definition['nom'] : '',
+          'thematique' => isset($definition['thematique']) ? (string) $definition['thematique'] : '',
+          'description' => isset($definition['description']) ? (string) $definition['description'] : '',
+        );
+      }
+    }
+    $this->setConfiguration('usageDefinitions', $prepared);
+    $this->save();
+  }
+
+  private function extractUsageDefinitionsFromData($jsonData) {
+    $definitions = array();
+    if (!is_array($jsonData)) {
+      return $definitions;
+    }
+    foreach ($jsonData as $zone) {
+      if (!is_array($zone)) {
+        continue;
+      }
+      if (!isset($zone['usages']) || !is_array($zone['usages'])) {
+        continue;
+      }
+      foreach ($zone['usages'] as $usage) {
+        if (!is_array($usage)) {
+          continue;
+        }
+        $usageKey = $this->buildUsageKey($usage);
+        if ($usageKey === '') {
+          continue;
+        }
+        if (!isset($definitions[$usageKey])) {
+          $definitions[$usageKey] = array(
+            'key' => $usageKey,
+            'id' => isset($usage['id']) ? (string) $usage['id'] : '',
+            'nom' => isset($usage['nom']) ? (string) $usage['nom'] : '',
+            'thematique' => isset($usage['thematique']) ? (string) $usage['thematique'] : '',
+            'description' => isset($usage['description']) ? (string) $usage['description'] : '',
+          );
+        } else {
+          if ($definitions[$usageKey]['nom'] === '' && !empty($usage['nom'])) {
+            $definitions[$usageKey]['nom'] = (string) $usage['nom'];
+          }
+          if ($definitions[$usageKey]['thematique'] === '' && !empty($usage['thematique'])) {
+            $definitions[$usageKey]['thematique'] = (string) $usage['thematique'];
+          }
+          if ($definitions[$usageKey]['description'] === '' && !empty($usage['description'])) {
+            $definitions[$usageKey]['description'] = (string) $usage['description'];
+          }
+          if ($definitions[$usageKey]['id'] === '' && isset($usage['id'])) {
+            $definitions[$usageKey]['id'] = (string) $usage['id'];
+          }
+        }
+      }
+    }
+    return $definitions;
+  }
+
+  private function ensureUsageCommands($usageDefinitions = null) {
+    if ($usageDefinitions === null) {
+      $usageDefinitions = $this->getDefinedUsages();
+    }
+    if (!is_array($usageDefinitions)) {
+      $usageDefinitions = array();
+    }
+
     $expected = array();
 
     $this->createOrUpdateInfoCommand('usages_restreints', array(
@@ -447,11 +564,38 @@ class vigieau extends eqLogic {
     ));
     $expected['usages_restreints'] = true;
 
+    $this->createOrUpdateInfoCommand('usages_restreints_flag', array(
+      'name' => __('Usages restreints (binaire)', __FILE__),
+      'subType' => 'binary',
+      'order' => 199,
+    ));
+    $expected['usages_restreints_flag'] = true;
+
     $index = 0;
-    foreach ($usages as $usageId => $usage) {
-      $displayName = isset($usage['nom']) ? $usage['nom'] : sprintf(__('Usage %s', __FILE__), $usageId);
-      $textLogicalId = 'usage_'.$usageId.'_texte';
-      $restrictionLogicalId = 'usage_'.$usageId.'_restriction';
+    foreach ($usageDefinitions as $usageKey => $usage) {
+      if (!is_array($usage)) {
+        continue;
+      }
+      $key = '';
+      if (is_string($usageKey) && $usageKey !== '') {
+        $key = $usageKey;
+      } elseif (isset($usage['key'])) {
+        $key = trim((string) $usage['key']);
+      }
+      if ($key === '') {
+        $key = $this->buildUsageKey($usage);
+      }
+      if ($key === '') {
+        continue;
+      }
+
+      $displayName = $this->getUsageDisplayName($usage);
+      if ($displayName === '') {
+        $displayName = sprintf(__('Usage %s', __FILE__), $key);
+      }
+
+      $textLogicalId = 'usage_'.$key.'_texte';
+      $restrictionLogicalId = 'usage_'.$key.'_restriction';
 
       $this->createOrUpdateInfoCommand($textLogicalId, array(
         'name' => sprintf(__('Usage - %s', __FILE__), $displayName),
@@ -477,7 +621,7 @@ class vigieau extends eqLogic {
       if (!is_string($logicalId)) {
         continue;
       }
-      if (strpos($logicalId, 'usage_') === 0 || $logicalId === 'usages_restreints') {
+      if (strpos($logicalId, 'usage_') === 0 || $logicalId === 'usages_restreints' || $logicalId === 'usages_restreints_flag') {
         if (!isset($expected[$logicalId])) {
           $cmd->remove();
         }
@@ -1490,8 +1634,13 @@ class vigieau extends eqLogic {
     } else {
       //sauvegarde date et heure de récupérations des info VigiEau
       $this->setConfiguration('lastActuVigiEau', time())->save();
-      $this->ensureUsageCommands();
       $usageDefinitions = $this->getDefinedUsages();
+      $dynamicUsageDefinitions = $this->extractUsageDefinitionsFromData($jsonData);
+      if (!empty($dynamicUsageDefinitions)) {
+        $usageDefinitions = $dynamicUsageDefinitions;
+        $this->saveUsageDefinitions($usageDefinitions);
+      }
+      $this->ensureUsageCommands($usageDefinitions);
 
       if (count($jsonData) === 0) {
         log::add(__CLASS__, 'info', 'Aucune donnée trouvée à la date du '.$dateFormat. ' pour la commune '.$nomCommune);
@@ -1511,11 +1660,18 @@ class vigieau extends eqLogic {
           }
         }
 
-        foreach ($usageDefinitions as $usageId => $usageDefinition) {
-          $this->updateCommandIfExists('usage_'.$usageId.'_texte', __('Aucune information disponible', __FILE__));
-          $this->updateCommandIfExists('usage_'.$usageId.'_restriction', 0);
+        foreach ($usageDefinitions as $usageKey => $usageDefinition) {
+          if (!is_string($usageKey) || $usageKey === '') {
+            $usageKey = isset($usageDefinition['key']) ? (string) $usageDefinition['key'] : $this->buildUsageKey($usageDefinition);
+          }
+          if ($usageKey === '') {
+            continue;
+          }
+          $this->updateCommandIfExists('usage_'.$usageKey.'_texte', __('Aucune information disponible', __FILE__));
+          $this->updateCommandIfExists('usage_'.$usageKey.'_restriction', 0);
         }
         $this->updateCommandIfExists('usages_restreints', __('Aucune restriction détectée', __FILE__));
+        $this->updateCommandIfExists('usages_restreints_flag', 0);
       } else {
         $levelMapping = array(
           'vigilance' => array('label' => __('Vigilance', __FILE__), 'value' => 1),
@@ -1530,8 +1686,14 @@ class vigieau extends eqLogic {
         $audienceField = $this->getAudienceFieldForType($typeInfo);
 
         $usageValues = array();
-        foreach ($usageDefinitions as $usageId => $usageDefinition) {
-          $usageValues[$usageId] = array(
+        foreach ($usageDefinitions as $usageKey => $usageDefinition) {
+          if (!is_string($usageKey) || $usageKey === '') {
+            $usageKey = isset($usageDefinition['key']) ? (string) $usageDefinition['key'] : $this->buildUsageKey($usageDefinition);
+          }
+          if ($usageKey === '') {
+            continue;
+          }
+          $usageValues[$usageKey] = array(
             'message' => '',
             'restricted' => 0,
             'restrictedMessages' => array(),
@@ -1640,28 +1802,40 @@ class vigieau extends eqLogic {
               $message = $this->getUsageFallbackMessage($usage);
             }
 
-            $usageId = isset($usage['id']) ? (string) $usage['id'] : '';
+            $usageKey = $this->buildUsageKey($usage);
             $isRestricted = $this->isUsageRestricted($usage, $profil) ? 1 : 0;
             $shouldInclude = $this->shouldIncludeUsage($usage, $enabledUsageKeys, $audienceField);
 
-            if ($usageId !== '' && isset($usageValues[$usageId])) {
-              $previousRestricted = isset($usageValues[$usageId]['restricted']) ? intval($usageValues[$usageId]['restricted']) : 0;
-              $existingMessage = isset($usageValues[$usageId]['message']) ? trim((string) $usageValues[$usageId]['message']) : '';
+            if ($usageKey === '') {
+              continue;
+            }
+
+            if (!isset($usageValues[$usageKey])) {
+              $usageValues[$usageKey] = array(
+                'message' => '',
+                'restricted' => 0,
+                'restrictedMessages' => array(),
+              );
+            }
+
+            if (isset($usageValues[$usageKey])) {
+              $previousRestricted = isset($usageValues[$usageKey]['restricted']) ? intval($usageValues[$usageKey]['restricted']) : 0;
+              $existingMessage = isset($usageValues[$usageKey]['message']) ? trim((string) $usageValues[$usageKey]['message']) : '';
 
               if ($isRestricted) {
-                $usageValues[$usageId]['restricted'] = 1;
-                if ($message !== '' && !in_array($message, $usageValues[$usageId]['restrictedMessages'], true)) {
-                  $usageValues[$usageId]['restrictedMessages'][] = $message;
+                $usageValues[$usageKey]['restricted'] = 1;
+                if ($message !== '' && !in_array($message, $usageValues[$usageKey]['restrictedMessages'], true)) {
+                  $usageValues[$usageKey]['restrictedMessages'][] = $message;
                 }
                 if ($message !== '' && ($existingMessage === '' || $previousRestricted === 0)) {
-                  $usageValues[$usageId]['message'] = $message;
+                  $usageValues[$usageKey]['message'] = $message;
                   $existingMessage = $message;
                 }
               }
 
               if ($shouldInclude && $message !== '') {
                 if ($existingMessage === '' || ($isRestricted && $previousRestricted === 0)) {
-                  $usageValues[$usageId]['message'] = $message;
+                  $usageValues[$usageKey]['message'] = $message;
                   $existingMessage = $message;
                 }
               }
@@ -1723,16 +1897,23 @@ class vigieau extends eqLogic {
         log::add(__CLASS__, 'debug', 'url pdf arrêté cadre   : '.$urlPdfCadre);
 
         $restrictedSummaryMessages = array();
-        foreach ($usageValues as $usageId => $usageValue) {
+        foreach ($usageValues as $usageKey => $usageValue) {
           $messageValue = isset($usageValue['message']) ? trim((string) $usageValue['message']) : '';
           if ($messageValue === '') {
             $messageValue = __('Aucune information disponible', __FILE__);
           }
 
-          $this->updateCommandIfExists('usage_'.$usageId.'_texte', $messageValue);
+          if (!is_string($usageKey) || $usageKey === '') {
+            $usageKey = isset($usageValue['key']) ? (string) $usageValue['key'] : '';
+          }
+          if ($usageKey === '') {
+            continue;
+          }
+
+          $this->updateCommandIfExists('usage_'.$usageKey.'_texte', $messageValue);
 
           $isRestricted = isset($usageValue['restricted']) ? intval($usageValue['restricted']) : 0;
-          $this->updateCommandIfExists('usage_'.$usageId.'_restriction', $isRestricted);
+          $this->updateCommandIfExists('usage_'.$usageKey.'_restriction', $isRestricted);
 
           if ($isRestricted === 1) {
             $messagesList = isset($usageValue['restrictedMessages']) && is_array($usageValue['restrictedMessages']) ? $usageValue['restrictedMessages'] : array();
@@ -1751,6 +1932,7 @@ class vigieau extends eqLogic {
         $restrictedSummaryMessages = array_values(array_unique($restrictedSummaryMessages));
         $restrictedSummary = empty($restrictedSummaryMessages) ? __('Aucune restriction détectée', __FILE__) : implode('<br/><br/>', $restrictedSummaryMessages);
         $this->updateCommandIfExists('usages_restreints', $restrictedSummary);
+        $this->updateCommandIfExists('usages_restreints_flag', empty($restrictedSummaryMessages) ? 0 : 1);
 
         $this->updateCommandIfExists('departement', $codeInseeDepartement);
         $this->updateCommandIfExists('numero_arrete', $numeroArrete);
