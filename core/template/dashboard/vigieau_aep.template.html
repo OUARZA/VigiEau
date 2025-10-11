@@ -1,0 +1,146 @@
+<div class="eqLogic eqLogic-widget allowResize allowReorderCmd #custom_layout# #eqLogic_class# #class#" data-eqType="#eqType#" data-eqLogic_id="#id#" data-eqLogic_uid="#uid#" data-version="#version#" data-translate-category="#translate_category#" data-category="#category#" data-tags="#tags#" style="width: #width#;height: #height#;#style#">
+  <link rel="stylesheet" href="plugins/vigieau/core/template/css/vigieau.dashboard.css" />
+  <center class="widget-name">
+    <span class="warning" title="#alert_name#">
+      <i class='#alert_icon#'></i>
+    </span>
+    <span class="cmd refresh pull-right cursor" data-cmd_id="#refresh_id#">
+      <i class="fas fa-sync"></i>
+    </span>
+        <span class="reportModeVisible">#name_display# <span class="object_name">#object_name#</span></span>
+    <a href="#eqLink#" class="reportModeHidden">#name_display# <span class="object_name">#object_name#</span></a>
+  </center>
+  <div class="#isVerticalAlign#">
+    <center>
+
+<table class="tableau">
+        <tbody>
+        <tr>
+                <td><i class='fas fa-map-pin'></i></td>
+        <td>Commune : #commune# (#departement#)</td>
+        </tr>
+        <tr>
+        <td><i class='fas fa-pen'></i></td>
+        <td id="arreteCell#uid#">
+                <script>
+                        (function() {
+                                var urlPdf = "#urlPdf#";
+                                var urlPdfCadre = "#urlPdfCadre#";
+                                var numeroArrete = "#numero_arrete#";
+                                var numeroArreteCadre = "#numero_arrete_cadre#";
+
+                                var sanitize = function(value) {
+                                        return (value || '').toString().trim();
+                                };
+
+                                var isKnown = function(value) {
+                                        if (value === '') {
+                                                return false;
+                                        }
+                                        var lower = value.toLowerCase();
+                                        return lower !== 'non communiqué' && lower.indexOf('aucun') === -1;
+                                };
+
+                                var buildLine = function(label, url, numero, rawValue) {
+                                        var cleanNumero = sanitize(numero);
+                                        var cleanRaw = sanitize(rawValue);
+                                        var known = isKnown(cleanNumero);
+                                        var fallback = known ? 'N° ' + cleanNumero : (cleanRaw !== '' ? cleanRaw : 'Non communiqué');
+                                        if (url !== '') {
+                                                var linkLabel = known ? 'N° ' + cleanNumero : (isKnown(cleanRaw) ? cleanRaw : 'Consulter le PDF');
+                                                return label + ' : <a href="' + url + '" target="_blank" class="lien-arrete">' + linkLabel + '</a>';
+                                        }
+                                        return label + ' : ' + fallback;
+                                };
+
+                                var restrictionLine = buildLine('Arrêté de restriction', urlPdf, numeroArrete, numeroArrete);
+                                var cadreLine = buildLine('Arrêté cadre', urlPdfCadre, numeroArreteCadre, numeroArreteCadre);
+
+                                var cell = document.getElementById('arreteCell#uid#');
+                                if (!cell) {
+                                        return;
+                                }
+                                cell.innerHTML = restrictionLine + '<br/>' + cadreLine;
+                        })();
+                </script>
+        </td>
+        </tr>
+    <tr>
+        <td><i class='fas fa-angle-right'></i></td>
+                <td>Date de début : #date_debut#</td>
+        </tr>
+    <tr>
+        <td><i class='fas fa-angle-right'></i></td>
+                <td>Date de fin : #date_fin#</td>
+        </tr>
+        </tbody>
+</table>
+
+<div class="tableaux">
+  <table class="tableau">
+        <tbody>
+    <tr>
+      <td colspan="2" style="width: 300px; font-weight: bold;"><center>Eau du robinet (AEP)</center></td>
+        </tr>
+        <tr>
+                <td style="width: 10px;"><i class='fas fa-map-pin'></i></td>
+        <td>Nom : #nom_zone_aep#</td>
+        </tr>
+        <tr>
+        <td><i class='fas fa-pen'></i></td>
+                <td>Restriction : #nom_restriction_aep#</td>
+        </tr>
+    <tr>
+        <td colspan="2">
+        <table border="0" class="restriction-scale">
+          <tbody>
+            <tr style="border: 1px black;">
+              <td style="width: 60px; height: 20px; background-color: #ffffff !important;">#nom_restriction_aep_N1#
+              </td>
+              <td style="width: 60px; height: 20px; background-color: #7f7f7f !important;">#nom_restriction_aep_N2#
+              </td>
+              <td style="width: 60px; height: 20px; background-color: #fae805 !important;">#nom_restriction_aep_N3#
+              </td>
+              <td style="width: 60px; height: 20px; background-color: #ff9900 !important;">#nom_restriction_aep_N4#
+              </td>
+              <td style="width: 60px; height: 20px; background-color: #ff0000 !important;">#nom_restriction_aep_N5#
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </td>
+        </tr>
+    <tr>
+        <td><i class='fas fa-angle-right'></i></td>
+                <td class="mesures-label">Mesures :</td>
+        </tr>
+    <tr class="mesures-row">
+        <td></td>
+        <td class="mesures-content">#editorial_zone_aep#</td>
+        </tr>
+        </tbody>
+</table>
+</div>
+
+      <div style="font-size: 10px; font-style: italic; text-align:left;margin-left: 5px">
+        #lastActuVigiEau#
+  </div>
+
+    </center>
+  </div>
+  <script>
+//    var eqLogic = $('.eqLogic[data-eqLogic_uid=#uid#]')
+//    var eqlogic_height = eqLogic.height()
+//    eqLogic.find('.vigieauCdc').css('font-size', (eqlogic_height * 0.05) + 'px')
+//    eqLogic.find('.vigieauValue, .vigieauTitle').css('font-size', (eqlogic_height * 0.06) + 'px')
+//    eqLogic.find('.vigieauUnite, .vigieauTitleIcon').css('font-size', (eqlogic_height * 0.04) + 'px')
+
+    if ('#refresh_id#' != '') {
+      $('.eqLogic[data-eqLogic_uid=#uid#] .refresh').on('click', function () {
+        jeedom.cmd.execute({id: '#refresh_id#'})
+      })
+    } else {
+      $('.eqLogic[data-eqLogic_uid=#uid#] .refresh').remove()
+    }
+  </script>
+</div>

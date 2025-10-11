@@ -1,0 +1,60 @@
+@font-face {
+	font-family: "Barcelona";
+	src: url("fonts/Barcelona.otf") format("opentype");
+	}
+
+        .tableau{
+                background-color: #C9EBF8 !important;
+                border: 5px solid #FFFFFF;
+                border-radius: 20px !important;
+                border-spacing:5px;
+                border-collapse: separate;
+                color: #000000 !important;
+                columns:2;
+        }
+
+        .tableau tr,
+        .tableau th,
+        .tableau td {
+                background-color: #C9EBF8 !important;
+        }
+
+  	.tableaux{
+  		display:inline-block;
+  		vertical-align:top;
+      		padding:5px;
+	}
+	.template.vigieau{
+      		background-image: url("images/VigiEauScreen.png");
+	}
+	.demo th {
+	}
+        .tableau td {
+                padding:2px;
+        }
+	.fa-mixer{
+   		color: black;
+	}
+        .lien-arrete {
+                color: blue !important;
+                text-decoration: underline !important;
+        }
+        .lien-arrete:hover {
+                color: red !important;
+                text-decoration: underline !important;
+        }
+        .restriction-scale {
+                margin: 0 auto;
+        }
+        .tableau .mesures-row td {
+                background-color: #C9EBF8 !important;
+                color: #000000 !important;
+        }
+        .tableau .mesures-label {
+                font-weight: bold;
+        }
+        .tableau .mesures-content {
+                text-align: left;
+                white-space: normal;
+                background-color: #C9EBF8 !important;
+        }
