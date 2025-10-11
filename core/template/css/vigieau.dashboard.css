@@ -93,6 +93,15 @@
                 align-items: center;
                 gap: 8px;
         }
+        .tableau .mesures-content .mesure-title {
+                font-weight: 600;
+        }
+        .tableau .mesures-content .mesure-toggle-hint {
+                font-weight: 400;
+                font-size: 0.85em;
+                color: #006f94;
+                margin-left: 4px;
+        }
         .tableau .mesures-content .mesure-summary::-webkit-details-marker {
                 display: none;
         }
