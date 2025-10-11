@@ -437,7 +437,7 @@ class vigieau extends eqLogic {
   }
 
   private function ensureUsageCommands() {
-    $usages = $this->getDefinedUsages();
+    $usages = $this->getKnownUsageDefinitions();
     $expected = array();
 
     $this->createOrUpdateInfoCommand('usages_restreints', array(
@@ -483,6 +483,160 @@ class vigieau extends eqLogic {
         }
       }
     }
+  }
+
+  private function getDynamicUsageDefinitions() {
+    $raw = $this->getConfiguration('dynamicUsages', array());
+    if (!is_array($raw)) {
+      return array();
+    }
+    $definitions = array();
+    foreach ($raw as $key => $definition) {
+      if (!is_array($definition)) {
+        continue;
+      }
+      $usageId = '';
+      if (isset($definition['id'])) {
+        $usageId = $this->normalizeUsageIdentifier($definition['id']);
+      }
+      if ($usageId === '') {
+        $usageId = $this->normalizeUsageIdentifier($key);
+      }
+      if ($usageId === '') {
+        continue;
+      }
+      $definitions[$usageId] = array(
+        'id' => $usageId,
+        'nom' => isset($definition['nom']) ? trim((string) $definition['nom']) : '',
+        'thematique' => isset($definition['thematique']) ? trim((string) $definition['thematique']) : '',
+        'description' => isset($definition['description']) ? trim((string) $definition['description']) : '',
+      );
+    }
+    return $definitions;
+  }
+
+  private function getKnownUsageDefinitions() {
+    $defined = $this->getDefinedUsages();
+    $dynamic = $this->getDynamicUsageDefinitions();
+    if (empty($dynamic)) {
+      return $defined;
+    }
+    foreach ($dynamic as $usageId => $usage) {
+      if (!isset($defined[$usageId])) {
+        $defined[$usageId] = $usage;
+        continue;
+      }
+      foreach (array('nom', 'thematique', 'description') as $field) {
+        if ((!isset($defined[$usageId][$field]) || trim((string) $defined[$usageId][$field]) === '') && isset($usage[$field])) {
+          $value = trim((string) $usage[$field]);
+          if ($value !== '') {
+            $defined[$usageId][$field] = $value;
+          }
+        }
+      }
+    }
+    return $defined;
+  }
+
+  private function normalizeUsageIdentifier($rawId) {
+    if (is_int($rawId) || is_float($rawId)) {
+      $rawId = (string) $rawId;
+    }
+    if (!is_string($rawId)) {
+      return '';
+    }
+    $id = trim($rawId);
+    if ($id === '') {
+      return '';
+    }
+    $normalized = @iconv('UTF-8', 'ASCII//TRANSLIT//IGNORE', $id);
+    if ($normalized !== false && $normalized !== null) {
+      $id = $normalized;
+    }
+    $id = strtolower($id);
+    $id = preg_replace('/[^a-z0-9_]+/', '_', $id);
+    if (!is_string($id)) {
+      $id = '';
+    }
+    $id = trim($id, '_');
+    return $id;
+  }
+
+  private function buildUsageDefinitionFromData($usage) {
+    if (!is_array($usage)) {
+      return null;
+    }
+    $usageId = $this->resolveUsageIdentifierFromData($usage);
+    if ($usageId === '') {
+      return null;
+    }
+    return array(
+      'id' => $usageId,
+      'nom' => isset($usage['nom']) ? trim((string) $usage['nom']) : '',
+      'thematique' => isset($usage['thematique']) ? trim((string) $usage['thematique']) : '',
+      'description' => isset($usage['description']) ? trim((string) $usage['description']) : '',
+    );
+  }
+
+  private function resolveUsageIdentifierFromData($usage) {
+    if (!is_array($usage)) {
+      return '';
+    }
+    if (isset($usage['id']) && $usage['id'] !== '' && $usage['id'] !== null) {
+      $normalized = $this->normalizeUsageIdentifier($usage['id']);
+      if ($normalized !== '') {
+        return $normalized;
+      }
+    }
+    $key = $this->buildUsageKey($usage);
+    if ($key !== '') {
+      $normalized = $this->normalizeUsageIdentifier($key);
+      if ($normalized !== '') {
+        return $normalized;
+      }
+    }
+    return '';
+  }
+
+  private function registerUsageDefinitionsFromData($jsonData) {
+    if (!is_array($jsonData)) {
+      return false;
+    }
+    $dynamicDefinitions = $this->getDynamicUsageDefinitions();
+    $staticDefinitions = $this->getDefinedUsages();
+    $changed = false;
+    foreach ($jsonData as $zone) {
+      if (!is_array($zone) || !isset($zone['usages']) || !is_array($zone['usages'])) {
+        continue;
+      }
+      foreach ($zone['usages'] as $usage) {
+        $definition = $this->buildUsageDefinitionFromData($usage);
+        if ($definition === null) {
+          continue;
+        }
+        $usageId = $definition['id'];
+        if (isset($staticDefinitions[$usageId])) {
+          continue;
+        }
+        if (!isset($dynamicDefinitions[$usageId])) {
+          $dynamicDefinitions[$usageId] = $definition;
+          $changed = true;
+          continue;
+        }
+        foreach (array('nom', 'thematique', 'description') as $field) {
+          $current = isset($dynamicDefinitions[$usageId][$field]) ? trim((string) $dynamicDefinitions[$usageId][$field]) : '';
+          $incoming = isset($definition[$field]) ? trim((string) $definition[$field]) : '';
+          if ($current === '' && $incoming !== '') {
+            $dynamicDefinitions[$usageId][$field] = $incoming;
+            $changed = true;
+          }
+        }
+      }
+    }
+    if ($changed) {
+      $this->setConfiguration('dynamicUsages', $dynamicDefinitions);
+    }
+    return $changed;
   }
 
   private function getUsageFallbackMessage($usage) {
@@ -1489,9 +1643,11 @@ class vigieau extends eqLogic {
         log::add(__CLASS__, 'error', 'le site \'https://api.vigieau.beta.gouv.fr\' renvoie une erreur ou n\'est pas accessible');
     } else {
       //sauvegarde date et heure de récupérations des info VigiEau
-      $this->setConfiguration('lastActuVigiEau', time())->save();
+      $this->setConfiguration('lastActuVigiEau', time());
+      $this->registerUsageDefinitionsFromData($jsonData);
       $this->ensureUsageCommands();
-      $usageDefinitions = $this->getDefinedUsages();
+      $usageDefinitions = $this->getKnownUsageDefinitions();
+      $this->save();
 
       if (count($jsonData) === 0) {
         log::add(__CLASS__, 'info', 'Aucune donnée trouvée à la date du '.$dateFormat. ' pour la commune '.$nomCommune);
@@ -1640,9 +1796,17 @@ class vigieau extends eqLogic {
               $message = $this->getUsageFallbackMessage($usage);
             }
 
-            $usageId = isset($usage['id']) ? (string) $usage['id'] : '';
+            $usageId = $this->resolveUsageIdentifierFromData($usage);
             $isRestricted = $this->isUsageRestricted($usage, $profil) ? 1 : 0;
             $shouldInclude = $this->shouldIncludeUsage($usage, $enabledUsageKeys, $audienceField);
+
+            if ($usageId !== '' && !isset($usageValues[$usageId])) {
+              $usageValues[$usageId] = array(
+                'message' => '',
+                'restricted' => 0,
+                'restrictedMessages' => array(),
+              );
+            }
 
             if ($usageId !== '' && isset($usageValues[$usageId])) {
               $previousRestricted = isset($usageValues[$usageId]['restricted']) ? intval($usageValues[$usageId]['restricted']) : 0;
