@@ -190,10 +190,10 @@ $eqLogics = eqLogic::byType($plugin->getId());
                                 <label class="col-sm-4 control-label">{{Restrictions spécifiques}}</label>
                                 <div class="col-sm-3">
                                   <select class="form-control eqLogicAttr" data-l1key="configuration" data-l2key="typeRestriction">
-                                    <option value="aep">{{Du robinet (AEP)}}</option>
-                                    <option value="sup">{{D'un cours d'eau ou d'une rivière (SUP)}}</option>
-                                    <option value="sou">{{Des nappes (puits ou forage) (SOU)}}</option>
-                                    <option value="all">{{Toutes les ressources}}</option>
+                                    <option value="aep">{{Du robinet}}</option>
+                                    <option value="sup">{{D'un cours d'eau ou d'une rivière}}</option>
+                                    <option value="sou">{{Des nappes (puits ou forage)}}</option>
+                                    <option value="all">{{Toutes les restrictions}}</option>
                                   </select>
                                 </div>
                                 </div>
