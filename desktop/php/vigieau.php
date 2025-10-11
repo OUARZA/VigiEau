@@ -226,7 +226,8 @@ $eqLogics = eqLogic::byType($plugin->getId());
                                                 </div>
 												<div class="btn-group" role="group">
                                                 <a class="btn btn-default btn-sm" id="usageFilterReload">{{Actualiser la liste}}</a>
-                                        </div>
+                                        		</div>
+										</div>
                                 </div>
                                 </div>
                                                 </div>
