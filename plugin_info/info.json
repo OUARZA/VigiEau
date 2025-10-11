@@ -2,7 +2,7 @@
 	"id" : "vigieau",
       "name" : "VigiEau",
 	"description" : {
-              "fr_FR": "Ce plugin permet de remonter les informations du site de l'information sécheresse du Gouvernement VigiEau https://vigieau.gouv.fr/ via l'API du site https://api.vigieau.beta.gouv.fr/swagger/#/."
+              "fr_FR": "Ce plugin permet de remonter les informations du site de l'information sécheresse du Gouvernement VigiEau https://vigieau.developpement-durable.gouv.fr/ via l'API du site https://eau.api.agriculture.gouv.fr."
 	},
 	"licence" : "AGPL",
 	"author" : "elmer69 & OUARZA",
