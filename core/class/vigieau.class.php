@@ -265,6 +265,15 @@ class vigieau extends eqLogic {
     return '';
   }
 
+  private function sanitizeUsageCommandKey($key) {
+    $key = strtolower(trim((string) $key));
+    $key = preg_replace('/[^a-z0-9_]+/', '_', $key);
+    if (!is_string($key)) {
+      return '';
+    }
+    return trim($key, '_');
+  }
+
   private function slugifyUsageLabel($label) {
     $label = trim((string) $label);
     if ($label === '') {
@@ -285,6 +294,243 @@ class vigieau extends eqLogic {
     }
     $fallback = strtolower(preg_replace('/\s+/', '_', trim((string) $label)));
     return trim($fallback, '_');
+  }
+
+  private function isTruthy($value) {
+    if ($value === true || $value === 1 || $value === '1') {
+      return true;
+    }
+    if (is_string($value)) {
+      $normalized = strtolower(trim($value));
+      return in_array($normalized, array('true', 'yes', 'on', 'vrai'), true);
+    }
+    return false;
+  }
+
+  private function isUsageApplicable($usage, $enabledUsageKeys, $audienceField) {
+    if (!is_array($usage)) {
+      return false;
+    }
+    $usageKey = $this->buildUsageKey($usage);
+    if (!empty($enabledUsageKeys)) {
+      if ($usageKey === '' || !in_array($usageKey, $enabledUsageKeys, true)) {
+        return false;
+      }
+    }
+    if ($audienceField !== '') {
+      $audienceValue = isset($usage[$audienceField]) ? $usage[$audienceField] : false;
+      if (!$this->isTruthy($audienceValue)) {
+        return false;
+      }
+    }
+    return true;
+  }
+
+  private function formatUsageText($usage) {
+    if (!is_array($usage)) {
+      return '';
+    }
+    $nomUsage = isset($usage['nom']) ? trim((string) $usage['nom']) : '';
+    $description = isset($usage['description']) ? trim((string) $usage['description']) : '';
+    if ($description !== '') {
+      $description = str_replace(array("\r\n", "\n", "\r"), ' ', $description);
+      $description = preg_replace('/\s+/u', ' ', $description);
+      if (!is_string($description)) {
+        $description = '';
+      }
+      $description = trim($description);
+    }
+    if ($nomUsage !== '' && $description !== '') {
+      return '<b>'.$nomUsage.'</b> : '.$description;
+    }
+    if ($description !== '') {
+      return $description;
+    }
+    return $nomUsage;
+  }
+
+  private function getUsageCommandBaseOrder($zoneType) {
+    switch (strtoupper($zoneType)) {
+      case 'SUP':
+        return 200;
+      case 'SOU':
+        return 240;
+      case 'AEP':
+        return 280;
+      default:
+        return 320;
+    }
+  }
+
+  private function getUsageCommandOrder($zoneType, $offset) {
+    $base = $this->getUsageCommandBaseOrder($zoneType);
+    return $base + ($offset * 2);
+  }
+
+  private function buildUsageCommandBaseId($zoneType, $usageKey) {
+    $zone = strtolower(trim((string) $zoneType));
+    if ($zone === '') {
+      return '';
+    }
+    $sanitizedZone = preg_replace('/[^a-z0-9_]+/', '_', $zone);
+    if (!is_string($sanitizedZone)) {
+      $sanitizedZone = $zone;
+    }
+    $sanitizedZone = trim($sanitizedZone, '_');
+    $sanitizedUsageKey = $this->sanitizeUsageCommandKey($usageKey);
+    if ($sanitizedUsageKey === '') {
+      return '';
+    }
+    return 'usage_'.$sanitizedZone.'_'.$sanitizedUsageKey;
+  }
+
+  private function buildUsageCommandDisplayName($usage, $zoneType, $position) {
+    $zoneLabel = strtoupper(trim((string) $zoneType));
+    if ($zoneLabel === '') {
+      $zoneLabel = __('Usage', __FILE__);
+    }
+    $nomUsage = isset($usage['nom']) ? trim((string) $usage['nom']) : '';
+    if ($nomUsage === '' && !empty($usage['thematique'])) {
+      $nomUsage = trim((string) $usage['thematique']);
+    }
+    if ($nomUsage === '') {
+      $nomUsage = sprintf(__('Usage %1$s #%2$d', __FILE__), $zoneLabel, intval($position));
+    }
+    return sprintf(__('%1$s - %2$s', __FILE__), $zoneLabel, $nomUsage);
+  }
+
+  private function isUsageRestricted($usage) {
+    if (!is_array($usage)) {
+      return false;
+    }
+    $truthyKeys = array('restriction', 'restrictionActive', 'restrictionEnCours', 'isRestriction', 'hasRestriction');
+    foreach ($truthyKeys as $key) {
+      if (isset($usage[$key]) && $this->isTruthy($usage[$key])) {
+        return true;
+      }
+    }
+    if (isset($usage['niveauRestriction']) && intval($usage['niveauRestriction']) > 0) {
+      return true;
+    }
+    $statusKeys = array('etat', 'status', 'statut');
+    foreach ($statusKeys as $statusKey) {
+      if (!isset($usage[$statusKey])) {
+        continue;
+      }
+      $value = strtolower(trim((string) $usage[$statusKey]));
+      if ($value === '') {
+        continue;
+      }
+      $noRestrictionValues = array('autorise', 'autorisee', 'autorisé', 'autorisée', 'aucune', 'aucune_restriction', 'sans_restriction', 'libre', 'ouvert');
+      if (in_array($value, $noRestrictionValues, true)) {
+        return false;
+      }
+      return true;
+    }
+    if (!empty($usage['description'])) {
+      $description = strtolower(trim((string) $usage['description']));
+      if ($description === '') {
+        return false;
+      }
+      if (preg_match('/aucune restriction|autorise|autorisée|autorisee|sans restriction/', $description)) {
+        return false;
+      }
+      return true;
+    }
+    return false;
+  }
+
+  private function synchronizeUsageCommands($zoneType, $usages, $enabledUsageKeys, $audienceField, &$usageMeta, &$activeLogicalIds, &$restrictedMessages) {
+    if (!isset($usageMeta[$zoneType])) {
+      $usageMeta[$zoneType] = array(
+        'count' => 0,
+        'orders' => array(),
+        'positions' => array(),
+      );
+    }
+    foreach ($usages as $usage) {
+      if (!$this->isUsageApplicable($usage, $enabledUsageKeys, $audienceField)) {
+        continue;
+      }
+      $usageKey = $this->buildUsageKey($usage);
+      $logicalBaseId = $this->buildUsageCommandBaseId($zoneType, $usageKey === '' ? $this->buildUsageDisplayKey($usage) : $usageKey);
+      if ($logicalBaseId === '') {
+        continue;
+      }
+      if (!isset($usageMeta[$zoneType]['orders'][$logicalBaseId])) {
+        $order = $this->getUsageCommandOrder($zoneType, $usageMeta[$zoneType]['count']);
+        $usageMeta[$zoneType]['orders'][$logicalBaseId] = $order;
+        $usageMeta[$zoneType]['positions'][$logicalBaseId] = $usageMeta[$zoneType]['count'] + 1;
+        $usageMeta[$zoneType]['count']++;
+      } else {
+        $order = $usageMeta[$zoneType]['orders'][$logicalBaseId];
+      }
+      $position = isset($usageMeta[$zoneType]['positions'][$logicalBaseId]) ? $usageMeta[$zoneType]['positions'][$logicalBaseId] : 1;
+      $displayName = $this->buildUsageCommandDisplayName($usage, $zoneType, $position);
+      $usageText = $this->formatUsageText($usage);
+      $restrictionLogicalId = $logicalBaseId.'_restriction';
+
+      $this->createOrUpdateInfoCommand($logicalBaseId, array(
+        'name' => $displayName,
+        'subType' => 'string',
+        'order' => $order,
+      ));
+      $this->checkAndUpdateCmd($logicalBaseId, $usageText);
+      $activeLogicalIds[] = $logicalBaseId;
+
+      $this->createOrUpdateInfoCommand($restrictionLogicalId, array(
+        'name' => sprintf(__('Restriction %s', __FILE__), $displayName),
+        'subType' => 'binary',
+        'order' => $order + 1,
+      ));
+      $isRestricted = $this->isUsageRestricted($usage) ? 1 : 0;
+      $this->checkAndUpdateCmd($restrictionLogicalId, $isRestricted);
+      $activeLogicalIds[] = $restrictionLogicalId;
+
+      if ($isRestricted === 1 && $usageText !== '') {
+        $restrictedMessages[] = $usageText;
+      }
+    }
+  }
+
+  private function cleanupUnusedUsageCommands($activeLogicalIds) {
+    $activeLogicalIds = array_unique($activeLogicalIds);
+    $activeMap = array();
+    foreach ($activeLogicalIds as $id) {
+      $activeMap[$id] = true;
+    }
+    foreach ($this->getCmd('info') as $cmd) {
+      $logicalId = $cmd->getLogicalId();
+      if (strpos($logicalId, 'usage_') !== 0) {
+        continue;
+      }
+      if (!isset($activeMap[$logicalId])) {
+        $cmd->remove();
+      }
+    }
+  }
+
+  private function buildRestrictedUsageSummary($messages) {
+    if (!is_array($messages) || count($messages) === 0) {
+      return __('Aucune restriction active', __FILE__);
+    }
+    $uniqueMessages = array();
+    foreach ($messages as $message) {
+      if (!is_string($message)) {
+        continue;
+      }
+      $trimmed = trim($message);
+      if ($trimmed === '') {
+        continue;
+      }
+      if (!in_array($trimmed, $uniqueMessages, true)) {
+        $uniqueMessages[] = $trimmed;
+      }
+    }
+    if (count($uniqueMessages) === 0) {
+      return __('Aucune restriction active', __FILE__);
+    }
+    return implode('<br/><br/>', $uniqueMessages);
   }
 
   private function normalizeTypeInfo($typeInfo) {
@@ -466,6 +712,12 @@ class vigieau extends eqLogic {
         'subType' => 'string',
         'order' => 9,
         'default' => ''
+      ),
+      'usages_restreints' => array(
+        'name' => __('Usages restreints', __FILE__),
+        'subType' => 'string',
+        'order' => 60,
+        'default' => __('Aucune restriction active', __FILE__)
       ),
     );
   }
@@ -875,6 +1127,11 @@ class vigieau extends eqLogic {
     } else {
       //sauvegarde date et heure de récupérations des info VigiEau
       $this->setConfiguration('lastActuVigiEau', time())->save();
+      $this->createOrUpdateInfoCommand('usages_restreints', array(
+        'name' => __('Usages restreints', __FILE__),
+        'subType' => 'string',
+        'order' => 60,
+      ));
       if (count($jsonData) === 0) {
         log::add(__CLASS__, 'info', 'Aucune donnée trouvée à la date du '.$dateFormat. ' pour la commune '.$nomCommune);
 
@@ -892,6 +1149,8 @@ class vigieau extends eqLogic {
             $this->updateCommandIfExists($logicalId, isset($definition['default']) ? $definition['default'] : '');
           }
         }
+        $this->checkAndUpdateCmd('usages_restreints', __('Aucune restriction active', __FILE__));
+        $this->cleanupUnusedUsageCommands(array());
       } else {
         $levelMapping = array(
           'vigilance' => array('label' => __('Vigilance', __FILE__), 'value' => 1),
@@ -908,37 +1167,14 @@ class vigieau extends eqLogic {
         $buildEditorial = function ($usages) use ($enabledUsageKeys, $self, $audienceField) {
           $messages = array();
           foreach ($usages as $usage) {
-            if (!is_array($usage)) {
+            if (!$self->isUsageApplicable($usage, $enabledUsageKeys, $audienceField)) {
               continue;
             }
-            $usageKey = $self->buildUsageKey($usage);
-            if (!empty($enabledUsageKeys)) {
-              if ($usageKey === '' || !in_array($usageKey, $enabledUsageKeys, true)) {
-                continue;
-              }
-            }
-            $shouldAdd = true;
-            if ($audienceField !== '') {
-              $audienceValue = isset($usage[$audienceField]) ? $usage[$audienceField] : false;
-              $shouldAdd = ($audienceValue === true || $audienceValue === 1 || $audienceValue === '1' || $audienceValue === 'true');
-            }
-            if (!$shouldAdd) {
+            $message = $self->formatUsageText($usage);
+            if ($message === '') {
               continue;
             }
-            $nomUsage = isset($usage['nom']) ? trim($usage['nom']) : '';
-            $description = isset($usage['description']) ? trim($usage['description']) : '';
-            if ($nomUsage === '' && $description === '') {
-              continue;
-            }
-            if ($description !== '') {
-              $description = str_replace(array("\r\n", "\n", "\r"), ' ', $description);
-              $description = preg_replace('/\s+/u', ' ', $description);
-            }
-            if ($nomUsage !== '' && $description !== '') {
-              $messages[] = '<b>'.$nomUsage.'</b> : '.$description;
-            } else {
-              $messages[] = $nomUsage.$description;
-            }
+            $messages[] = $message;
           }
           if (count($messages) === 0) {
             return __('Aucune information disponible', __FILE__);
@@ -948,6 +1184,9 @@ class vigieau extends eqLogic {
 
         $zoneCommandDefinitions = $this->getZoneCommandDefinitions();
         $zoneValues = array();
+        $usageMeta = array();
+        $activeUsageLogicalIds = array();
+        $restrictedUsageMessages = array();
         foreach ($zoneCommandDefinitions as $zoneType => $commands) {
           $zoneValues[$zoneType] = array(
             'nom' => '',
@@ -1044,6 +1283,8 @@ class vigieau extends eqLogic {
             }
           }
 
+          $this->synchronizeUsageCommands($typeZone, $usages, $enabledUsageKeys, $audienceField, $usageMeta, $activeUsageLogicalIds, $restrictedUsageMessages);
+
           log::add(__CLASS__, 'debug', '----------'.strtoupper($nomZone.' ['.$typeZone.']').'----------');
           log::add(__CLASS__, 'debug', 'Niveau >> '.$nomNiveau.' ('.$niveauRestriction.')');
           log::add(__CLASS__, 'debug', strip_tags(str_replace('<br/>', ' | ', $editorial)));
@@ -1093,6 +1334,10 @@ class vigieau extends eqLogic {
             $this->updateCommandIfExists($logicalId, $value);
           }
         }
+
+        $restrictedSummary = $this->buildRestrictedUsageSummary($restrictedUsageMessages);
+        $this->checkAndUpdateCmd('usages_restreints', $restrictedSummary);
+        $this->cleanupUnusedUsageCommands($activeUsageLogicalIds);
       }
     }
   }

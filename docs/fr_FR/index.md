@@ -37,6 +37,14 @@ Création du widget par @Phpvarious
 ## Pour aller plus loin
 Dans vos scénarios, vous pouvez utiliser comme déclencheur la commande "Niveau restriction zone SUP" et/ou "Niveau restriction zone SOU".
 
+Chaque actualisation récupère également le détail de tous les usages renvoyés par l'API :
+
+* une commande info de type `string` est créée pour chaque usage (par exemple `usage_sup_arrosage_potager`) et contient le texte descriptif fourni par VigiEau ;
+* une commande info de type `binaire` portant le suffixe `_restriction` indique, via 1 ou 0, si l'usage est soumis à une restriction ;
+* la commande `Usages restreints` regroupe automatiquement l'ensemble des usages actuellement restreints.
+
+Ces commandes se mettent à jour à chaque rafraîchissement et les usages qui disparaissent sont automatiquement supprimés.
+
 
 ## Notes et références
 [1] : https://www.projetecolo.com/eaux-de-surface-definition-et-exemples-733.html  
