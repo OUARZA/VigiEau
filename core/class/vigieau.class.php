@@ -187,6 +187,9 @@ class vigieau extends eqLogic {
   private function updateCommandIfExists($logicalId, $value) {
     $cmd = $this->getCmd(null, $logicalId);
     if (is_object($cmd)) {
+      if ($cmd->getSubType() === 'binary') {
+        $value = $this->isTruthyValue($value) ? 1 : 0;
+      }
       $this->checkAndUpdateCmd($logicalId, $value);
     }
   }
@@ -498,9 +501,301 @@ class vigieau extends eqLogic {
     return '';
   }
 
-  private function isUsageRestricted($usage) {
+  private function normalizeProfileKey($key) {
+    if (!is_string($key) && !is_numeric($key)) {
+      return '';
+    }
+    $value = trim((string) $key);
+    if ($value === '') {
+      return '';
+    }
+    $normalized = @iconv('UTF-8', 'ASCII//TRANSLIT//IGNORE', $value);
+    if ($normalized !== false && $normalized !== null) {
+      $value = $normalized;
+    }
+    $value = strtolower($value);
+    $value = str_replace(array('-', '/', '\\', '.', ' '), '_', $value);
+    $value = preg_replace('/[^a-z0-9_]/', '', $value);
+    if (!is_string($value)) {
+      $value = '';
+    }
+    $value = trim($value, '_');
+    if ($value === '') {
+      return '';
+    }
+    $map = array(
+      'part' => 'particulier',
+      'particulier' => 'particulier',
+      'particuliers' => 'particulier',
+      'particulier_s' => 'particulier',
+      'entreprise' => 'entreprise',
+      'entreprises' => 'entreprise',
+      'pro' => 'entreprise',
+      'professionnel' => 'entreprise',
+      'professionnels' => 'entreprise',
+      'collectivite' => 'collectivites',
+      'collectivites' => 'collectivites',
+      'collectivites_locales' => 'collectivites',
+      'collectivite_locale' => 'collectivites',
+      'collectivite_s' => 'collectivites',
+      'collectivite_territoriale' => 'collectivites',
+      'collectivite_territoriales' => 'collectivites',
+      'collectivite_territoriale_s' => 'collectivites',
+      'exploitation' => 'exploitation_agricole',
+      'exploitationagricole' => 'exploitation_agricole',
+      'exploitant' => 'exploitation_agricole',
+      'exploitants' => 'exploitation_agricole',
+      'exploitations' => 'exploitation_agricole',
+      'agricole' => 'exploitation_agricole',
+      'agriculteur' => 'exploitation_agricole',
+      'agriculteurs' => 'exploitation_agricole',
+    );
+    if (isset($map[$value])) {
+      return $map[$value];
+    }
+    return $value;
+  }
+
+  private function buildProfileKeyCandidates($profil) {
+    $normalized = $this->normalizeProfileKey($profil);
+    if ($normalized === '') {
+      return array();
+    }
+    $candidates = array($normalized);
+    switch ($normalized) {
+      case 'particulier':
+        $candidates[] = 'particuliers';
+        $candidates[] = 'part';
+        break;
+      case 'entreprise':
+        $candidates[] = 'professionnel';
+        $candidates[] = 'professionnels';
+        $candidates[] = 'entreprises';
+        $candidates[] = 'pro';
+        break;
+      case 'collectivites':
+        $candidates[] = 'collectivite';
+        $candidates[] = 'collectivites_locales';
+        $candidates[] = 'collectivite_locale';
+        break;
+      case 'exploitation_agricole':
+        $candidates[] = 'agricole';
+        $candidates[] = 'agriculteur';
+        $candidates[] = 'agriculteurs';
+        $candidates[] = 'exploitation';
+        $candidates[] = 'exploitant';
+        $candidates[] = 'exploitants';
+        break;
+    }
+    return array_values(array_unique($candidates));
+  }
+
+  private function interpretRestrictionScalar($value) {
+    if ($this->isTruthyValue($value)) {
+      return true;
+    }
+    if (is_bool($value)) {
+      return $value;
+    }
+    if (is_numeric($value)) {
+      return ((float) $value) != 0.0;
+    }
+    if (is_string($value)) {
+      $normalized = strtolower(trim($value));
+      $transliterated = @iconv('UTF-8', 'ASCII//TRANSLIT//IGNORE', $normalized);
+      if ($transliterated !== false && $transliterated !== null) {
+        $normalized = strtolower(trim($transliterated));
+      }
+      if ($normalized === '') {
+        return null;
+      }
+      if (in_array($normalized, array('false', '0', 'non', 'aucune', 'aucun', 'autorise', 'autorisee', 'autorisation', 'sans_restriction', 'sans restriction', 'neant', 'inactif', 'inactive'), true)) {
+        return false;
+      }
+      if (strpos($normalized, 'aucune restriction') !== false || strpos($normalized, 'sans restriction') !== false) {
+        return false;
+      }
+      if (strpos($normalized, 'interdiction') !== false || strpos($normalized, 'interdit') !== false) {
+        return true;
+      }
+      if (strpos($normalized, 'restriction') !== false && strpos($normalized, 'aucune') === false && strpos($normalized, 'sans') === false) {
+        return true;
+      }
+    }
+    return null;
+  }
+
+  private function isAssociativeArray($value) {
+    if (!is_array($value)) {
+      return false;
+    }
+    if (array() === $value) {
+      return false;
+    }
+    return array_keys($value) !== range(0, count($value) - 1);
+  }
+
+  private function extractRestrictionFromContainer($container, $profileKeys) {
+    if (empty($profileKeys)) {
+      if (!is_array($container)) {
+        return $this->interpretRestrictionScalar($container);
+      }
+      return null;
+    }
+
+    if (!is_array($container)) {
+      return $this->interpretRestrictionScalar($container);
+    }
+
+    if ($this->isAssociativeArray($container)) {
+      foreach ($container as $key => $value) {
+        $normalizedKey = $this->normalizeProfileKey($key);
+        if ($normalizedKey !== '' && in_array($normalizedKey, $profileKeys, true)) {
+          $resolved = $this->extractRestrictionFromContainer($value, $profileKeys);
+          if ($resolved !== null) {
+            return $resolved;
+          }
+        }
+        foreach ($profileKeys as $profileKey) {
+          if ($normalizedKey === '') {
+            continue;
+          }
+          if (strpos($normalizedKey, $profileKey.'_') === 0 || strpos($normalizedKey, '_'.$profileKey) !== false || strpos($normalizedKey, $profileKey) !== false) {
+            $resolved = $this->extractRestrictionFromContainer($value, $profileKeys);
+            if ($resolved !== null) {
+              return $resolved;
+            }
+          }
+        }
+        if (!is_string($key)) {
+          $resolved = $this->extractRestrictionFromContainer($value, $profileKeys);
+          if ($resolved !== null) {
+            return $resolved;
+          }
+        }
+      }
+      return null;
+    }
+
+    foreach ($container as $value) {
+      if (is_array($value)) {
+        $profileField = '';
+        $fieldCandidates = array('profil', 'profile', 'type', 'audience', 'public', 'categorie', 'categoriePublic', 'categoriepublic', 'cible', 'code', 'id', 'slug', 'label', 'name');
+        foreach ($fieldCandidates as $field) {
+          if (isset($value[$field])) {
+            $profileField = $this->normalizeProfileKey($value[$field]);
+            if ($profileField !== '') {
+              break;
+            }
+          }
+        }
+        if ($profileField !== '' && in_array($profileField, $profileKeys, true)) {
+          $booleanFields = array('estRestreint', 'usageRestreint', 'restriction', 'restrictionActive', 'active', 'actif', 'restreint', 'isRestricted', 'value', 'valeur', 'statut', 'status', 'etat');
+          foreach ($booleanFields as $booleanField) {
+            if (array_key_exists($booleanField, $value)) {
+              $resolved = $this->extractRestrictionFromContainer($value[$booleanField], $profileKeys);
+              if ($resolved !== null) {
+                return $resolved;
+              }
+            }
+          }
+        }
+        $resolved = $this->extractRestrictionFromContainer($value, $profileKeys);
+        if ($resolved !== null) {
+          return $resolved;
+        }
+      } else {
+        $resolved = $this->interpretRestrictionScalar($value);
+        if ($resolved !== null) {
+          return $resolved;
+        }
+      }
+    }
+
+    return null;
+  }
+
+  private function resolveUsageRestrictionForProfile($usage, $profil) {
+    if (!is_array($usage)) {
+      return null;
+    }
+
+    $profileKeys = $this->buildProfileKeyCandidates($profil);
+    if (!empty($profileKeys)) {
+      $containers = array(
+        'usageRestreint',
+        'restreint',
+        'restriction',
+        'restrictions',
+        'restrictionActive',
+        'estRestriction',
+        'restriction_en_cours',
+        'restrictionEnCours',
+        'restriction_profils',
+        'restrictionProfils',
+        'profilRestriction',
+        'profilRestrictions',
+        'restrictionsProfils',
+        'profils',
+        'profiles',
+        'audiences',
+        'details',
+      );
+      foreach ($containers as $containerKey) {
+        if (!array_key_exists($containerKey, $usage)) {
+          continue;
+        }
+        $resolved = $this->extractRestrictionFromContainer($usage[$containerKey], $profileKeys);
+        if ($resolved !== null) {
+          return $resolved;
+        }
+      }
+
+      foreach ($usage as $key => $value) {
+        if (!is_string($key)) {
+          continue;
+        }
+        $normalizedKey = $this->normalizeProfileKey($key);
+        if ($normalizedKey === '') {
+          continue;
+        }
+        foreach ($profileKeys as $profileKey) {
+          if ($normalizedKey === $profileKey || strpos($normalizedKey, $profileKey.'_') === 0 || strpos($normalizedKey, '_'.$profileKey) !== false || strpos($normalizedKey, $profileKey) !== false) {
+            $resolved = $this->extractRestrictionFromContainer($value, $profileKeys);
+            if ($resolved !== null) {
+              return $resolved;
+            }
+          }
+        }
+      }
+    }
+
+    $generalFields = array('usageRestreint', 'restreint', 'restriction', 'restrictionActive', 'estRestriction', 'isRestricted');
+    foreach ($generalFields as $field) {
+      if (!array_key_exists($field, $usage)) {
+        continue;
+      }
+      $value = $usage[$field];
+      if (is_array($value)) {
+        continue;
+      }
+      $resolved = $this->interpretRestrictionScalar($value);
+      if ($resolved !== null) {
+        return $resolved;
+      }
+    }
+
+    return null;
+  }
+
+  private function isUsageRestricted($usage, $profil = '') {
     if (!is_array($usage)) {
       return false;
+    }
+
+    $profileSpecific = $this->resolveUsageRestrictionForProfile($usage, $profil);
+    if ($profileSpecific !== null) {
+      return $profileSpecific;
     }
 
     $booleanKeys = array('restriction', 'restrictionActive', 'estInterdiction', 'interdiction', 'estRestriction', 'usageRestreint', 'restriction_en_cours', 'restreint', 'isRestricted');
@@ -1351,7 +1646,7 @@ class vigieau extends eqLogic {
             $messages[] = $message;
 
             $usageId = isset($usage['id']) ? (string) $usage['id'] : '';
-            $isRestricted = $this->isUsageRestricted($usage) ? 1 : 0;
+            $isRestricted = $this->isUsageRestricted($usage, $profil) ? 1 : 0;
             if ($isRestricted) {
               $restrictedMessages[] = $message;
             }
