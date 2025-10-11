@@ -269,6 +269,16 @@ var propluviaUsageFilterManager = {
       var checkboxId = 'usage-filter-' + displayKey;
       var $label = $('<label class="checkbox-inline usage-filter-option"></label>').attr('for', checkboxId);
       var $checkbox = $('<input type="checkbox" class="usage-filter-checkbox" />').attr('id', checkboxId).attr('data-usage-keys', keys.join(','));
+      var primaryKey = '';
+      if (option.hasOwnProperty('key') && option.key !== undefined && option.key !== null) {
+        primaryKey = $.trim(String(option.key));
+      }
+      if (primaryKey === '' && keys.length > 0) {
+        primaryKey = keys[0];
+      }
+      if (primaryKey !== '') {
+        $checkbox.attr('data-usage-primary', primaryKey);
+      }
       $label.append($checkbox);
       var nom = option.nom || keys[0];
       $label.append(document.createTextNode(' ' + nom));
@@ -297,6 +307,13 @@ var propluviaUsageFilterManager = {
     $container.find('.usage-filter-checkbox').each(function () {
       var $checkbox = $(this);
       var optionKeys = propluviaUsageFilterManager.parseKeys($checkbox.attr('data-usage-keys'));
+      var hasSpecificKey = false;
+      for (var s = 0; s < optionKeys.length; s++) {
+        if (!propluviaUsageFilterManager.isThematicKey(optionKeys[s])) {
+          hasSpecificKey = true;
+          break;
+        }
+      }
       if (!optionKeys.length) {
         $checkbox.prop('checked', false);
         return;
@@ -304,9 +321,21 @@ var propluviaUsageFilterManager = {
       if (hasStoredSelection) {
         var shouldCheck = false;
         for (var j = 0; j < optionKeys.length; j++) {
-          if (selectedMap[optionKeys[j]]) {
+          var candidateKey = optionKeys[j];
+          if (hasSpecificKey && propluviaUsageFilterManager.isThematicKey(candidateKey)) {
+            continue;
+          }
+          if (selectedMap[candidateKey]) {
             shouldCheck = true;
             break;
+          }
+        }
+        if (!shouldCheck && !hasSpecificKey) {
+          for (var j2 = 0; j2 < optionKeys.length; j2++) {
+            if (selectedMap[optionKeys[j2]]) {
+              shouldCheck = true;
+              break;
+            }
           }
         }
         $checkbox.prop('checked', shouldCheck);
@@ -323,28 +352,23 @@ var propluviaUsageFilterManager = {
       return;
     }
     var initialArray = $.isArray(initialKeys) ? initialKeys : [];
-    var allKeysMap = {};
-    var checkedKeysMap = {};
+    var allKeys = [];
+    var checkedKeys = [];
     $container.find('.usage-filter-checkbox').each(function () {
       var $checkbox = $(this);
       var keys = propluviaUsageFilterManager.parseKeys($checkbox.attr('data-usage-keys'));
-      if (!keys.length) {
+      var primary = propluviaUsageFilterManager.getPrimaryKeyFromCheckbox($checkbox, keys);
+      if (primary === '') {
         return;
       }
       var isChecked = $checkbox.prop('checked');
-      for (var i = 0; i < keys.length; i++) {
-        var key = keys[i];
-        if (key === '') {
-          continue;
-        }
-        allKeysMap[key] = true;
-        if (isChecked) {
-          checkedKeysMap[key] = true;
-        }
+      if (allKeys.indexOf(primary) === -1) {
+        allKeys.push(primary);
+      }
+      if (isChecked && checkedKeys.indexOf(primary) === -1) {
+        checkedKeys.push(primary);
       }
     });
-    var allKeys = Object.keys(allKeysMap);
-    var checkedKeys = Object.keys(checkedKeysMap);
     if (allKeys.length === 0) {
       $hidden.value('');
       return;
@@ -358,6 +382,25 @@ var propluviaUsageFilterManager = {
     } else {
       $hidden.value(checkedKeys.join(','));
     }
+  },
+  getPrimaryKeyFromCheckbox: function ($checkbox, optionKeys) {
+    var primary = '';
+    if ($checkbox && $checkbox.length > 0) {
+      var attrValue = $checkbox.attr('data-usage-primary');
+      if (typeof attrValue === 'string' && attrValue !== '') {
+        primary = $.trim(attrValue);
+      }
+    }
+    if (primary === '' && $.isArray(optionKeys) && optionKeys.length > 0) {
+      primary = optionKeys[0];
+    }
+    return primary;
+  },
+  isThematicKey: function (key) {
+    if (typeof key !== 'string') {
+      return false;
+    }
+    return key.indexOf('thematique_') === 0 || key.indexOf('display_thematique_') === 0;
   },
   getSelectedKeysFromConfig: function () {
     var $hidden = $('#usageFilterIds');
