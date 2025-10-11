@@ -30,6 +30,7 @@
 
     var title = '';
     var bodyHtml = '';
+    var bodyIsText = false;
     var heading = clone.querySelector('strong, b');
     if (heading) {
       title = normalizeSpace(heading.textContent || '');
@@ -41,17 +42,35 @@
         clone.removeChild(clone.firstChild);
       }
       bodyHtml = clone.innerHTML.trim();
+      bodyIsText = false;
     } else if (rawHtml !== '') {
       var split = rawHtml.split(/<br\s*\/?>/i);
       if (split.length > 1) {
         title = htmlToText(split.shift());
         bodyHtml = split.join('<br>').replace(/^(<br\s*\/?>)+/i, '').trim();
+        bodyIsText = false;
       } else {
         title = htmlToText(rawHtml);
         bodyHtml = '';
+        bodyIsText = false;
       }
     } else {
       title = normalizeSpace(clone.textContent || '');
+      bodyIsText = false;
+    }
+
+    if (bodyHtml === '') {
+      var textContent = normalizeSpace(clone.textContent || '');
+      var colonIndex = textContent.indexOf(':');
+      if (colonIndex !== -1 && colonIndex < textContent.length - 1) {
+        var summaryText = normalizeSpace(textContent.substring(0, colonIndex));
+        var detailText = normalizeSpace(textContent.substring(colonIndex + 1));
+        if (summaryText !== '' && detailText !== '') {
+          title = summaryText + ' :';
+          bodyHtml = detailText;
+          bodyIsText = true;
+        }
+      }
     }
 
     title = normalizeSpace(title).replace(/^[\-\u2022:\s]+/, '');
@@ -85,7 +104,11 @@
     if (bodyHtml !== '') {
       var body = document.createElement('div');
       body.className = 'mesure-body';
-      body.innerHTML = bodyHtml;
+      if (bodyIsText) {
+        body.textContent = bodyHtml;
+      } else {
+        body.innerHTML = bodyHtml;
+      }
       details.appendChild(body);
     }
 
