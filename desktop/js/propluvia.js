@@ -148,6 +148,44 @@ function addCmdToTable(_cmd) {
 
 var propluviaUsageFilterManager = {
   currentEqId: null,
+  postSaveIntervalId: null,
+  postSaveTimeoutId: null,
+  postSaveAttempts: 0,
+  maxPostSaveAttempts: 6,
+  postSaveDelay: 1500,
+  schedulePostSaveRefresh: function () {
+    this.clearPostSaveRefresh();
+    var self = this;
+    this.postSaveAttempts = 0;
+    if (this.postSaveTimeoutId) {
+      clearTimeout(this.postSaveTimeoutId);
+      this.postSaveTimeoutId = null;
+    }
+    var attemptRefresh = function () {
+      self.postSaveAttempts += 1;
+      self.currentEqId = null;
+      self.refresh(true);
+      if (self.hasRenderedOptions() || self.postSaveAttempts >= self.maxPostSaveAttempts) {
+        self.clearPostSaveRefresh();
+      }
+    };
+    this.postSaveIntervalId = setInterval(attemptRefresh, this.postSaveDelay);
+    this.postSaveTimeoutId = setTimeout(attemptRefresh, 600);
+  },
+  hasRenderedOptions: function () {
+    var $container = $('#usageFilterCheckboxes');
+    return $container.length > 0 && $container.find('.usage-filter-option').length > 0;
+  },
+  clearPostSaveRefresh: function () {
+    if (this.postSaveIntervalId) {
+      clearInterval(this.postSaveIntervalId);
+      this.postSaveIntervalId = null;
+    }
+    if (this.postSaveTimeoutId) {
+      clearTimeout(this.postSaveTimeoutId);
+      this.postSaveTimeoutId = null;
+    }
+  },
   refresh: function (force) {
     var $eqIdInput = $('.eqLogicAttr[data-l1key=id]');
     if ($eqIdInput.length === 0) {
@@ -237,6 +275,9 @@ var propluviaUsageFilterManager = {
       $container.append($label);
     }
     this.applySelection(storedKeys);
+    if (options.length > 0) {
+      this.clearPostSaveRefresh();
+    }
   },
   applySelection: function (selectedKeys) {
     var $container = $('#usageFilterCheckboxes');
@@ -365,6 +406,10 @@ var propluviaUsageFilterManager = {
 $(document).on('change', '.eqLogicAttr[data-l1key=id]', function () {
   propluviaUsageFilterManager.currentEqId = null;
   propluviaUsageFilterManager.refresh(true);
+});
+
+$(document).on('click', '.eqLogicAction[data-action=save]', function () {
+  propluviaUsageFilterManager.schedulePostSaveRefresh();
 });
 
 $(document).on('click', '#usageFilterReload', function (e) {

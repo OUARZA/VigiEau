@@ -52,11 +52,24 @@ $eqLogics = eqLogic::byType($plugin->getId());
   margin-top: 10px;
   display: flex;
   flex-wrap: wrap;
-  gap: 5px;
+  gap: 8px;
 }
 
 .usage-filter-actions .btn-group {
   display: inline-flex;
+  gap: 6px;
+}
+
+.usage-filter-actions .btn-group > .btn + .btn,
+.usage-filter-actions .btn-group > .btn,
+.usage-filter-actions > .btn {
+  margin: 0;
+  border-radius: 18px;
+  padding: 6px 14px;
+}
+
+.usage-filter-actions #usageFilterReload {
+  align-self: flex-start;
 }
 </style>
 

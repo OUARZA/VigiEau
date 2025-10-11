@@ -50,11 +50,82 @@
                 background-color: #C9EBF8 !important;
                 color: #000000 !important;
         }
-        .tableau .mesures-label {
+        .tableau .mesures-label,
+        .tableau .mesures-label-cell {
+                display: flex;
+                align-items: center;
+                gap: 8px;
+                flex-wrap: wrap;
+        }
+        .tableau .mesures-label,
+        .tableau .mesures-label-text {
                 font-weight: bold;
         }
         .tableau .mesures-content {
+                display: none;
                 text-align: left;
                 white-space: normal;
                 background-color: #C9EBF8 !important;
+                padding: 8px 12px;
+                border-radius: 14px;
+                border: 1px solid rgba(0, 0, 0, 0.08);
+        }
+        .tableau .mesures-content.is-expanded {
+                display: block;
+        }
+        .tableau .mesures-content .mesures-details-container {
+                display: flex;
+                flex-direction: column;
+                gap: 8px;
+        }
+        .tableau .mesures-content .mesure-item {
+                border: 1px solid rgba(0, 0, 0, 0.12);
+                border-radius: 12px;
+                background-color: #ffffff;
+                overflow: hidden;
+        }
+        .tableau .mesures-content .mesure-summary {
+                cursor: pointer;
+                font-weight: 600;
+                padding: 8px 12px;
+                list-style: none;
+                display: flex;
+                align-items: center;
+                gap: 8px;
+        }
+        .tableau .mesures-content .mesure-summary::-webkit-details-marker {
+                display: none;
+        }
+        .tableau .mesures-content .mesure-summary::after {
+                content: '\f078';
+                font-family: "Font Awesome 5 Free";
+                font-weight: 900;
+                margin-left: auto;
+                transition: transform 0.2s ease-in-out;
+        }
+        .tableau .mesures-content .mesure-item[open] .mesure-summary::after {
+                transform: rotate(180deg);
+        }
+        .tableau .mesures-content .mesure-item[open] .mesure-summary {
+                border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+        }
+        .tableau .mesures-content .mesure-body {
+                padding: 8px 12px;
+                background-color: #f5fbff;
+        }
+        .mesures-toggle {
+                display: inline-flex !important;
+                align-items: center;
+                gap: 6px;
+        }
+        .mesures-toggle::before {
+                content: '\f0d7';
+                font-family: "Font Awesome 5 Free";
+                font-weight: 900;
+                font-size: 0.85em;
+                transition: transform 0.2s ease-in-out;
+        }
+        .mesures-toggle.is-open::before,
+        .mesures-toggle[aria-expanded="true"]::before {
+                transform: rotate(180deg);
         }

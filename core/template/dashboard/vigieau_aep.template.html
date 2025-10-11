@@ -1,5 +1,6 @@
 <div class="eqLogic eqLogic-widget allowResize allowReorderCmd #custom_layout# #eqLogic_class# #class#" data-eqType="#eqType#" data-eqLogic_id="#id#" data-eqLogic_uid="#uid#" data-version="#version#" data-translate-category="#translate_category#" data-category="#category#" data-tags="#tags#" style="width: #width#;height: #height#;#style#">
   <link rel="stylesheet" href="plugins/vigieau/core/template/css/vigieau.dashboard.css" />
+  <script src="plugins/vigieau/core/template/js/vigieau.dashboard.js"></script>
   <center class="widget-name">
     <span class="warning" title="#alert_name#">
       <i class='#alert_icon#'></i>
@@ -110,13 +111,16 @@
         </table>
       </td>
         </tr>
-    <tr>
+    <tr class="mesures-toggle-row">
         <td><i class='fas fa-angle-right'></i></td>
-                <td class="mesures-label">Mesures :</td>
+                <td class="mesures-label-cell">
+                        <span class="mesures-label-text">Mesures :</span>
+                        <button type="button" class="btn btn-xs btn-default mesures-toggle" data-target="mesures-aep-#uid#" data-collapsed-label="Afficher les mesures" data-expanded-label="Masquer les mesures" aria-controls="mesures-aep-#uid#" aria-expanded="false">Afficher les mesures</button>
+                </td>
         </tr>
     <tr class="mesures-row">
         <td></td>
-        <td class="mesures-content">#editorial_zone_aep#</td>
+        <td class="mesures-content" id="mesures-aep-#uid#" data-zone="aep" aria-hidden="true">#editorial_zone_aep#</td>
         </tr>
         </tbody>
 </table>
@@ -134,6 +138,10 @@
 //    eqLogic.find('.vigieauCdc').css('font-size', (eqlogic_height * 0.05) + 'px')
 //    eqLogic.find('.vigieauValue, .vigieauTitle').css('font-size', (eqlogic_height * 0.06) + 'px')
 //    eqLogic.find('.vigieauUnite, .vigieauTitleIcon').css('font-size', (eqlogic_height * 0.04) + 'px')
+
+    if (window.vigieauInitMesuresWidget) {
+      window.vigieauInitMesuresWidget('#uid#');
+    }
 
     if ('#refresh_id#' != '') {
       $('.eqLogic[data-eqLogic_uid=#uid#] .refresh').on('click', function () {
