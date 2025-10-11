@@ -187,18 +187,7 @@ $eqLogics = eqLogic::byType($plugin->getId());
                                 <a href="http://public.opendatasoft.com/explore/dataset/correspondance-code-insee-code-postal/table/?flg=fr&location=9,45.71673,3.13522&basemap=jawg.light" target="_blank">Liste des codes INSEE</a>
 							</div>
                             <div class="form-group">
-                                <label class="col-sm-4 control-label">{{Restrictions spécifiques}}</label>
-                                <div class="col-sm-3">
-                                  <select class="form-control eqLogicAttr" data-l1key="configuration" data-l2key="typeRestriction">
-                                    <option value="aep">{{Du robinet}}</option>
-                                    <option value="sup">{{D'un cours d'eau ou d'une rivière}}</option>
-                                    <option value="sou">{{Des nappes (puits ou forage)}}</option>
-                                    <option value="all">{{Toutes les restrictions}}</option>
-                                  </select>
-                                </div>
-                                </div>
-                            <div class="form-group">
-                                <label class="col-sm-4 control-label">{{Profil}}</label>
+								<label class="col-sm-4 control-label">{{Choisissez votre profil de consommateur d’eau :}}</label>
                                 <div class="col-sm-3">
                                   <select class="form-control eqLogicAttr" data-l1key="configuration" data-l2key="typeInfo">
                                     <option value="particulier">{{Particulier}}</option>
@@ -209,7 +198,18 @@ $eqLogics = eqLogic::byType($plugin->getId());
                                 </div>
                                 </div>
                             <div class="form-group">
-                                <label class="col-sm-4 control-label">{{Usages affichés}}</label>
+                                <label class="col-sm-4 control-label">{{Choisissez le type d’eau que vous consommez :}}</label>
+                                <div class="col-sm-3">
+                                  <select class="form-control eqLogicAttr" data-l1key="configuration" data-l2key="typeRestriction">
+                                    <option value="aep">{{Du robinet}}</option>
+                                    <option value="sup">{{D'un cours d'eau ou d'une rivière}}</option>
+                                    <option value="sou">{{Des nappes (puits ou forage)}}</option>
+                                    <option value="all">{{Toutes les restrictions}}</option>
+                                  </select>
+                                </div>
+                                </div>
+                            <div class="form-group">
+                                <label class="col-sm-4 control-label">{{Type d'usages à afficher :}}</label>
                                 <div class="col-sm-8">
                                         <div class="usage-filter-wrapper">
                                                 <div id="usageFilterCheckboxes" class="usage-filter-box">
@@ -220,8 +220,11 @@ $eqLogics = eqLogic::byType($plugin->getId());
                                         <div class="usage-filter-actions">
                                                 <div class="btn-group" role="group">
                                                         <a class="btn btn-default btn-sm" id="usageFilterSelectAll">{{Tout sélectionner}}</a>
+												</div>
+												<div class="btn-group" role="group">
                                                         <a class="btn btn-default btn-sm" id="usageFilterClear">{{Tout décocher}}</a>
                                                 </div>
+												<div class="btn-group" role="group">
                                                 <a class="btn btn-default btn-sm" id="usageFilterReload">{{Actualiser la liste}}</a>
                                         </div>
                                 </div>
