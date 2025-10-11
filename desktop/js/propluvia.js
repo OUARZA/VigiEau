@@ -362,6 +362,89 @@ var propluviaUsageFilterManager = {
   }
 };
 
+function setupUsageFilterSaveRefresh(manager, pluginType) {
+  if (!manager || manager._saveRefreshInitialized) {
+    return;
+  }
+  manager._saveRefreshInitialized = true;
+
+  function tryRegister() {
+    if (typeof jeedom === 'undefined' || !jeedom.eqLogic || typeof jeedom.eqLogic.save !== 'function') {
+      return false;
+    }
+
+    if (!jeedom.eqLogic._usageFilterAfterSaveCallbacks) {
+      var originalSave = jeedom.eqLogic.save;
+      jeedom.eqLogic._usageFilterAfterSaveCallbacks = [];
+      jeedom.eqLogic.save = function (_params) {
+        var params = _params || {};
+        var originalSuccess = params.success;
+        params.success = function () {
+          if (typeof originalSuccess === 'function') {
+            try {
+              originalSuccess.apply(this, arguments);
+            } catch (error) {
+              console.error(error);
+            }
+          }
+          var data = arguments.length > 0 ? arguments[0] : null;
+          var callbacks = jeedom.eqLogic._usageFilterAfterSaveCallbacks.slice();
+          for (var i = 0; i < callbacks.length; i++) {
+            try {
+              callbacks[i].call(this, params, data);
+            } catch (callbackError) {
+              console.error(callbackError);
+            }
+          }
+        };
+        return originalSave.call(this, params);
+      };
+    }
+
+    var callbacks = jeedom.eqLogic._usageFilterAfterSaveCallbacks;
+    for (var i = 0; i < callbacks.length; i++) {
+      if (callbacks[i]._usageFilterPluginType === pluginType) {
+        return true;
+      }
+    }
+
+    var callback = function (params, data) {
+      var type = null;
+      if (params && typeof params.type === 'string') {
+        type = params.type;
+      } else if (typeof eqType === 'string') {
+        type = eqType;
+      }
+      if (type !== pluginType) {
+        return;
+      }
+      if (!data || data.state !== 'ok') {
+        return;
+      }
+      if (typeof manager.currentEqId !== 'undefined') {
+        manager.currentEqId = null;
+      }
+      if (typeof manager.refresh === 'function') {
+        manager.refresh(true);
+      }
+    };
+    callback._usageFilterPluginType = pluginType;
+    callbacks.push(callback);
+    return true;
+  }
+
+  if (!tryRegister()) {
+    var attempts = 0;
+    var maxAttempts = 50;
+    var intervalId = setInterval(function () {
+      attempts++;
+      if (tryRegister() || attempts >= maxAttempts) {
+        clearInterval(intervalId);
+      }
+    }, 100);
+  }
+}
+
 $(document).on('change', '.eqLogicAttr[data-l1key=id]', function () {
   propluviaUsageFilterManager.currentEqId = null;
   propluviaUsageFilterManager.refresh(true);
@@ -392,5 +475,6 @@ $(document).on('change', '#usageFilterCheckboxes .usage-filter-checkbox', functi
 });
 
 $(document).ready(function () {
+  setupUsageFilterSaveRefresh(propluviaUsageFilterManager, 'propluvia');
   propluviaUsageFilterManager.refresh(false);
 });
