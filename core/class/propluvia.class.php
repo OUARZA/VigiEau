@@ -265,6 +265,48 @@ class propluvia extends eqLogic {
     return '';
   }
 
+  private function getUsageKeyCandidates($usage) {
+    $candidates = array();
+    if (!is_array($usage)) {
+      return $candidates;
+    }
+    $primary = $this->buildUsageKey($usage);
+    if ($primary !== '') {
+      $candidates[] = $primary;
+    }
+    $display = $this->buildUsageDisplayKey($usage);
+    if ($display !== '' && !in_array($display, $candidates, true)) {
+      $candidates[] = $display;
+    }
+    if (!empty($usage['nom'])) {
+      $slug = $this->slugifyUsageLabel($usage['nom']);
+      if ($slug !== '') {
+        $prefixed = 'nom_'.$slug;
+        if ($prefixed !== $primary && !in_array($prefixed, $candidates, true)) {
+          $candidates[] = $prefixed;
+        }
+        $displayPrefixed = 'display_nom_'.$slug;
+        if ($displayPrefixed !== $display && !in_array($displayPrefixed, $candidates, true)) {
+          $candidates[] = $displayPrefixed;
+        }
+      }
+    }
+    if (!empty($usage['thematique'])) {
+      $slug = $this->slugifyUsageLabel($usage['thematique']);
+      if ($slug !== '') {
+        $prefixed = 'thematique_'.$slug;
+        if ($prefixed !== $primary && !in_array($prefixed, $candidates, true)) {
+          $candidates[] = $prefixed;
+        }
+        $displayPrefixed = 'display_thematique_'.$slug;
+        if ($displayPrefixed !== $display && !in_array($displayPrefixed, $candidates, true)) {
+          $candidates[] = $displayPrefixed;
+        }
+      }
+    }
+    return $candidates;
+  }
+
   private function slugifyUsageLabel($label) {
     $label = trim((string) $label);
     if ($label === '') {
@@ -361,13 +403,13 @@ class propluvia extends eqLogic {
         if (!is_array($usage)) {
           continue;
         }
-        $key = $this->buildUsageKey($usage);
-        if ($key === '') {
+        $candidateKeys = $this->getUsageKeyCandidates($usage);
+        if (empty($candidateKeys)) {
           continue;
         }
         $displayKey = $this->buildUsageDisplayKey($usage);
         if ($displayKey === '') {
-          $displayKey = $key;
+          $displayKey = $candidateKeys[0];
         }
         if (!isset($usageGroups[$displayKey])) {
           $usageGroups[$displayKey] = array(
@@ -384,8 +426,10 @@ class propluvia extends eqLogic {
             $usageGroups[$displayKey]['thematique'] = $usage['thematique'];
           }
         }
-        if (!in_array($key, $usageGroups[$displayKey]['keys'], true)) {
-          $usageGroups[$displayKey]['keys'][] = $key;
+        foreach ($candidateKeys as $candidate) {
+          if (!in_array($candidate, $usageGroups[$displayKey]['keys'], true)) {
+            $usageGroups[$displayKey]['keys'][] = $candidate;
+          }
         }
       }
     }
@@ -903,17 +947,28 @@ class propluvia extends eqLogic {
         );
 
         $enabledUsageKeys = $this->getEnabledUsageKeys();
+        $enabledUsageMap = array();
+        foreach ($enabledUsageKeys as $enabledKey) {
+          $enabledUsageMap[$enabledKey] = true;
+        }
         $audienceField = $this->getAudienceFieldForType($typeInfo);
         $self = $this;
-        $buildEditorial = function ($usages) use ($enabledUsageKeys, $self, $audienceField) {
+        $buildEditorial = function ($usages) use ($enabledUsageMap, $self, $audienceField) {
           $messages = array();
           foreach ($usages as $usage) {
             if (!is_array($usage)) {
               continue;
             }
-            $usageKey = $self->buildUsageKey($usage);
-            if (!empty($enabledUsageKeys)) {
-              if ($usageKey === '' || !in_array($usageKey, $enabledUsageKeys, true)) {
+            if (!empty($enabledUsageMap)) {
+              $candidateKeys = $self->getUsageKeyCandidates($usage);
+              $hasMatch = false;
+              foreach ($candidateKeys as $candidateKey) {
+                if (isset($enabledUsageMap[$candidateKey])) {
+                  $hasMatch = true;
+                  break;
+                }
+              }
+              if (!$hasMatch) {
                 continue;
               }
             }
