@@ -187,6 +187,9 @@ class vigieau extends eqLogic {
   private function updateCommandIfExists($logicalId, $value) {
     $cmd = $this->getCmd(null, $logicalId);
     if (is_object($cmd)) {
+      if ($cmd->getSubType() === 'binary') {
+        $value = $this->isTruthyValue($value) ? 1 : 0;
+      }
       $this->checkAndUpdateCmd($logicalId, $value);
     }
   }
