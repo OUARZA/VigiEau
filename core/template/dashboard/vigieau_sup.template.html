@@ -1,0 +1,140 @@
+<div class="eqLogic eqLogic-widget allowResize allowReorderCmd #custom_layout# #eqLogic_class# #class#" data-eqType="#eqType#" data-eqLogic_id="#id#" data-eqLogic_uid="#uid#" data-version="#version#" data-translate-category="#translate_category#" data-category="#category#" data-tags="#tags#" style="width: #width#;height: #height#;#style#">
+  <link rel="stylesheet" href="plugins/vigieau/core/template/css/vigieau.dashboard.css" />
+  <div class="vigieau-widget">
+    <div class="widget-name vigieau-header">
+      <div class="vigieau-header__title">
+        <span class="warning" title="#alert_name#">
+          <i class='#alert_icon#'></i>
+        </span>
+        <span class="reportModeVisible">#name_display# <span class="object_name">#object_name#</span></span>
+        <a href="#eqLink#" class="reportModeHidden">#name_display# <span class="object_name">#object_name#</span></a>
+      </div>
+      <span class="cmd refresh pull-right cursor vigieau-refresh" data-cmd_id="#refresh_id#">
+        <i class="fas fa-sync"></i>
+      </span>
+    </div>
+    <div class="vigieau-body #isVerticalAlign#">
+      <div class="vigieau-summary">
+        <div class="vigieau-summary__item">
+          <span class="vigieau-summary__icon"><i class="fas fa-map-marker-alt"></i></span>
+          <div>
+            <div class="vigieau-summary__label">Commune</div>
+            <div class="vigieau-summary__value">#commune# (#departement#)</div>
+          </div>
+        </div>
+        <div class="vigieau-summary__item">
+          <span class="vigieau-summary__icon"><i class="fas fa-calendar-day"></i></span>
+          <div>
+            <div class="vigieau-summary__label">Début</div>
+            <div class="vigieau-summary__value">#date_debut#</div>
+          </div>
+        </div>
+        <div class="vigieau-summary__item">
+          <span class="vigieau-summary__icon"><i class="fas fa-calendar-check"></i></span>
+          <div>
+            <div class="vigieau-summary__label">Fin estimée</div>
+            <div class="vigieau-summary__value">#date_fin#</div>
+          </div>
+        </div>
+        <div class="vigieau-summary__item vigieau-summary__item--full">
+          <span class="vigieau-summary__icon"><i class="fas fa-file-signature"></i></span>
+          <div id="arreteCell#uid#" class="vigieau-orders">
+            <div class="vigieau-order">
+              <span class="vigieau-order__label">Arrêtés</span>
+              <span class="vigieau-order__value">Chargement des informations…</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="vigieau-sections">
+        <section class="vigieau-section">
+          <div class="vigieau-section__header">
+            <div class="vigieau-section__icon"><i class="fas fa-water"></i></div>
+            <div>
+              <h3 class="vigieau-section__title">Cours d'eau et rivières (SUP)</h3>
+              <p class="vigieau-section__subtitle">Suivi des restrictions pour les usages sur les milieux superficiels</p>
+            </div>
+          </div>
+          <div class="vigieau-info-grid">
+            <div class="vigieau-info-card">
+              <div class="vigieau-info-card__label">Nom de la zone</div>
+              <div class="vigieau-info-card__value">#nom_zone_sup#</div>
+            </div>
+            <div class="vigieau-info-card">
+              <div class="vigieau-info-card__label">Niveau de restriction</div>
+              <div class="vigieau-info-card__value">#nom_restriction_sup#</div>
+            </div>
+          </div>
+          <div class="vigieau-scale">
+            <span class="vigieau-scale__item level-1">#nom_restriction_sup_N1#</span>
+            <span class="vigieau-scale__item level-2">#nom_restriction_sup_N2#</span>
+            <span class="vigieau-scale__item level-3">#nom_restriction_sup_N3#</span>
+            <span class="vigieau-scale__item level-4">#nom_restriction_sup_N4#</span>
+            <span class="vigieau-scale__item level-5">#nom_restriction_sup_N5#</span>
+          </div>
+          <div class="vigieau-measures">
+            <div class="vigieau-measures__title"><i class="fas fa-clipboard-list"></i> Mesures à appliquer</div>
+            <div class="vigieau-measures__content">#editorial_zone_sup#</div>
+          </div>
+        </section>
+      </div>
+
+      <div class="vigieau-footer-note">#lastActuVigiEau#</div>
+    </div>
+  </div>
+  <script>
+    if ('#refresh_id#' != '') {
+      $('.eqLogic[data-eqLogic_uid=#uid#] .refresh').on('click', function () {
+        jeedom.cmd.execute({id: '#refresh_id#'})
+      })
+    } else {
+      $('.eqLogic[data-eqLogic_uid=#uid#] .refresh').remove()
+    }
+    (function() {
+      var urlPdf = "#urlPdf#";
+      var urlPdfCadre = "#urlPdfCadre#";
+      var numeroArrete = "#numero_arrete#";
+      var numeroArreteCadre = "#numero_arrete_cadre#";
+
+      var sanitize = function(value) {
+        return (value || '').toString().trim();
+      };
+
+      var isKnown = function(value) {
+        if (value === '') {
+          return false;
+        }
+        var lower = value.toLowerCase();
+        return lower !== 'non communiqué' && lower.indexOf('aucun') === -1;
+      };
+
+      var buildLine = function(label, url, numero, rawValue) {
+        var cleanNumero = sanitize(numero);
+        var cleanRaw = sanitize(rawValue);
+        var known = isKnown(cleanNumero);
+        var fallback = known ? 'N° ' + cleanNumero : (cleanRaw !== '' ? cleanRaw : 'Non communiqué');
+        var display = fallback;
+
+        if (url !== '') {
+          var linkLabel = known ? 'N° ' + cleanNumero : (isKnown(cleanRaw) ? cleanRaw : 'Consulter le PDF');
+          display = '<a href="' + url + '" target="_blank" class="lien-arrete">' + linkLabel + '</a>';
+        }
+
+        return '<div class="vigieau-order">' +
+          '<span class="vigieau-order__label">' + label + '</span>' +
+          '<span class="vigieau-order__value">' + display + '</span>' +
+        '</div>';
+      };
+
+      var restrictionLine = buildLine("Arrêté de restriction", urlPdf, numeroArrete, numeroArrete);
+      var cadreLine = buildLine("Arrêté cadre", urlPdfCadre, numeroArreteCadre, numeroArreteCadre);
+
+      var cell = document.getElementById('arreteCell#uid#');
+      if (!cell) {
+        return;
+      }
+      cell.innerHTML = restrictionLine + cadreLine;
+    })();
+  </script>
+</div>
