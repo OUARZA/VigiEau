@@ -417,6 +417,36 @@ function setupUsageFilterSaveRefresh(manager, pluginType) {
     return params;
   }
 
+  function normalizeResponse(data) {
+    if (!data) {
+      return null;
+    }
+    if ($.isPlainObject(data)) {
+      return data;
+    }
+    if (typeof data === 'string') {
+      try {
+        return $.parseJSON(data);
+      } catch (e) {
+        return null;
+      }
+    }
+    return null;
+  }
+
+  function extractEqLogicFromResponse(response) {
+    if (!response || !response.result) {
+      return null;
+    }
+    if ($.isArray(response.result.eqLogics) && response.result.eqLogics.length > 0) {
+      return response.result.eqLogics[0];
+    }
+    if ($.isPlainObject(response.result.eqLogic)) {
+      return response.result.eqLogic;
+    }
+    return null;
+  }
+
   var eventNamespace = '.usageFilterSaveRefresh-' + pluginType;
   $(document).off('ajaxSuccess' + eventNamespace).on('ajaxSuccess' + eventNamespace, function (event, xhr, settings, responseData) {
     if (!settings || typeof settings.url !== 'string') {
@@ -425,18 +455,27 @@ function setupUsageFilterSaveRefresh(manager, pluginType) {
     if (settings.url.indexOf('core/ajax/eqlogic.ajax.php') === -1) {
       return;
     }
+
     var requestParams = parseAjaxData(settings.data);
     var action = requestParams.action || requestParams.eqLogic_action || '';
-    if (action !== 'save') {
+    if (action && action !== 'save') {
       return;
     }
-    var type = requestParams.type || requestParams.eqType || '';
-    if (type !== pluginType) {
+
+    var response = normalizeResponse(responseData);
+    if (!response || response.state !== 'ok') {
       return;
     }
-    if (!responseData || responseData.state !== 'ok') {
+
+    var eqLogic = extractEqLogicFromResponse(response);
+    var detectedType = requestParams.type || requestParams.eqType || '';
+    if (!detectedType && eqLogic) {
+      detectedType = eqLogic.eqType_name || eqLogic.eqType || '';
+    }
+    if (detectedType !== pluginType) {
       return;
     }
+
     if (typeof manager.currentEqId !== 'undefined') {
       manager.currentEqId = null;
     }
