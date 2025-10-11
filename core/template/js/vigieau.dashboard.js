@@ -92,20 +92,15 @@
     titleSpan.textContent = title;
     summary.appendChild(titleSpan);
 
-    if (bodyHtml !== '') {
-      var toggleHint = document.createElement('span');
-      toggleHint.className = 'mesure-toggle-hint';
-      toggleHint.textContent = '(plier/déplier)';
-      summary.appendChild(toggleHint);
-    }
-
     details.appendChild(summary);
 
     if (bodyHtml !== '') {
       var body = document.createElement('div');
       body.className = 'mesure-body';
       if (bodyIsText) {
-        body.textContent = bodyHtml;
+        var paragraph = document.createElement('p');
+        paragraph.textContent = bodyHtml;
+        body.appendChild(paragraph);
       } else {
         body.innerHTML = bodyHtml;
       }
