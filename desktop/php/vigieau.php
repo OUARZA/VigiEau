@@ -187,7 +187,7 @@ $eqLogics = eqLogic::byType($plugin->getId());
                                 <a href="http://public.opendatasoft.com/explore/dataset/correspondance-code-insee-code-postal/table/?flg=fr&location=9,45.71673,3.13522&basemap=jawg.light" target="_blank">Liste des codes INSEE</a>
 							</div>
                             <div class="form-group">
-								<label class="col-sm-4 control-label">{{Choisissez votre profil de consommateur d’eau :}}</label>
+								<label class="col-sm-4 control-label">{{Profil de consommation :}}</label>
                                 <div class="col-sm-3">
                                   <select class="form-control eqLogicAttr" data-l1key="configuration" data-l2key="typeInfo">
                                     <option value="particulier">{{Particulier}}</option>
@@ -198,7 +198,7 @@ $eqLogics = eqLogic::byType($plugin->getId());
                                 </div>
                                 </div>
                             <div class="form-group">
-                                <label class="col-sm-4 control-label">{{Choisissez le type d’eau que vous consommez :}}</label>
+                                <label class="col-sm-4 control-label">{{Type d'eau consommé :}}</label>
                                 <div class="col-sm-3">
                                   <select class="form-control eqLogicAttr" data-l1key="configuration" data-l2key="typeRestriction">
                                     <option value="aep">{{Du robinet}}</option>
