@@ -1,30 +1,35 @@
 # Plugin VigiEau
 
-Ce plugin permet de remonter les informations du site de l'information sécheresse du Gouvernement [**VigiEau**](https://vigieau.developpement-durable.gouv.fr/vigieaupublic/recherche-particulier) via l'API du site [https://eau.api.agriculture.gouv.fr](https://api.vigieau.beta.gouv.fr/swagger/).
-
-Création du plugin par @elmer69</br>
-Création du widget par @Phpvarious
+Ce plugin permet de remonter les informations du site de l'information sécheresse du Gouvernement [**VigiEau**](https://vigieau.gouv.fr/) via l'API du site https://api.vigieau.beta.gouv.fr/swagger/.
 
 ## Installation
 1. Le plugin s'installe comme n'importe quel autre plugin sur Jeedom via le Market.<br/>
 
 ## Configuration
 1. Une fois installé et activé, sur la page de configuration, vous pouvez définir l'heure à laquelle le plugin ira chercher les information.<br/>
-![image](https://github.com/OUARZA/VigiEau/assets/34892335/84857d98-5694-40d4-ad00-e04770220738)
+<img width="742" height="137" alt="image" src="https://github.com/user-attachments/assets/6e67f909-bf01-43b9-b168-9c9bc6d4b36e" /></br>
 
 2. Lancer le plugin qui se trouve dans la catégorie Météo.<br/>
-![image](https://github.com/OUARZA/VigiEau/assets/34892335/0db2b09b-a0c6-48fc-99f1-9fa58c3ad5da)
+<img width="408" height="183" alt="image" src="https://github.com/user-attachments/assets/8049d2dd-a1e3-4486-a1b1-3ace66c58238" /></br>
 
 3. Ajouter un équipement, comme n'importe quel équipement sous Jeedom.  
-4. Configurer les paramètres généraux, puis dans les aramètres spécifiques, indiquer le code INSEE de la commune que vous souhaitez consulter. Indiquer quels types de restrictions vous souhaitez suivre (Eaux superficielles, Eaux sonterraines), ainsi que le type éditorial (Particulier, Profesionnel).  
-![image](https://github.com/OUARZA/VigiEau/assets/34892335/ddf81407-3b43-45c3-b67f-301f38e4e514)
+4. Configurer les paramètres généraux, puis dans les aramètres spécifiques, indiquer le code INSEE de la commune que vous souhaitez consulter.</br>
+   Indiquer votre profil de consommation (Particulier/Entreprise/Collectivités/Exploitation agricoles).</br>
+   Indiquer le type d'eau consommé (Du robinet/D'un cours d'eau ou d'une rivière/Des nappes (puits ou forage)).</br>
+   Indiquer le(s) type(s) d'usage que vous souhaitez afficher.</br>
+![image](/docs/images/VigiEau_Conf.png)</br>
+
+5. Sauvegarder.
+
 
 >**NOTE**  
->Restrictions spécifiques :  
+>Type d'eau consommé :  
 >| Type | Description |
 >| --- | --- |
->| Eaux superficielles | Les eaux superficielles ou eaux de surface regroupent les eaux des pluies, des sources et du ruissellement d'autres sources d'eau. Les eaux de surface cheminent toutes afin d'arriver à un plus grand plan d'eau, pour exemple, les rivières qui se jettent dans l'océan.[<sup>[1]</sup>](#notes-et-références) |
->| Eaux souterraines | Les eaux souterraines peuvent être résumées comme étant l'ensemble des eaux stockées en profondeur ou en dessous de la surface terrestre, saturant complètement les pores du sous-sol.[<sup>[2]</sup>](#notes-et-références) |
+>| Eau potable | L’eau potable provient des nappes et des cours d'eau. Elle est traitée en plusieurs étapes afin de lui donner la qualité de l’eau potable. Elle est ensuite acheminée jusqu’à votre domicile. |
+>| Eau superficielle | Il s'agit pour l'essentiel des cours d'eau, des lacs et des eaux de ruissellement. Vous êtes concernés si vous prélevez directement dans un cours d’eau. |
+>| Eau souterraine | Ce sont toutes les eaux se trouvant sous la surface du sol : les nappes phréatiques, nappes profondes, etc. Vous utilisez cette eau, si vous disposez d’un puits ou d’un forage. |
+<!--
 >
 >Type éditorial :  
 >| Type | Description |
@@ -32,12 +37,5 @@ Création du widget par @Phpvarious
 >| Particulier | Utilisation de l'eau à titre personnel (arrosage du jardin, des fleurs, piscine...) |
 >| Profesionnel | Utilisation de l'eau à titre profesionnel (agriculteur...) |
 
-5. Sauvegarder.
-
 ## Pour aller plus loin
 Dans vos scénarios, vous pouvez utiliser comme déclencheur la commande "Niveau restriction zone SUP" et/ou "Niveau restriction zone SOU".
-
-
-## Notes et références
-[1] : https://www.projetecolo.com/eaux-de-surface-definition-et-exemples-733.html  
-[2] : https://www.projetecolo.com/eaux-souterraines-definition-caracteristiques-formation-et-importance-601.html
