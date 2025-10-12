@@ -270,6 +270,26 @@ class vigieau extends eqLogic {
     return '';
   }
 
+  private function getUsageCommandDisplayName($usageId, $usage) {
+    $nom = '';
+    $thematique = '';
+
+    if (is_array($usage)) {
+      $nom = isset($usage['nom']) ? trim((string) $usage['nom']) : '';
+      $thematique = isset($usage['thematique']) ? trim((string) $usage['thematique']) : '';
+    }
+
+    if ($nom === '') {
+      $nom = sprintf(__('Usage %s', __FILE__), $usageId);
+    }
+
+    if ($thematique === '') {
+      $thematique = __('Autres usages', __FILE__);
+    }
+
+    return $thematique.' - '.$nom;
+  }
+
   private function normalizeUsageStatusValue($value) {
     if (!is_string($value) && !is_numeric($value)) {
       return '';
@@ -449,12 +469,12 @@ class vigieau extends eqLogic {
 
     $index = 0;
     foreach ($usages as $usageId => $usage) {
-      $displayName = isset($usage['nom']) ? $usage['nom'] : sprintf(__('Usage %s', __FILE__), $usageId);
+      $displayName = $this->getUsageCommandDisplayName($usageId, $usage);
       $textLogicalId = 'usage_'.$usageId.'_texte';
       $restrictionLogicalId = 'usage_'.$usageId.'_restriction';
 
       $this->createOrUpdateInfoCommand($textLogicalId, array(
-        'name' => sprintf(__('Usage - %s', __FILE__), $displayName),
+        'name' => $displayName,
         'subType' => 'string',
         'order' => 200 + ($index * 2),
       ));
