@@ -7,140 +7,163 @@
     <span class="cmd refresh pull-right cursor" data-cmd_id="#refresh_id#">
       <i class="fas fa-sync"></i>
     </span>
-        <span class="reportModeVisible">#name_display# <span class="object_name">#object_name#</span></span>
+    <span class="reportModeVisible">#name_display# <span class="object_name">#object_name#</span></span>
     <a href="#eqLink#" class="reportModeHidden">#name_display# <span class="object_name">#object_name#</span></a>
   </center>
   <div class="#isVerticalAlign#">
-    <center>
+    <div class="ve-card" id="vigeau-#uid#">
+      <div class="ve-header">
+        <span class="ve-city">#commune# (#departement#)</span>
+      </div>
 
-<table class="tableau">
-        <tbody>
-        <tr>
-                <td><i class='fas fa-map-pin'></i></td>
-        <td>Commune : #commune# (#departement#)</td>
-        </tr>
-        <tr>
-        <td><i class='fas fa-pen'></i></td>
-        <td id="arreteCell#uid#">
-                <script>
-                        (function() {
-                                var urlPdf = "#urlPdf#";
-                                var urlPdfCadre = "#urlPdfCadre#";
-                                var numeroArrete = "#numero_arrete#";
-                                var numeroArreteCadre = "#numero_arrete_cadre#";
+      <div class="ve-panel ve-panel--info">
+        <div class="ve-row">
+          <div class="ve-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24"><path d="M16 9V4h1V2H7v2h1v5l-2 4v2h5v7h2v-7h5v-2z"/></svg>
+          </div>
+          <div class="ve-col">
+            <div class="ve-line"><b>Commune :</b> #commune# (#departement#)</div>
+          </div>
+        </div>
 
-                                var sanitize = function(value) {
-                                        return (value || '').toString().trim();
-                                };
+        <div class="ve-row">
+          <div class="ve-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41L18.37 3.29a.9959.9959 0 0 0-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg>
+          </div>
+          <div class="ve-col">
+            <div class="ve-line" id="arreteRestrictionLine#uid#"></div>
+            <div class="ve-line" id="arreteCadreLine#uid#"></div>
+          </div>
+        </div>
 
-                                var isKnown = function(value) {
-                                        if (value === '') {
-                                                return false;
-                                        }
-                                        var lower = value.toLowerCase();
-                                        return lower !== 'non communiqué' && lower.indexOf('aucun') === -1;
-                                };
+        <div class="ve-row">
+          <div class="ve-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg>
+          </div>
+          <div class="ve-col">
+            <div class="ve-line"><b>Date de début :</b> #date_debut#</div>
+            <div class="ve-line"><b>Date de fin :</b> #date_fin#</div>
+          </div>
+        </div>
+      </div>
 
-                                var buildLine = function(label, url, numero, rawValue) {
-                                        var cleanNumero = sanitize(numero);
-                                        var cleanRaw = sanitize(rawValue);
-                                        var known = isKnown(cleanNumero);
-                                        var fallback = known ? 'N° ' + cleanNumero : (cleanRaw !== '' ? cleanRaw : 'Non communiqué');
-                                        if (url !== '') {
-                                                var linkLabel = known ? 'N° ' + cleanNumero : (isKnown(cleanRaw) ? cleanRaw : 'Consulter le PDF');
-                                                return label + ' : <a href="' + url + '" target="_blank" class="lien-arrete">' + linkLabel + '</a>';
-                                        }
-                                        return label + ' : ' + fallback;
-                                };
+      <div class="ve-panel ve-panel--topic">
+        <div class="ve-topic-title">Eau du robinet</div>
 
-                                var restrictionLine = buildLine('Arrêté de restriction', urlPdf, numeroArrete, numeroArrete);
-                                var cadreLine = buildLine('Arrêté cadre', urlPdfCadre, numeroArreteCadre, numeroArreteCadre);
+        <div class="ve-meta">
+          <div><b>Nom :</b> #nom_zone_aep#</div>
+          <div><b>Restriction :</b> #nom_restriction_aep#</div>
+        </div>
 
-                                var cell = document.getElementById('arreteCell#uid#');
-                                if (!cell) {
-                                        return;
-                                }
-                                cell.innerHTML = restrictionLine + '<br/>' + cadreLine;
-                        })();
-                </script>
-        </td>
-        </tr>
-    <tr>
-        <td><i class='fas fa-angle-right'></i></td>
-                <td>Date de début : #date_debut#</td>
-        </tr>
-    <tr>
-        <td><i class='fas fa-angle-right'></i></td>
-                <td>Date de fin : #date_fin#</td>
-        </tr>
-        </tbody>
-</table>
+        <div class="ve-scale" data-level-raw="#niveau_restriction_aep#">
+          <div class="ve-step" data-level="0" title="Alerte blanche"></div>
+          <div class="ve-step" data-level="1" title="Alerte grise"></div>
+          <div class="ve-step" data-level="2" title="Alerte jaune"></div>
+          <div class="ve-step" data-level="3" title="Alerte orange"></div>
+          <div class="ve-step" data-level="4" title="Alerte rouge"></div>
+          <div class="ve-marker"></div>
+        </div>
 
-<div class="tableaux">
-  <table class="tableau">
-        <tbody>
-    <tr>
-      <td colspan="2" style="width: 300px; font-weight: bold;"><center>Eau du robinet</center></td>
-        </tr>
-        <tr>
-                <td style="width: 10px;"><i class='fas fa-map-pin'></i></td>
-        <td>Nom : #nom_zone_aep#</td>
-        </tr>
-        <tr>
-        <td><i class='fas fa-pen'></i></td>
-                <td>Restriction : #nom_restriction_aep#</td>
-        </tr>
-    <tr>
-        <td colspan="2">
-        <table border="0" class="restriction-scale">
-          <tbody>
-            <tr style="border: 1px black;">
-              <td style="width: 60px; height: 20px; background-color: #ffffff !important;">#nom_restriction_aep_N1#
-              </td>
-              <td style="width: 60px; height: 20px; background-color: #7f7f7f !important;">#nom_restriction_aep_N2#
-              </td>
-              <td style="width: 60px; height: 20px; background-color: #fae805 !important;">#nom_restriction_aep_N3#
-              </td>
-              <td style="width: 60px; height: 20px; background-color: #ff9900 !important;">#nom_restriction_aep_N4#
-              </td>
-              <td style="width: 60px; height: 20px; background-color: #ff0000 !important;">#nom_restriction_aep_N5#
-              </td>
-            </tr>
-          </tbody>
-        </table>
-      </td>
-        </tr>
-    <tr>
-        <td><i class='fas fa-angle-right'></i></td>
-                <td>Mesures :</td>
-        </tr>
-    <tr class="mesures-row">
-        <td></td>
-        <td class="mesures-content">#editorial_zone_aep#</td>
-        </tr>
-        </tbody>
-</table>
-</div>
+        <div class="ve-measures">
+          <div class="ve-measures-title">Mesures :</div>
+          <div class="ve-measures-body">#editorial_zone_aep#</div>
+        </div>
+      </div>
 
-      <div style="font-size: 10px; font-style: italic; text-align:left;margin-left: 5px">
-        #lastActuVigiEau#
-  </div>
-
-    </center>
+      <div class="ve-footer">#lastActuVigiEau#</div>
+    </div>
   </div>
   <script>
-//    var eqLogic = $('.eqLogic[data-eqLogic_uid=#uid#]')
-//    var eqlogic_height = eqLogic.height()
-//    eqLogic.find('.vigieauCdc').css('font-size', (eqlogic_height * 0.05) + 'px')
-//    eqLogic.find('.vigieauValue, .vigieauTitle').css('font-size', (eqlogic_height * 0.06) + 'px')
-//    eqLogic.find('.vigieauUnite, .vigieauTitleIcon').css('font-size', (eqlogic_height * 0.04) + 'px')
+    (function() {
+      var uid = '#uid#';
+      var restrictionEl = document.getElementById('arreteRestrictionLine' + uid);
+      var cadreEl = document.getElementById('arreteCadreLine' + uid);
+
+      function sanitize(value) {
+        return (value || '').toString().trim();
+      }
+
+      function isKnown(value) {
+        if (value === '') {
+          return false;
+        }
+        var lower = value.toLowerCase();
+        return lower !== 'non communiqué' && lower.indexOf('aucun') === -1;
+      }
+
+      function buildLine(label, url, numero, rawValue) {
+        var cleanNumero = sanitize(numero);
+        var cleanRaw = sanitize(rawValue);
+        var known = isKnown(cleanNumero);
+        var fallback = known ? 'N° ' + cleanNumero : (cleanRaw !== '' ? cleanRaw : 'Non communiqué');
+        if (sanitize(url) !== '') {
+          var linkLabel = known ? 'N° ' + cleanNumero : (isKnown(cleanRaw) ? cleanRaw : 'Consulter le PDF');
+          return '<b>' + label + ' :</b> <a class="ve-link" href="' + url + '" target="_blank" rel="noopener">' + linkLabel + '</a>';
+        }
+        return '<b>' + label + ' :</b> ' + fallback;
+      }
+
+      if (restrictionEl) {
+        restrictionEl.innerHTML = buildLine('Arrêté de restriction', '#urlPdf#', '#numero_arrete#', '#numero_arrete#');
+      }
+      if (cadreEl) {
+        cadreEl.innerHTML = buildLine('Arrêté cadre', '#urlPdfCadre#', '#numero_arrete_cadre#', '#numero_arrete_cadre#');
+      }
+
+      var card = document.getElementById('vigeau-' + uid);
+      if (!card) {
+        return;
+      }
+
+      var levelMap = { '0': 0, '1': 1, '2': 2, '3': 3, '4': 4, '5': 4 };
+
+      function normalizedLevel(raw) {
+        var key = sanitize(raw);
+        if (levelMap.hasOwnProperty(key)) {
+          return levelMap[key];
+        }
+        var parsed = parseInt(key, 10);
+        if (isNaN(parsed)) {
+          return 0;
+        }
+        return Math.max(0, Math.min(4, parsed));
+      }
+
+      function updateMarker(scale) {
+        if (!scale) {
+          return;
+        }
+        var marker = scale.querySelector('.ve-marker');
+        if (!marker) {
+          return;
+        }
+        var steps = scale.querySelectorAll('.ve-step');
+        if (!steps.length) {
+          return;
+        }
+        var raw = scale.getAttribute('data-level-raw') || '0';
+        var level = normalizedLevel(raw);
+        var index = Math.max(0, Math.min(level, steps.length - 1));
+        var target = steps[index];
+        var offset = target.offsetLeft + (target.offsetWidth / 2) - (marker.offsetWidth / 2);
+        marker.style.transform = 'translateX(' + offset + 'px)';
+      }
+
+      function refreshMarkers() {
+        var scales = card.querySelectorAll('.ve-scale');
+        Array.prototype.forEach.call(scales, updateMarker);
+      }
+
+      window.addEventListener('resize', refreshMarkers);
+      refreshMarkers();
+    })();
 
     if ('#refresh_id#' != '') {
       $('.eqLogic[data-eqLogic_uid=#uid#] .refresh').on('click', function () {
-        jeedom.cmd.execute({id: '#refresh_id#'})
-      })
+        jeedom.cmd.execute({id: '#refresh_id#'});
+      });
     } else {
-      $('.eqLogic[data-eqLogic_uid=#uid#] .refresh').remove()
+      $('.eqLogic[data-eqLogic_uid=#uid#] .refresh').remove();
     }
   </script>
 </div>
