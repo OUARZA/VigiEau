@@ -136,8 +136,27 @@
 }
 
 .ve-step {
+  position: relative;
+  z-index: 0;
   height: 100%;
   border-radius: 6px;
+  transition: box-shadow 0.25s ease, transform 0.25s ease;
+}
+
+.ve-step.is-active {
+  box-shadow: inset 0 0 0 2px var(--text);
+  transform: translateY(-1px);
+  z-index: 1;
+}
+
+.ve-step.is-active::after {
+  content: "";
+  position: absolute;
+  inset: -3px;
+  border-radius: 10px;
+  border: 2px solid rgba(15, 23, 42, 0.45);
+  box-shadow: 0 4px 10px rgba(15, 23, 42, 0.2);
+  pointer-events: none;
 }
 
 .ve-step[data-level="0"] {

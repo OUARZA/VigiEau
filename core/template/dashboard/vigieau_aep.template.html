@@ -141,10 +141,17 @@
         if (!steps.length) {
           return;
         }
+        Array.prototype.forEach.call(steps, function (step) {
+          step.classList.remove('is-active');
+        });
         var raw = scale.getAttribute('data-level-raw') || '0';
         var level = normalizedLevel(raw);
         var index = Math.max(0, Math.min(level, steps.length - 1));
         var target = steps[index];
+        if (!target) {
+          return;
+        }
+        target.classList.add('is-active');
         var offset = target.offsetLeft + (target.offsetWidth / 2) - (marker.offsetWidth / 2);
         marker.style.transform = 'translateX(' + offset + 'px)';
       }
