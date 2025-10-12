@@ -38,7 +38,7 @@
 
         <div class="ve-row">
           <div class="ve-icon" aria-hidden="true">
-            <svg viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg>
+            <svg viewBox="0 0 24 24"><path d="M19 4h-1V2h-2v2H8V2H6v2H5a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2zm0 15H5V9h14v10z"/></svg>
           </div>
           <div class="ve-col">
             <div class="ve-line"><b>Date de début :</b> #date_debut#</div>
@@ -52,7 +52,7 @@
 
         <div class="ve-meta">
           <div><b>Nom :</b> #nom_zone_aep#</div>
-          <div><b>Restriction :</b> #nom_restriction_aep#</div>
+          <div class="ve-restriction-line"><b>Restriction :</b> <span class="ve-alert-badge" data-level-raw="#niveau_restriction_aep#">#nom_restriction_aep#</span></div>
         </div>
 
         <div class="ve-scale" data-level-raw="#niveau_restriction_aep#">
@@ -154,8 +154,18 @@
         Array.prototype.forEach.call(scales, updateMarker);
       }
 
+      function refreshBadges() {
+        var badges = card.querySelectorAll('.ve-alert-badge');
+        Array.prototype.forEach.call(badges, function (badge) {
+          var raw = badge.getAttribute('data-level-raw') || '0';
+          var level = normalizedLevel(raw);
+          badge.setAttribute('data-level', String(level));
+        });
+      }
+
       window.addEventListener('resize', refreshMarkers);
       refreshMarkers();
+      refreshBadges();
     })();
 
     if ('#refresh_id#' != '') {
