@@ -1,15 +1,16 @@
-/* ====== VigiEau – styles ====== */
+/* ----- Structure de base ----- */
 .ve-card {
   --radius: 16px;
   --shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
   --border: 1px solid rgba(0, 0, 0, 0.06);
   --bg: #f7f9fc;
   --panel: #ffffff;
-  --info: #eaf5ff;
+  --info: #2f6d45; /* panneau principal vert */
   --topic: #e9f5fb;
   --text: #0f172a;
   --muted: #475569;
   --link: #2563eb;
+
   --level0: #ffffff;
   --level1: #888888;
   --level2: #ffe74d;
@@ -25,6 +26,7 @@
   box-sizing: border-box;
 }
 
+/* ----- Panneaux ----- */
 .ve-panel {
   background: var(--panel);
   border: var(--border);
@@ -34,40 +36,53 @@
   box-shadow: var(--shadow);
 }
 
+/* Panneau d'informations vert (haut) */
 .ve-panel--info {
-  background: #2f6d45;
+  background: var(--info);
   color: #fff;
   border: none;
   box-shadow: none;
   margin-top: 0;
 }
 
-.ve-panel--info .ve-icon svg {
-  fill: currentColor;
-}
-
+/* Liens blancs forcés dans le panneau vert */
+.ve-panel--info a,
+.ve-panel--info a:visited,
+.ve-panel--info a:active,
+.ve-panel--info a:focus,
 .ve-panel--info .ve-link,
 .ve-panel--info .ve-link:visited,
 .ve-panel--info .ve-link:active,
 .ve-panel--info .ve-link:focus {
-  color: #fff;
-  border-bottom-color: rgba(255, 255, 255, 0.65);
+  color: #fff !important;
+  text-decoration: none;
+  border-bottom: 1px dotted rgba(255, 255, 255, 0.6);
 }
 
+.ve-panel--info a:hover,
 .ve-panel--info .ve-link:hover,
+.ve-panel--info a:focus-visible,
 .ve-panel--info .ve-link:focus-visible {
-  color: #fff;
+  color: #fff !important;
   border-bottom-color: #fff;
+  text-decoration: underline;
 }
 
+/* Couleur héritée */
 .ve-panel--info .ve-line {
   color: inherit;
 }
 
+.ve-panel--info .ve-icon svg {
+  fill: currentColor;
+}
+
+/* Panneau bleu clair */
 .ve-panel--topic {
   background: var(--topic);
 }
 
+/* ----- Disposition interne ----- */
 .ve-row {
   display: flex;
   gap: 10px;
@@ -103,6 +118,7 @@
   gap: 6px;
 }
 
+/* ----- Liens par défaut ----- */
 .ve-link {
   color: var(--link);
   text-decoration: none;
@@ -113,6 +129,7 @@
   text-decoration: underline;
 }
 
+/* ----- Titres et sections ----- */
 .ve-topic-title {
   font-weight: 700;
   text-align: center;
@@ -131,6 +148,7 @@
   margin-bottom: 12px;
 }
 
+/* ----- Réglette de niveau ----- */
 .ve-scale {
   position: relative;
   height: 22px;
@@ -169,6 +187,7 @@
   pointer-events: none;
 }
 
+/* Couleurs par niveau */
 .ve-step[data-level="0"] {
   background: var(--level0);
   border: 1px solid rgba(0, 0, 0, 0.08);
@@ -190,19 +209,7 @@
   background: var(--level4);
 }
 
-.ve-measures-title {
-  font-weight: 700;
-  margin: 8px 0 6px;
-}
-
-.ve-measures-body b {
-  font-weight: 700;
-}
-
-.ve-measures-body p {
-  margin: 0.35rem 0;
-}
-
+/* ----- Badges d’alerte ----- */
 .ve-alert-badge {
   display: inline-flex;
   align-items: center;
@@ -247,12 +254,28 @@
   color: #7f1d1d;
 }
 
+/* ----- Mesures ----- */
+.ve-measures-title {
+  font-weight: 700;
+  margin: 8px 0 6px;
+}
+
+.ve-measures-body b {
+  font-weight: 700;
+}
+
+.ve-measures-body p {
+  margin: 0.35rem 0;
+}
+
+/* ----- Pied de carte ----- */
 .ve-footer {
   margin-top: 8px;
   font-size: 12px;
   color: var(--muted);
 }
 
+/* ----- Responsive ----- */
 @media (min-width: 520px) {
   .ve-meta {
     grid-template-columns: repeat(2, 1fr);
