@@ -46,13 +46,18 @@
   fill: currentColor;
 }
 
-.ve-panel--info .ve-link {
+.ve-panel--info .ve-link,
+.ve-panel--info .ve-link:visited,
+.ve-panel--info .ve-link:active,
+.ve-panel--info .ve-link:focus {
   color: #fff;
   border-bottom-color: rgba(255, 255, 255, 0.65);
 }
 
-.ve-panel--info .ve-link:hover {
+.ve-panel--info .ve-link:hover,
+.ve-panel--info .ve-link:focus-visible {
   color: #fff;
+  border-bottom-color: #fff;
 }
 
 .ve-panel--info .ve-line {
@@ -183,18 +188,6 @@
 
 .ve-step[data-level="4"] {
   background: var(--level4);
-}
-
-.ve-marker {
-  position: absolute;
-  top: 2px;
-  bottom: 2px;
-  width: 6px;
-  background: var(--text);
-  border-radius: 3px;
-  box-shadow: 0 0 0 3px rgba(15, 23, 42, 0.15);
-  transform: translateX(0);
-  transition: transform 0.25s ease;
 }
 
 .ve-measures-title {

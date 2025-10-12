@@ -57,7 +57,6 @@
           <div class="ve-step" data-level="2" title="Alerte jaune"></div>
           <div class="ve-step" data-level="3" title="Alerte orange"></div>
           <div class="ve-step" data-level="4" title="Alerte rouge"></div>
-          <div class="ve-marker"></div>
         </div>
 
         <div class="ve-measures">
@@ -125,12 +124,8 @@
         return Math.max(0, Math.min(4, parsed));
       }
 
-      function updateMarker(scale) {
+      function updateScale(scale) {
         if (!scale) {
-          return;
-        }
-        var marker = scale.querySelector('.ve-marker');
-        if (!marker) {
           return;
         }
         var steps = scale.querySelectorAll('.ve-step');
@@ -148,13 +143,11 @@
           return;
         }
         target.classList.add('is-active');
-        var offset = target.offsetLeft + (target.offsetWidth / 2) - (marker.offsetWidth / 2);
-        marker.style.transform = 'translateX(' + offset + 'px)';
       }
 
-      function refreshMarkers() {
+      function refreshScales() {
         var scales = card.querySelectorAll('.ve-scale');
-        Array.prototype.forEach.call(scales, updateMarker);
+        Array.prototype.forEach.call(scales, updateScale);
       }
 
       function refreshBadges() {
@@ -166,8 +159,7 @@
         });
       }
 
-      window.addEventListener('resize', refreshMarkers);
-      refreshMarkers();
+      refreshScales();
       refreshBadges();
     })();
 
