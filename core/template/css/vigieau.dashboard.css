@@ -90,6 +90,22 @@
   margin: 8px 0;
 }
 
+.ve-row--commune {
+  justify-content: center;
+  text-align: center;
+}
+
+.ve-row--split {
+  justify-content: space-between;
+  align-items: stretch;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+.ve-row--stack {
+  margin: 0;
+}
+
 .ve-icon {
   width: 22px;
   height: 22px;
@@ -107,8 +123,23 @@
   flex: 1;
 }
 
+.ve-col--center {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.ve-col--half {
+  flex: 1 1 220px;
+}
+
 .ve-line {
   margin: 2px 0;
+}
+
+.ve-line--center {
+  text-align: center;
+  width: 100%;
 }
 
 .ve-restriction-line {
