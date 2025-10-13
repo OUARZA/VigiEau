@@ -31,7 +31,7 @@
   background: var(--panel);
   border: var(--border);
   border-radius: 14px;
-  padding: 14px;
+  padding: 1px 10px;
   margin-top: 12px;
   box-shadow: var(--shadow);
 }
