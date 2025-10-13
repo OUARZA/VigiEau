@@ -93,6 +93,15 @@
 .ve-row--commune {
   justify-content: center;
   text-align: center;
+  align-items: center;
+}
+
+.ve-row--commune .ve-col {
+  flex: 0 1 auto;
+}
+
+.ve-row--commune .ve-line--center {
+  width: auto;
 }
 
 .ve-row--split {
