@@ -41,9 +41,22 @@ class vigieau extends eqLogic {
   /*     * ***********************Methode static*************************** */
 
   /*
-  * Fonction exécutée automatiquement toutes les minutes par Jeedom
-  public static function cron()
-  */  
+  * Fonction exécutée automatiquement toutes les minutes par Jeedom */  
+  public static function cron() {
+  	$cronConfMinute = config::byKey('cronConfMinute', __CLASS__);
+  	$cronConfHeure = config::byKey('cronConfHeure', __CLASS__);
+	if (empty($cronConfMinute) || empty($cronConfHeure)) {
+      log::add(__CLASS__, 'error', 'L\'heure de relevé n\'a pas été correctement configurée dans la page de configuration du plugin');
+      return;
+    }
+    $cronConfHeureEtMinute = str_pad($cronConfHeure, 2, '0', STR_PAD_LEFT) . ':' . str_pad($cronConfMinute, 2, '0', STR_PAD_LEFT);
+    if (date('G:i') != $cronConfHeureEtMinute) return;
+
+    foreach (eqLogic::byType(__CLASS__, true) as $propluvia) {
+      $propluvia->pullpropluvia();
+      sleep(15);
+    }
+  }
 
   /*
   * Fonction exécutée automatiquement toutes les 5 minutes par Jeedom
@@ -67,7 +80,7 @@ class vigieau extends eqLogic {
 
   /*
   * Fonction exécutée automatiquement toutes les heures par Jeedom */
-  public static function cronHourly() {
+ /* public static function cronHourly() {
     $cronHeure = config::byKey('cronHeure', __CLASS__);
     if (!empty($cronHeure) && date('G') != $cronHeure) return;
  
@@ -76,6 +89,7 @@ class vigieau extends eqLogic {
       sleep(15);
     }  
   }
+  */
 
   /*
   * Fonction exécutée automatiquement tous les jours par Jeedom
