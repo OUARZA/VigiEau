@@ -26,7 +26,7 @@ if (!isConnect()) {
   <fieldset>
     <div class="form-group">
       <label class="col-md-4 control-label">{{Heure de mise à jour}}
-/*        <sup><i class="fas fa-question-circle tooltips" title="{{Heure à laquelle le plugin va chercher les informations}}"></i></sup>
+<!--        <sup><i class="fas fa-question-circle tooltips" title="{{Heure à laquelle le plugin va chercher les informations}}"></i></sup>
       </label>
       <div class="col-md-1">
         <input class="configKey form-control" data-l1key="cronHeure"/>
@@ -34,7 +34,7 @@ if (!isConnect()) {
     </div>
   </fieldset>
 </form>
-*/
+-->
         <sup><i class="fas fa-question-circle tooltips" title="{{Heure à laquelle le plugin va chercher les informations}}"></i></sup>
       </label>
       <div class="col-md-1">
