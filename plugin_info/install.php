@@ -19,24 +19,48 @@ require_once dirname(__FILE__) . '/../../../core/php/core.inc.php';
 
 // Fonction exécutée automatiquement après l'installation du plugin
 function vigieau_install() {
-    $cronHeure = config::byKey('cronHeure', 'vigieau');
-    if (empty($cronHeure)) {
-      $randHeure = rand(0, 23);
-      config::save('cronHeure', $randHeure, 'vigieau');
-    }
-    config::save('captcha-warning', 1, 'vigieau');
+  $cronHour = config::byKey('cronConfHeure', 'vigieau');
+  if ($cronHour === '' || $cronHour === null) {
+    $cronHour = rand(0, 23);
+    config::save('cronConfHeure', $cronHour, 'vigieau');
   }
+
+  $cronMinute = config::byKey('cronConfMinute', 'vigieau');
+  if ($cronMinute === '' || $cronMinute === null) {
+    $cronMinute = rand(0, 59);
+    config::save('cronConfMinute', $cronMinute, 'vigieau');
+  }
+
+  require_once dirname(__FILE__) . '/../core/class/vigieau.class.php';
+  vigieau::ensureDailyCron();
+
+  config::save('captcha-warning', 1, 'vigieau');
+}
 
 // Fonction exécutée automatiquement après la mise à jour du plugin
 function vigieau_update() {
-    $cronHeure = config::byKey('cronHeure', 'vigieau');
-    if (empty($cronHeure)) {
-      $randHeure = rand(0, 23);
-      config::save('cronHeure', $randHeure, 'vigieau');
-    }
-    config::save('captcha-warning', 1, 'vigieau');
+  $cronHour = config::byKey('cronConfHeure', 'vigieau');
+  if ($cronHour === '' || $cronHour === null) {
+    $cronHour = rand(0, 23);
+    config::save('cronConfHeure', $cronHour, 'vigieau');
   }
+
+  $cronMinute = config::byKey('cronConfMinute', 'vigieau');
+  if ($cronMinute === '' || $cronMinute === null) {
+    $cronMinute = rand(0, 59);
+    config::save('cronConfMinute', $cronMinute, 'vigieau');
+  }
+
+  require_once dirname(__FILE__) . '/../core/class/vigieau.class.php';
+  vigieau::ensureDailyCron();
+
+  config::save('captcha-warning', 1, 'vigieau');
+}
 
 // Fonction exécutée automatiquement après la suppression du plugin
 function vigieau_remove() {
+  $cron = cron::byClassAndFunction('vigieau', 'cron');
+  if (is_object($cron)) {
+    $cron->remove();
+  }
 }

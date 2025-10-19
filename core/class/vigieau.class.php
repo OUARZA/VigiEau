@@ -41,11 +41,13 @@ class vigieau extends eqLogic {
   /*     * ***********************Methode static*************************** */
 
   /*
-  * Fonction exécutée automatiquement toutes les minutes par Jeedom */  
+  * Fonction exécutée automatiquement toutes les minutes par Jeedom */
   public static function cron() {
-  	$cronConfMinute = config::byKey('cronConfMinute', __CLASS__);
-  	$cronConfHeure = config::byKey('cronConfHeure', __CLASS__);
-	if (empty($cronConfMinute) || empty($cronConfHeure)) {
+    self::ensureDailyCron();
+
+        $cronConfMinute = config::byKey('cronConfMinute', __CLASS__);
+        $cronConfHeure = config::byKey('cronConfHeure', __CLASS__);
+        if ($cronConfMinute === '' || $cronConfMinute === null || $cronConfHeure === '' || $cronConfHeure === null) {
       log::add(__CLASS__, 'error', 'L\'heure de relevé n\'a pas été correctement configurée dans la page de configuration du plugin');
       return;
     }
@@ -55,6 +57,28 @@ class vigieau extends eqLogic {
     foreach (eqLogic::byType(__CLASS__, true) as $propluvia) {
       $propluvia->pullpropluvia();
       sleep(15);
+    }
+  }
+
+  public static function ensureDailyCron() {
+    $cronConfMinute = config::byKey('cronConfMinute', __CLASS__);
+    $cronConfHeure = config::byKey('cronConfHeure', __CLASS__);
+    if ($cronConfMinute === '' || $cronConfMinute === null || $cronConfHeure === '' || $cronConfHeure === null) {
+      return;
+    }
+
+    $schedule = intval($cronConfMinute) . ' ' . intval($cronConfHeure) . ' * * *';
+    $cron = cron::byClassAndFunction(__CLASS__, 'cron');
+    if (!is_object($cron)) {
+      $cron = new cron();
+      $cron->setClass(__CLASS__);
+      $cron->setFunction('cron');
+    }
+
+    if ($cron->getSchedule() !== $schedule || $cron->getEnable() != 1) {
+      $cron->setSchedule($schedule);
+      $cron->setEnable(1);
+      $cron->save();
     }
   }
 
