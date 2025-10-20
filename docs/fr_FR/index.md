@@ -7,7 +7,7 @@ Ce plugin permet de remonter les informations du site de l'information sécheres
 
 ## Configuration
 1. Une fois installé et activé, sur la page de configuration, vous pouvez définir l'heure à laquelle le plugin ira chercher les information.<br/>
-<img width="742" height="137" alt="image" src="https://github.com/user-attachments/assets/6e67f909-bf01-43b9-b168-9c9bc6d4b36e" /></br>
+<img width="861" height="135" alt="image" src="https://github.com/user-attachments/assets/723acfaa-c53f-48fc-a89f-e710619f77d6" /></br>
 
 2. Lancer le plugin qui se trouve dans la catégorie Météo.<br/>
 <img width="408" height="183" alt="image" src="https://github.com/user-attachments/assets/8049d2dd-a1e3-4486-a1b1-3ace66c58238" /></br>
