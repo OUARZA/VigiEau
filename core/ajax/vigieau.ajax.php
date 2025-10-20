@@ -110,7 +110,13 @@ try {
         ajax::success($communes);
         break;
       default:
-        throw new Exception(__('Aucune méthode correspondante à', __FILE__) . ' : ' . init('action'));
+        $requestedAction = init('action');
+        if ($requestedAction === null || $requestedAction === '') {
+          ajax::error(__('Aucune action n\'a été spécifiée pour cette requête.', __FILE__), 0);
+        } else {
+          ajax::error(__('Aucune méthode correspondante à', __FILE__) . ' : ' . $requestedAction, 0);
+        }
+        die();
     }
     /*     * *********Catch exeption*************** */
 }
