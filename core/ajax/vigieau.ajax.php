@@ -29,7 +29,9 @@ try {
   */
     ajax::init();
 
-    switch (init('action')) {
+    $action = init('action');
+
+    switch ($action) {
       case 'getUsageOptions':
         $eqId = init('id');
         if (empty($eqId)) {
@@ -110,12 +112,11 @@ try {
         ajax::success($communes);
         break;
       default:
-        $requestedAction = init('action');
-        if ($requestedAction === null || $requestedAction === '') {
-          ajax::error(__('Aucune action n\'a été spécifiée pour cette requête.', __FILE__), 0);
-        } else {
-          ajax::error(__('Aucune méthode correspondante à', __FILE__) . ' : ' . $requestedAction, 0);
+        if ($action === null || $action === '') {
+          ajax::success([]);
+          return;
         }
+        ajax::error(__('Aucune méthode correspondante à', __FILE__) . ' : ' . $action, 0);
         die();
     }
     /*     * *********Catch exeption*************** */
