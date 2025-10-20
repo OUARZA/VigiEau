@@ -18,7 +18,24 @@
 try {
     require_once dirname(__FILE__) . '/../../../../core/php/core.inc.php';
     include_file('core', 'authentification', 'php');
-    require_once dirname(__FILE__) . '/../../../../core/php/com_http.php';
+    if (!class_exists('com_http')) {
+        $comHttpPaths = [
+            dirname(__FILE__) . '/../../../../core/class/com_http.class.php',
+            dirname(__FILE__) . '/../../../../core/php/com_http.php',
+        ];
+        foreach ($comHttpPaths as $path) {
+            if (file_exists($path)) {
+                require_once $path;
+                break;
+            }
+        }
+        if (!class_exists('com_http') && function_exists('include_file')) {
+            @include_file('core', 'com_http', 'class');
+        }
+        if (!class_exists('com_http')) {
+            throw new Exception(__('La classe com_http est introuvable', __FILE__));
+        }
+    }
 
     if (!isConnect('admin')) {
         throw new Exception(__('401 - Accès non autorisé', __FILE__));
