@@ -115,10 +115,16 @@ var vigieauCommuneManager = {
         if (data && data.state === 'ok' && $.isArray(data.result)) {
           self.populateSelect(data.result, selectedCode);
         } else {
+          if (data && data.state === 'error' && data.result) {
+            self.showError(data.result);
+          }
           self.populateSelect([], '');
         }
       },
-      error: function () {
+      error: function (xhr, status, error) {
+        if (error) {
+          self.showError(error);
+        }
         self.populateSelect([], '');
       }
     });
@@ -148,13 +154,28 @@ var vigieauCommuneManager = {
           }
           self.populateSelect([commune], codeInsee);
         } else {
+          if (data && data.state === 'error' && data.result) {
+            self.showError(data.result);
+          }
           self.populateSelect([], '');
         }
       },
-      error: function () {
+      error: function (xhr, status, error) {
+        if (error) {
+          self.showError(error);
+        }
         self.populateSelect([], '');
       }
     });
+  },
+  showError: function (message) {
+    if (!message) {
+      return;
+    }
+    var $alert = $('#div_alert');
+    if ($alert.length) {
+      $alert.showAlert({ message: message, level: 'danger' });
+    }
   },
   refreshFromPostal: function (force) {
     var postal = this.getPostalValue();

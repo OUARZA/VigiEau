@@ -15,27 +15,126 @@
  * along with Jeedom. If not, see <http://www.gnu.org/licenses/>.
  */
 
+function vigieauTryLoadComHttp() {
+    if (class_exists('com_http')) {
+        return true;
+    }
+    $comHttpPaths = [
+        dirname(__FILE__) . '/../../../../core/class/com_http.class.php',
+        dirname(__FILE__) . '/../../../../core/php/com_http.php',
+    ];
+    foreach ($comHttpPaths as $path) {
+        if (file_exists($path)) {
+            require_once $path;
+            if (class_exists('com_http')) {
+                return true;
+            }
+        }
+    }
+    if (function_exists('include_file')) {
+        @include_file('core', 'com_http', 'class');
+    }
+    return class_exists('com_http');
+}
+
+function vigieauHttpRequest($url) {
+    if (!is_string($url) || $url === '') {
+        return null;
+    }
+
+    if (vigieauTryLoadComHttp()) {
+        try {
+            $client = new com_http($url);
+            $client->setTimeout(10);
+            $response = $client->exec();
+            if ($response !== false && $response !== null) {
+                return $response;
+            }
+        } catch (Exception $e) {
+            log::add('vigieau', 'debug', 'searchCommunes via com_http (Exception): ' . $e->getMessage());
+        }
+    }
+
+    if (function_exists('curl_init')) {
+        $ch = curl_init($url);
+        if ($ch !== false) {
+            curl_setopt_array($ch, [
+                CURLOPT_RETURNTRANSFER => true,
+                CURLOPT_FOLLOWLOCATION => true,
+                CURLOPT_TIMEOUT => 10,
+                CURLOPT_FAILONERROR => false,
+                CURLOPT_SSL_VERIFYPEER => true,
+                CURLOPT_SSL_VERIFYHOST => 2,
+                CURLOPT_USERAGENT => 'vigieau-plugin',
+            ]);
+            $response = curl_exec($ch);
+            $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+            if ($response === false || ($httpCode >= 400 && $httpCode !== 0)) {
+                $errno = curl_errno($ch);
+                $sslErrorCodes = [];
+                foreach (['CURLE_SSL_CACERT', 'CURLE_PEER_FAILED_VERIFICATION', 'CURLE_SSL_CERTPROBLEM', 'CURLE_SSL_CONNECT_ERROR'] as $constantName) {
+                    if (defined($constantName)) {
+                        $sslErrorCodes[] = constant($constantName);
+                    }
+                }
+                if ($response === false && !empty($sslErrorCodes) && in_array($errno, $sslErrorCodes, true)) {
+                    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+                    curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
+                    $response = curl_exec($ch);
+                    $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+                }
+                if ($response === false || ($httpCode >= 400 && $httpCode !== 0)) {
+                    log::add('vigieau', 'debug', 'searchCommunes via curl: ' . curl_error($ch) . ' (code ' . $httpCode . ')');
+                    $response = null;
+                }
+            }
+            curl_close($ch);
+            if ($response !== null) {
+                return $response;
+            }
+        }
+    }
+
+    if (function_exists('file_get_contents') && filter_var(ini_get('allow_url_fopen'), FILTER_VALIDATE_BOOLEAN)) {
+        $context = stream_context_create([
+            'http' => [
+                'method' => 'GET',
+                'timeout' => 10,
+                'ignore_errors' => true,
+                'header' => "User-Agent: vigieau-plugin\r\nAccept: application/json\r\n",
+            ],
+            'https' => [
+                'method' => 'GET',
+                'timeout' => 10,
+                'ignore_errors' => true,
+                'header' => "User-Agent: vigieau-plugin\r\nAccept: application/json\r\n",
+            ],
+        ]);
+        $response = @file_get_contents($url, false, $context);
+        if ($response !== false) {
+            if (isset($http_response_header) && is_array($http_response_header)) {
+                foreach ($http_response_header as $headerLine) {
+                    if (stripos($headerLine, 'HTTP/') === 0) {
+                        $parts = explode(' ', $headerLine);
+                        if (isset($parts[1]) && (int) $parts[1] >= 400) {
+                            log::add('vigieau', 'debug', 'searchCommunes via file_get_contents failed with header: ' . $headerLine);
+                            return null;
+                        }
+                        break;
+                    }
+                }
+            }
+            return $response;
+        }
+        log::add('vigieau', 'debug', 'searchCommunes via file_get_contents failed.');
+    }
+
+    return null;
+}
+
 try {
     require_once dirname(__FILE__) . '/../../../../core/php/core.inc.php';
     include_file('core', 'authentification', 'php');
-    if (!class_exists('com_http')) {
-        $comHttpPaths = [
-            dirname(__FILE__) . '/../../../../core/class/com_http.class.php',
-            dirname(__FILE__) . '/../../../../core/php/com_http.php',
-        ];
-        foreach ($comHttpPaths as $path) {
-            if (file_exists($path)) {
-                require_once $path;
-                break;
-            }
-        }
-        if (!class_exists('com_http') && function_exists('include_file')) {
-            @include_file('core', 'com_http', 'class');
-        }
-        if (!class_exists('com_http')) {
-            throw new Exception(__('La classe com_http est introuvable', __FILE__));
-        }
-    }
 
     if (!isConnect('admin')) {
         throw new Exception(__('401 - Accès non autorisé', __FILE__));
@@ -121,28 +220,26 @@ try {
           die();
         }
 
-        try {
-          $client = new com_http($queryUrl);
-          $client->setTimeout(10);
-          $response = $client->exec();
-        } catch (Exception $e) {
-          ajax::success([]);
-          die();
-        }
-        if ($response === false || $response === null) {
-          ajax::success([]);
-          die();
-        }
-        $decoded = json_decode(trim($response), true);
-        if (!is_array($decoded)) {
-          ajax::success([]);
+        $response = vigieauHttpRequest($queryUrl);
+        if ($response === null) {
+          ajax::error(__('Impossible de contacter le service de recherche de communes.', __FILE__), 0);
           die();
         }
 
-        $communes = [];
-        if (isset($decoded['code'])) {
-          $decoded = [$decoded];
+        $decoded = json_decode(trim($response), true);
+        if (!is_array($decoded)) {
+          log::add('vigieau', 'debug', 'searchCommunes: réponse invalide depuis ' . $queryUrl . ' => ' . substr($response, 0, 200));
+          ajax::error(__('Réponse invalide du service de recherche de communes.', __FILE__), 0);
+          die();
         }
+
+        if (isset($decoded['code']) && isset($decoded['nom']) && !isset($decoded[0])) {
+          $decoded = [$decoded];
+        } elseif (array_values($decoded) !== $decoded) {
+          $decoded = [];
+        }
+
+        $communes = [];
         foreach ($decoded as $commune) {
           if (!is_array($commune)) {
             continue;
