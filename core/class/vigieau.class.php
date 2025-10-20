@@ -54,8 +54,8 @@ class vigieau extends eqLogic {
     $cronConfHeureEtMinute = str_pad($cronConfHeure, 2, '0', STR_PAD_LEFT) . ':' . str_pad($cronConfMinute, 2, '0', STR_PAD_LEFT);
     if (date('G:i') != $cronConfHeureEtMinute) return;
 
-    foreach (eqLogic::byType(__CLASS__, true) as $propluvia) {
-      $propluvia->pullpropluvia();
+    foreach (eqLogic::byType(__CLASS__, true) as $vigieauEqLogic) {
+      $vigieauEqLogic->pullvigieau();
       sleep(15);
     }
   }
