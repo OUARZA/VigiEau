@@ -42,6 +42,59 @@ try {
         $options = $eqLogic->getUsageOptionsForConfig();
         ajax::success($options);
         break;
+      case 'searchCommunes':
+        $postalCode = trim((string) init('codePostal'));
+        $codeInsee = trim((string) init('codeInsee'));
+        if ($postalCode === '' && $codeInsee === '') {
+          throw new Exception(__('Aucun critère de recherche fourni', __FILE__));
+        }
+
+        $queryUrl = null;
+        if ($postalCode !== '') {
+          if (!preg_match('/^[0-9]{5}$/', $postalCode)) {
+            ajax::success([]);
+          }
+          $queryUrl = 'https://geo.api.gouv.fr/communes?codePostal=' . urlencode($postalCode) . '&fields=nom,code';
+        } else {
+          if (!preg_match('/^[0-9A-Za-z]{5}$/', $codeInsee)) {
+            ajax::success([]);
+          }
+          $queryUrl = 'https://geo.api.gouv.fr/communes?code=' . urlencode($codeInsee) . '&fields=nom,code,codesPostaux';
+        }
+
+        $client = new com_http($queryUrl);
+        $client->setTimeout(10);
+        $response = $client->exec();
+        if ($response === false || $response === null) {
+          ajax::success([]);
+        }
+        $decoded = json_decode(trim($response), true);
+        if (!is_array($decoded)) {
+          ajax::success([]);
+        }
+
+        $communes = [];
+        if (isset($decoded['code'])) {
+          $decoded = [$decoded];
+        }
+        foreach ($decoded as $commune) {
+          if (!is_array($commune)) {
+            continue;
+          }
+          $code = isset($commune['code']) ? trim((string) $commune['code']) : '';
+          $nom = isset($commune['nom']) ? trim((string) $commune['nom']) : '';
+          if ($code === '' || $nom === '') {
+            continue;
+          }
+          $entry = ['code' => $code, 'nom' => $nom];
+          if (isset($commune['codesPostaux']) && is_array($commune['codesPostaux'])) {
+            $entry['codesPostaux'] = array_values(array_filter(array_map('strval', $commune['codesPostaux'])));
+          }
+          $communes[] = $entry;
+        }
+
+        ajax::success($communes);
+        break;
       default:
         throw new Exception(__('Aucune méthode correspondante à', __FILE__) . ' : ' . init('action'));
     }

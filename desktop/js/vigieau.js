@@ -104,16 +104,19 @@ var vigieauCommuneManager = {
     }
     this.lastPostalCode = postalCode;
     $.ajax({
-      url: 'https://geo.api.gouv.fr/communes',
-      type: 'GET',
+      url: 'plugins/vigieau/core/ajax/vigieau.ajax.php',
+      type: 'POST',
       dataType: 'json',
       data: {
-        codePostal: postalCode,
-        fields: 'nom,code'
+        action: 'searchCommunes',
+        codePostal: postalCode
       },
       success: function (data) {
-        var communes = $.isArray(data) ? data : [];
-        self.populateSelect(communes, selectedCode);
+        if (data && data.state === 'ok' && $.isArray(data.result)) {
+          self.populateSelect(data.result, selectedCode);
+        } else {
+          self.populateSelect([], '');
+        }
       },
       error: function () {
         self.populateSelect([], '');
@@ -127,16 +130,16 @@ var vigieauCommuneManager = {
       return;
     }
     $.ajax({
-      url: 'https://geo.api.gouv.fr/communes',
-      type: 'GET',
+      url: 'plugins/vigieau/core/ajax/vigieau.ajax.php',
+      type: 'POST',
       dataType: 'json',
       data: {
-        code: codeInsee,
-        fields: 'nom,code,codesPostaux'
+        action: 'searchCommunes',
+        codeInsee: codeInsee
       },
       success: function (data) {
-        if ($.isArray(data) && data.length > 0) {
-          var commune = data[0];
+        if (data && data.state === 'ok' && $.isArray(data.result) && data.result.length > 0) {
+          var commune = data.result[0];
           if ($.isArray(commune.codesPostaux) && commune.codesPostaux.length > 0) {
             var postal = commune.codesPostaux[0];
             self.setPostalValue(postal);
