@@ -180,12 +180,20 @@ $eqLogics = eqLogic::byType($plugin->getId());
 
 							<legend><i class="fas fa-cogs"></i> {{Paramètres spécifiques}}</legend>
                             <div class="form-group">
-                            	<label class="col-sm-4 control-label">{{Code INSEE commune}}</label>
+                                <label class="col-sm-4 control-label">{{Code postal}}</label>
                                 <div class="col-sm-3">
-                                	<input type="text" class="eqLogicAttr form-control" data-l1key="configuration" data-l2key="codeInseeCommune" placeholder="{{Code INSEE}}"/>
+                                        <input type="text" class="eqLogicAttr form-control" data-l1key="configuration" data-l2key="codePostal" placeholder="{{Code postal}}" id="vigieauPostalCode"/>
                                 </div>
-                                <a href="https://datanova.laposte.fr/datasets/laposte-hexasmal/full" target="_blank">Liste des codes INSEE</a>
-							</div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-sm-4 control-label">{{Commune}}</label>
+                                <div class="col-sm-5">
+                                        <select class="form-control eqLogicAttr" data-l1key="configuration" data-l2key="codeInseeCommune" id="vigieauCommuneSelect" data-placeholder="<?php echo __('Sélectionnez une commune', __FILE__); ?>">
+                                                <option value=""><?php echo __('Sélectionnez une commune', __FILE__); ?></option>
+                                        </select>
+                                        <span class="help-block"><a href="https://datanova.laposte.fr/datasets/laposte-hexasmal/full" target="_blank"><?php echo __('Liste des codes INSEE', __FILE__); ?></a></span>
+                                </div>
+                            </div>
                             <div class="form-group">
 								<label class="col-sm-4 control-label">{{Profil de consommation :}}</label>
                                 <div class="col-sm-3">

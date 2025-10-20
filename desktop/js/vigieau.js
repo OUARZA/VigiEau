@@ -24,10 +24,169 @@ $("#table_cmd").sortable({
   forcePlaceholderSize: true
 })
 
- $('.eqLogicAttr[data-l1key=configuration][data-l2key=datasource]').on('change',function(){
+$('.eqLogicAttr[data-l1key=configuration][data-l2key=datasource]').on('change',function(){
     $('.datasource').hide();
     $('.datasource.'+$(this).value()).show();
 });
+
+var vigieauCommuneManager = {
+  lastPostalCode: null,
+  getPostalInput: function () {
+    return $('.eqLogicAttr[data-l1key=configuration][data-l2key=codePostal]');
+  },
+  getCommuneSelect: function () {
+    return $('.eqLogicAttr[data-l1key=configuration][data-l2key=codeInseeCommune]');
+  },
+  getPostalValue: function () {
+    var $postal = this.getPostalInput();
+    if ($postal.length === 0) {
+      return '';
+    }
+    var value = $postal.value();
+    return $.trim(value || '');
+  },
+  setPostalValue: function (postalCode) {
+    var $postal = this.getPostalInput();
+    if ($postal.length === 0) {
+      return;
+    }
+    $postal.value(postalCode || '');
+  },
+  ensurePlaceholder: function ($select) {
+    if ($select.length === 0) {
+      return;
+    }
+    var placeholder = $select.attr('data-placeholder') || '';
+    $select.empty();
+    $select.append($('<option></option>').attr('value', '').text(placeholder));
+  },
+  populateSelect: function (communes, selectedCode) {
+    var $select = this.getCommuneSelect();
+    if ($select.length === 0) {
+      return;
+    }
+    this.ensurePlaceholder($select);
+    if (!$.isArray(communes) || communes.length === 0) {
+      $select.value('');
+      $select.trigger('change');
+      return;
+    }
+    var normalized = [];
+    for (var i = 0; i < communes.length; i++) {
+      if (communes[i] && communes[i].code && communes[i].nom) {
+        normalized.push({ code: communes[i].code, nom: communes[i].nom });
+      }
+    }
+    for (var j = 0; j < normalized.length; j++) {
+      var commune = normalized[j];
+      $select.append($('<option></option>').attr('value', commune.code).text(commune.nom));
+    }
+    var toSelect = '';
+    if (selectedCode) {
+      for (var k = 0; k < normalized.length; k++) {
+        if (normalized[k].code === selectedCode) {
+          toSelect = selectedCode;
+          break;
+        }
+      }
+    }
+    if (toSelect === '' && normalized.length === 1) {
+      toSelect = normalized[0].code;
+    }
+    $select.value(toSelect);
+    $select.trigger('change');
+  },
+  fetchByPostalCode: function (postalCode, selectedCode) {
+    var self = this;
+    if (!postalCode || !/^[0-9]{5}$/.test(postalCode)) {
+      this.populateSelect([], '');
+      return;
+    }
+    this.lastPostalCode = postalCode;
+    $.ajax({
+      url: 'https://geo.api.gouv.fr/communes',
+      type: 'GET',
+      dataType: 'json',
+      data: {
+        codePostal: postalCode,
+        fields: 'nom,code'
+      },
+      success: function (data) {
+        var communes = $.isArray(data) ? data : [];
+        self.populateSelect(communes, selectedCode);
+      },
+      error: function () {
+        self.populateSelect([], '');
+      }
+    });
+  },
+  fetchByInsee: function (codeInsee) {
+    var self = this;
+    if (!codeInsee) {
+      this.populateSelect([], '');
+      return;
+    }
+    $.ajax({
+      url: 'https://geo.api.gouv.fr/communes',
+      type: 'GET',
+      dataType: 'json',
+      data: {
+        code: codeInsee,
+        fields: 'nom,code,codesPostaux'
+      },
+      success: function (data) {
+        if ($.isArray(data) && data.length > 0) {
+          var commune = data[0];
+          if ($.isArray(commune.codesPostaux) && commune.codesPostaux.length > 0) {
+            var postal = commune.codesPostaux[0];
+            self.setPostalValue(postal);
+            self.fetchByPostalCode(postal, codeInsee);
+            return;
+          }
+          self.populateSelect([commune], codeInsee);
+        } else {
+          self.populateSelect([], '');
+        }
+      },
+      error: function () {
+        self.populateSelect([], '');
+      }
+    });
+  },
+  refreshFromPostal: function (force) {
+    var postal = this.getPostalValue();
+    var sanitized = postal.replace(/\s+/g, '');
+    if (sanitized !== postal) {
+      this.setPostalValue(sanitized);
+    }
+    if (!sanitized) {
+      this.lastPostalCode = null;
+      this.populateSelect([], '');
+      return;
+    }
+    if (!/^[0-9]{5}$/.test(sanitized)) {
+      this.lastPostalCode = null;
+      this.populateSelect([], '');
+      return;
+    }
+    if (!force && this.lastPostalCode === sanitized) {
+      return;
+    }
+    var selectedCode = this.getCommuneSelect().value();
+    this.fetchByPostalCode(sanitized, selectedCode);
+  },
+  loadFromConfig: function () {
+    var selectedCode = this.getCommuneSelect().value();
+    var postalCode = this.getPostalValue();
+    if (postalCode) {
+      this.fetchByPostalCode(postalCode, selectedCode);
+    } else if (selectedCode) {
+      this.fetchByInsee(selectedCode);
+    } else {
+      this.populateSelect([], '');
+    }
+  }
+};
 
 /* Fonction permettant l'affichage des commandes dans l'équipement */
 function addCmdToTable(_cmd) {
@@ -365,6 +524,9 @@ var vigieauUsageFilterManager = {
 $(document).on('change', '.eqLogicAttr[data-l1key=id]', function () {
   vigieauUsageFilterManager.currentEqId = null;
   vigieauUsageFilterManager.refresh(true);
+  setTimeout(function () {
+    vigieauCommuneManager.loadFromConfig();
+  }, 0);
 });
 
 $(document).on('click', '#usageFilterReload', function (e) {
@@ -391,6 +553,13 @@ $(document).on('change', '#usageFilterCheckboxes .usage-filter-checkbox', functi
   vigieauUsageFilterManager.syncHiddenFromCheckboxes(false);
 });
 
+$(document).on('blur', '#vigieauPostalCode', function () {
+  vigieauCommuneManager.refreshFromPostal(true);
+});
+
 $(document).ready(function () {
   vigieauUsageFilterManager.refresh(false);
+  setTimeout(function () {
+    vigieauCommuneManager.loadFromConfig();
+  }, 0);
 });
