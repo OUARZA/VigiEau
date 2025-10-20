@@ -53,13 +53,20 @@ try {
         if ($postalCode !== '') {
           if (!preg_match('/^[0-9]{5}$/', $postalCode)) {
             ajax::success([]);
+            return;
           }
           $queryUrl = 'https://geo.api.gouv.fr/communes?codePostal=' . urlencode($postalCode) . '&fields=nom,code';
         } else {
           if (!preg_match('/^[0-9A-Za-z]{5}$/', $codeInsee)) {
             ajax::success([]);
+            return;
           }
           $queryUrl = 'https://geo.api.gouv.fr/communes?code=' . urlencode($codeInsee) . '&fields=nom,code,codesPostaux';
+        }
+
+        if ($queryUrl === null) {
+          ajax::success([]);
+          return;
         }
 
         try {
@@ -68,16 +75,16 @@ try {
           $response = $client->exec();
         } catch (Exception $e) {
           ajax::success([]);
-        }
-        if (!isset($response)) {
           return;
         }
         if ($response === false || $response === null) {
           ajax::success([]);
+          return;
         }
         $decoded = json_decode(trim($response), true);
         if (!is_array($decoded)) {
           ajax::success([]);
+          return;
         }
 
         $communes = [];
