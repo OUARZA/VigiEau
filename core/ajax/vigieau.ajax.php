@@ -62,9 +62,16 @@ try {
           $queryUrl = 'https://geo.api.gouv.fr/communes?code=' . urlencode($codeInsee) . '&fields=nom,code,codesPostaux';
         }
 
-        $client = new com_http($queryUrl);
-        $client->setTimeout(10);
-        $response = $client->exec();
+        try {
+          $client = new com_http($queryUrl);
+          $client->setTimeout(10);
+          $response = $client->exec();
+        } catch (Exception $e) {
+          ajax::success([]);
+        }
+        if (!isset($response)) {
+          return;
+        }
         if ($response === false || $response === null) {
           ajax::success([]);
         }
