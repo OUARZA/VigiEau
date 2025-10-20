@@ -30,6 +30,19 @@ try {
     ajax::init();
 
     $action = init('action');
+    if ($action === null || $action === '') {
+      if (isset($_POST['action'])) {
+        $action = $_POST['action'];
+      } elseif (isset($_GET['action'])) {
+        $action = $_GET['action'];
+      }
+    }
+    $action = trim((string) $action);
+
+    if ($action === '') {
+      ajax::success([]);
+      die();
+    }
 
     switch ($action) {
       case 'getUsageOptions':
@@ -45,30 +58,49 @@ try {
         ajax::success($options);
         break;
       case 'searchCommunes':
-        $postalCode = trim((string) init('codePostal'));
-        $codeInsee = trim((string) init('codeInsee'));
+        $postalCode = init('codePostal');
+        if ($postalCode === null || $postalCode === '') {
+          if (isset($_POST['codePostal'])) {
+            $postalCode = $_POST['codePostal'];
+          } elseif (isset($_GET['codePostal'])) {
+            $postalCode = $_GET['codePostal'];
+          }
+        }
+        $postalCode = trim((string) $postalCode);
+
+        $codeInsee = init('codeInsee');
+        if ($codeInsee === null || $codeInsee === '') {
+          if (isset($_POST['codeInsee'])) {
+            $codeInsee = $_POST['codeInsee'];
+          } elseif (isset($_GET['codeInsee'])) {
+            $codeInsee = $_GET['codeInsee'];
+          }
+        }
+        $codeInsee = trim((string) $codeInsee);
+
         if ($postalCode === '' && $codeInsee === '') {
-          throw new Exception(__('Aucun critère de recherche fourni', __FILE__));
+          ajax::success([]);
+          die();
         }
 
         $queryUrl = null;
         if ($postalCode !== '') {
           if (!preg_match('/^[0-9]{5}$/', $postalCode)) {
             ajax::success([]);
-            return;
+            die();
           }
           $queryUrl = 'https://geo.api.gouv.fr/communes?codePostal=' . urlencode($postalCode) . '&fields=nom,code';
         } else {
           if (!preg_match('/^[0-9A-Za-z]{5}$/', $codeInsee)) {
             ajax::success([]);
-            return;
+            die();
           }
           $queryUrl = 'https://geo.api.gouv.fr/communes?code=' . urlencode($codeInsee) . '&fields=nom,code,codesPostaux';
         }
 
         if ($queryUrl === null) {
           ajax::success([]);
-          return;
+          die();
         }
 
         try {
@@ -77,16 +109,16 @@ try {
           $response = $client->exec();
         } catch (Exception $e) {
           ajax::success([]);
-          return;
+          die();
         }
         if ($response === false || $response === null) {
           ajax::success([]);
-          return;
+          die();
         }
         $decoded = json_decode(trim($response), true);
         if (!is_array($decoded)) {
           ajax::success([]);
-          return;
+          die();
         }
 
         $communes = [];
@@ -112,10 +144,6 @@ try {
         ajax::success($communes);
         break;
       default:
-        if ($action === null || $action === '') {
-          ajax::success([]);
-          return;
-        }
         ajax::error(__('Aucune méthode correspondante à', __FILE__) . ' : ' . $action, 0);
         die();
     }
