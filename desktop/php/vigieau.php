@@ -3,7 +3,8 @@ if (!isConnect('admin')) {
 	throw new Exception('{{401 - Accès non autorisé}}');
 }
 // Déclaration des variables obligatoires
-$plugin = plugin::byId('vigieau');
+$pluginName = 'vigieau';
+$plugin = plugin::byId($pluginName);
 sendVarToJS('eqType', $plugin->getId());
 $eqLogics = eqLogic::byType($plugin->getId());
 ?>
@@ -179,6 +180,29 @@ $eqLogics = eqLogic::byType($plugin->getId());
 							</div>
 
 							<legend><i class="fas fa-cogs"></i> {{Paramètres spécifiques}}</legend>
+<div class="form-group">
+              <label class="col-sm-3 control-label">{{Code postal}}
+              </label>
+              <div class="col-sm-4 input-group">
+                <input id="zipCode" type="text" class="eqLogicAttr form-control" data-l1key="configuration" data-l2key="zipCode"/>
+                <span class="input-group-btn" style="vertical-align:top">
+                  <button title="Rechercher INSEE" type="button" class="btn btn-default" id="btnGetInsee"><i class="icon fas fa-search"></i></button>
+                </span>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label class="col-sm-3 control-label"></label>
+              <div class="col-sm-4">
+                <div id="zipFeedback" style="font-size:0.9em;line-height:1;"></div>
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="col-sm-3 control-label">{{Commune (INSEE,EPCI)}}</label>
+              <div class="col-sm-4 input-group">
+                <input id="codeZone" class="eqLogicAttr form-control" data-l1key="configuration" data-l2key="codeZone"/>
+              </div>
+            </div>
                             <div class="form-group">
                             	<label class="col-sm-4 control-label">{{Code INSEE commune}}</label>
                                 <div class="col-sm-3">
@@ -251,7 +275,7 @@ $eqLogics = eqLogic::byType($plugin->getId());
 			<!-- Onglet des commandes de l'équipement -->
 			<div role="tabpanel" class="tab-pane" id="commandtab">
 				<legend>
-					<center class="title_cmdtable">{{Tableau de commandes <?php echo $plugName.' : ';?>}}
+					<center class="title_cmdtable">{{Tableau de commandes <?php echo $pluginName.' : ';?>}}
 						<span class="eqName"></span>
 					</center>
 				</legend>
@@ -297,6 +321,6 @@ $eqLogics = eqLogic::byType($plugin->getId());
 </div><!-- /.row row-overflow -->
 
 <!-- Inclusion du fichier javascript du plugin (dossier, nom_du_fichier, extension_du_fichier, id_du_plugin) -->
-<?php include_file('desktop', 'vigieau', 'js', 'vigieau');?>
+<?php include_file('desktop', $pluginName, 'js', $pluginName);?>
 <!-- Inclusion du fichier javascript du core - NE PAS MODIFIER NI SUPPRIMER -->
 <?php include_file('core', 'plugin.template', 'js');?>
