@@ -141,6 +141,7 @@ class vigieau extends eqLogic {
   // Fonction exécutée automatiquement avant la sauvegarde (création ou mise à jour) de l'équipement
   public function preSave() {
     $codeInseeCommune = $this->getConfiguration('codeInseeCommune');
+    $codePostal = trim((string) $this->getConfiguration('codePostal'));
     //récupération nom commune
     $url = 'https://geo.api.gouv.fr/communes?code='.$codeInseeCommune.'&fields=code,nom,departement';
     $request_http = new com_http($url);
@@ -151,8 +152,18 @@ class vigieau extends eqLogic {
       $nomDepartement = $jsonData['0']['departement']['nom'];
       $this->setConfiguration('commune', $nomCommune);
       $this->setConfiguration('departement', $nomDepartement);
+      $laposteCode = $this->fetchInseeFromLaposte($codePostal, $nomCommune);
+      if ($laposteCode !== null) {
+        $this->setConfiguration('codeInseeLaposte', $laposteCode);
+      } else {
+        $this->setConfiguration('codeInseeLaposte', '');
+        if ($codePostal !== '') {
+          log::add(__CLASS__, 'warning', 'Impossible de récupérer le code INSEE via l\'API Laposte pour ' . $nomCommune . ' (' . $codePostal . ')');
+        }
+      }
     } else {
       log::add(__CLASS__, 'error', 'Code INSEE de commune ('.$codeInseeCommune.') invalide');
+      $this->setConfiguration('codeInseeLaposte', '');
     }
   }
 
@@ -845,6 +856,69 @@ class vigieau extends eqLogic {
       default:
         return true;
     }
+  }
+
+  private function fetchInseeFromLaposte($codePostal, $nomCommune) {
+    $codePostal = trim((string) $codePostal);
+    $nomCommune = trim((string) $nomCommune);
+    if ($codePostal === '' || $nomCommune === '') {
+      return null;
+    }
+
+    $url = 'https://public.opendatasoft.com/api/records/1.0/search/?dataset=laposte_hexasmal&rows=100&refine.code_postal=' . urlencode($codePostal);
+    $request = new com_http($url);
+    $response = $request->exec();
+    if (!is_string($response) || trim($response) === '') {
+      return null;
+    }
+
+    $decoded = json_decode(trim($response), true);
+    if (!is_array($decoded) || !isset($decoded['records']) || !is_array($decoded['records'])) {
+      return null;
+    }
+
+    $target = $this->normalizeCommuneName($nomCommune);
+    foreach ($decoded['records'] as $record) {
+      if (!is_array($record) || !isset($record['fields']) || !is_array($record['fields'])) {
+        continue;
+      }
+      $fields = $record['fields'];
+      if (!isset($fields['code_commune_insee'])) {
+        continue;
+      }
+      $candidateName = isset($fields['nom_de_la_commune']) ? $fields['nom_de_la_commune'] : '';
+      if ($target === '' || $target === $this->normalizeCommuneName($candidateName)) {
+        return trim((string) $fields['code_commune_insee']);
+      }
+    }
+
+    foreach ($decoded['records'] as $record) {
+      if (!is_array($record) || !isset($record['fields']) || !is_array($record['fields'])) {
+        continue;
+      }
+      if (!isset($record['fields']['code_commune_insee'])) {
+        continue;
+      }
+      $fallback = trim((string) $record['fields']['code_commune_insee']);
+      if ($fallback !== '') {
+        return $fallback;
+      }
+    }
+
+    return null;
+  }
+
+  private function normalizeCommuneName($value) {
+    $value = trim((string) $value);
+    if ($value === '') {
+      return '';
+    }
+    $normalized = @iconv('UTF-8', 'ASCII//TRANSLIT//IGNORE', $value);
+    if ($normalized === false || $normalized === null) {
+      $normalized = $value;
+    }
+    $upper = strtoupper($normalized);
+    return preg_replace('/[^A-Z0-9]/', '', $upper);
   }
 
   public function pullvigieau() {
