@@ -192,12 +192,11 @@ $eqLogics = eqLogic::byType($plugin->getId());
                                         <select class="form-control" id="vigieauCommuneSelect" data-placeholder="<?php echo __('Sélectionnez une commune', __FILE__); ?>">
                                                 <option value=""><?php echo __('Sélectionnez une commune', __FILE__); ?></option>
                                         </select>
-                                        <span class="help-block"><a href="https://datanova.laposte.fr/datasets/laposte-hexasmal/full" target="_blank"><?php echo __('Liste des codes INSEE', __FILE__); ?></a></span>
                                 </div>
                             </div>
                             <div class="form-group">
 								<label class="col-sm-4 control-label">{{Profil de consommation :}}</label>
-                                <div class="col-sm-3">
+                                <div class="col-sm-5">
                                   <select class="form-control eqLogicAttr" data-l1key="configuration" data-l2key="typeInfo">
                                     <option value="particulier">{{Particulier}}</option>
                                     <option value="entreprise">{{Entreprise}}</option>
@@ -208,7 +207,7 @@ $eqLogics = eqLogic::byType($plugin->getId());
                                 </div>
                             <div class="form-group">
                                 <label class="col-sm-4 control-label">{{Type d'eau consommé :}}</label>
-                                <div class="col-sm-3">
+                                <div class="col-sm-5">
                                   <select class="form-control eqLogicAttr" data-l1key="configuration" data-l2key="typeRestriction">
                                     <option value="aep">{{Du robinet}}</option>
                                     <option value="sup">{{D'un cours d'eau ou d'une rivière}}</option>
