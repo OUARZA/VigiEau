@@ -32,6 +32,10 @@ $('.eqLogicAttr[data-l1key=configuration][data-l2key=datasource]').on('change',f
 var vigieauCommuneManager = {
   lastPostalCode: null,
   isSettingStoredValue: false,
+  observedPostalValue: null,
+  observedStoredValue: null,
+  valueWatcherId: null,
+  valueWatcherInterval: 400,
   getPostalInput: function () {
     return $('.eqLogicAttr[data-l1key=configuration][data-l2key=codePostal]');
   },
@@ -55,6 +59,7 @@ var vigieauCommuneManager = {
       return;
     }
     $postal.value(postalCode || '');
+    this.observedPostalValue = this.getPostalValue();
   },
   getStoredCommuneValue: function () {
     var $stored = this.getStoredCommuneInput();
@@ -75,6 +80,7 @@ var vigieauCommuneManager = {
     }
     this.isSettingStoredValue = true;
     $stored.value(normalized);
+    this.observedStoredValue = normalized;
     $stored.trigger('change');
     this.isSettingStoredValue = false;
   },
@@ -269,6 +275,42 @@ var vigieauCommuneManager = {
     }
     var selectedCode = this.getStoredCommuneValue();
     this.fetchByPostalCode(sanitized, selectedCode);
+  },
+  isPostalFocused: function () {
+    var $postal = this.getPostalInput();
+    if ($postal.length === 0) {
+      return false;
+    }
+    var element = $postal.get(0);
+    return element === document.activeElement;
+  },
+  startValueWatcher: function () {
+    if (this.valueWatcherId !== null) {
+      return;
+    }
+    this.observedPostalValue = this.getPostalValue();
+    this.observedStoredValue = this.getStoredCommuneValue();
+    var self = this;
+    this.valueWatcherId = window.setInterval(function () {
+      self.checkForExternalUpdates();
+    }, this.valueWatcherInterval);
+    this.checkForExternalUpdates();
+  },
+  checkForExternalUpdates: function () {
+    var currentPostal = this.getPostalValue();
+    if (currentPostal !== this.observedPostalValue) {
+      this.observedPostalValue = currentPostal;
+      if (!this.isPostalFocused()) {
+        this.refreshFromPostal(true);
+      }
+    }
+    var currentStored = this.getStoredCommuneValue();
+    if (currentStored !== this.observedStoredValue) {
+      this.observedStoredValue = currentStored;
+      if (!this.isSettingStoredValue) {
+        this.loadFromConfig();
+      }
+    }
   },
   loadFromConfig: function () {
     var selectedCode = this.getStoredCommuneValue();
@@ -666,6 +708,7 @@ $(document).on('change', '#vigieauCommuneValue', function () {
 
 $(document).ready(function () {
   vigieauUsageFilterManager.refresh(false);
+  vigieauCommuneManager.startValueWatcher();
   setTimeout(function () {
     vigieauCommuneManager.loadFromConfig();
   }, 0);
