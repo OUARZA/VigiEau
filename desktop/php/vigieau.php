@@ -180,15 +180,23 @@ $eqLogics = eqLogic::byType($plugin->getId());
 
 							<legend><i class="fas fa-cogs"></i> {{Paramètres spécifiques}}</legend>
                             <div class="form-group">
-                            	<label class="col-sm-4 control-label">{{Code INSEE commune}}</label>
+                                <label class="col-sm-4 control-label">{{Code postal}}</label>
                                 <div class="col-sm-3">
-                                	<input type="text" class="eqLogicAttr form-control" data-l1key="configuration" data-l2key="codeInseeCommune" placeholder="{{Code INSEE}}"/>
+                                        <input type="text" class="eqLogicAttr form-control" data-l1key="configuration" data-l2key="codePostal" placeholder="{{Code postal}}" id="vigieauPostalCode"/>
                                 </div>
-                                <a href="https://datanova.laposte.fr/datasets/laposte-hexasmal/full" target="_blank">Liste des codes INSEE</a>
-							</div>
+                            </div>
                             <div class="form-group">
-								<label class="col-sm-4 control-label">{{Profil de consommation :}}</label>
-                                <div class="col-sm-3">
+                                <label class="col-sm-4 control-label">{{Commune}}</label>
+                                <div class="col-sm-5">
+                                        <input type="hidden" class="eqLogicAttr" data-l1key="configuration" data-l2key="codeInseeCommune" id="vigieauCommuneValue" />
+                                        <select class="form-control" id="vigieauCommuneSelect" data-placeholder="<?php echo __('Sélectionnez une commune', __FILE__); ?>">
+                                                <option value=""><?php echo __('Sélectionnez une commune', __FILE__); ?></option>
+                                        </select>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-sm-4 control-label">{{Profil de consommation :}}</label>
+                                <div class="col-sm-5">
                                   <select class="form-control eqLogicAttr" data-l1key="configuration" data-l2key="typeInfo">
                                     <option value="particulier">{{Particulier}}</option>
                                     <option value="entreprise">{{Entreprise}}</option>
@@ -199,7 +207,7 @@ $eqLogics = eqLogic::byType($plugin->getId());
                                 </div>
                             <div class="form-group">
                                 <label class="col-sm-4 control-label">{{Type d'eau consommé :}}</label>
-                                <div class="col-sm-3">
+                                <div class="col-sm-5">
                                   <select class="form-control eqLogicAttr" data-l1key="configuration" data-l2key="typeRestriction">
                                     <option value="aep">{{Du robinet}}</option>
                                     <option value="sup">{{D'un cours d'eau ou d'une rivière}}</option>
@@ -236,13 +244,18 @@ $eqLogics = eqLogic::byType($plugin->getId());
 						<div class="col-lg-6">
 							<legend><i class="fas fa-info"></i> {{Informations}}</legend>
 							
-                            	<div class="form-group">
-									<label class="col-sm-3 control-label">{{Département :}}</label>
-                                	<span class="eqLogicAttr control-label" style="font-size:1em;cursor: default;" data-l1key="configuration" data-l2key="departement"></span>	
+                                <div class="form-group">
+                                        <label class="col-sm-3 control-label">{{Département :}}</label>
+                                        <span class="eqLogicAttr control-label" style="font-size:1em;cursor: default;" data-l1key="configuration" data-l2key="departement"></span>
                                 </div>
                                 <div class="form-group">
-                                	<label class="col-sm-3 control-label">{{Commune :}}</label>
-                                	<span class="eqLogicAttr control-label" style="font-size:1em;cursor: default;" data-l1key="configuration" data-l2key="commune"></span>												</div>
+                                        <label class="col-sm-3 control-label">{{Commune :}}</label>
+                                        <span class="eqLogicAttr control-label" style="font-size:1em;cursor: default;" data-l1key="configuration" data-l2key="commune"></span>
+                                </div>
+                                <div class="form-group">
+                                        <label class="col-sm-3 control-label">{{Code INSEE :}}</label>
+                                        <span class="eqLogicAttr control-label" style="font-size:1em;cursor: default;" data-l1key="configuration" data-l2key="codeInseeCommune"></span>
+                                </div>
 						</div>
 					</fieldset>
 				</form>
