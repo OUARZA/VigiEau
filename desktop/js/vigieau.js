@@ -31,6 +31,7 @@ $('.eqLogicAttr[data-l1key=configuration][data-l2key=datasource]').on('change',f
 
 var vigieauCommuneManager = {
   lastPostalCode: null,
+  isSettingStoredValue: false,
   getPostalInput: function () {
     return $('.eqLogicAttr[data-l1key=configuration][data-l2key=codePostal]');
   },
@@ -72,8 +73,10 @@ var vigieauCommuneManager = {
     if ($stored.value() === normalized) {
       return;
     }
+    this.isSettingStoredValue = true;
     $stored.value(normalized);
     $stored.trigger('change');
+    this.isSettingStoredValue = false;
   },
   ensurePlaceholder: function ($select) {
     if ($select.length === 0) {
@@ -652,6 +655,13 @@ $(document).on('blur', '#vigieauPostalCode', function () {
 $(document).on('change', '#vigieauCommuneSelect', function () {
   var value = $(this).value();
   vigieauCommuneManager.setStoredCommuneValue(value);
+});
+
+$(document).on('change', '#vigieauCommuneValue', function () {
+  if (vigieauCommuneManager.isSettingStoredValue) {
+    return;
+  }
+  vigieauCommuneManager.loadFromConfig();
 });
 
 $(document).ready(function () {
