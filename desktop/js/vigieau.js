@@ -36,6 +36,8 @@ var vigieauCommuneManager = {
   observedStoredValue: null,
   valueWatcherId: null,
   valueWatcherInterval: 400,
+  isSaveInProgress: false,
+  saveReloadTimeoutId: null,
   getPostalInput: function () {
     return $('.eqLogicAttr[data-l1key=configuration][data-l2key=codePostal]');
   },
@@ -297,6 +299,9 @@ var vigieauCommuneManager = {
     this.checkForExternalUpdates();
   },
   checkForExternalUpdates: function () {
+    if (this.isSaveInProgress) {
+      return;
+    }
     var currentPostal = this.getPostalValue();
     if (currentPostal !== this.observedPostalValue) {
       this.observedPostalValue = currentPostal;
@@ -322,6 +327,82 @@ var vigieauCommuneManager = {
     } else {
       this.populateSelect([], '');
     }
+  },
+  isVigieauSaveRequest: function (settings) {
+    if (!settings || typeof settings.url !== 'string') {
+      return false;
+    }
+    if (settings.url.indexOf('core/ajax/eqLogic.ajax.php') === -1) {
+      return false;
+    }
+    var data = settings.data;
+    if (data === undefined || data === null) {
+      return false;
+    }
+    var action = null;
+    var type = null;
+    if (typeof data === 'string') {
+      action = this.extractParamFromQuery(data, 'action');
+      type = this.extractParamFromQuery(data, 'type');
+    } else if (typeof URLSearchParams !== 'undefined' && data instanceof URLSearchParams) {
+      action = data.get('action');
+      type = data.get('type');
+    } else if (typeof FormData !== 'undefined' && data instanceof FormData) {
+      action = data.get('action');
+      type = data.get('type');
+    } else if (typeof data === 'object') {
+      action = data.action;
+      type = data.type;
+    }
+    return action === 'save' && type === 'vigieau';
+  },
+  extractParamFromQuery: function (query, key) {
+    if (typeof query !== 'string' || !key) {
+      return null;
+    }
+    var pattern = new RegExp('(?:^|&)' + key + '=([^&]*)');
+    var match = pattern.exec(query);
+    if (!match) {
+      return null;
+    }
+    try {
+      return decodeURIComponent(match[1].replace(/\+/g, ' '));
+    } catch (e) {
+      return match[1];
+    }
+  },
+  monitorEqSaveRequests: function () {
+    var self = this;
+    $(document).ajaxSend(function (event, jqXHR, settings) {
+      if (!self.isVigieauSaveRequest(settings)) {
+        return;
+      }
+      self.isSaveInProgress = true;
+      if (self.saveReloadTimeoutId !== null) {
+        window.clearTimeout(self.saveReloadTimeoutId);
+        self.saveReloadTimeoutId = null;
+      }
+    });
+    $(document).ajaxComplete(function (event, jqXHR, settings) {
+      if (!self.isVigieauSaveRequest(settings)) {
+        return;
+      }
+      self.isSaveInProgress = false;
+      if (jqXHR && jqXHR.responseJSON && jqXHR.responseJSON.state && jqXHR.responseJSON.state !== 'ok') {
+        return;
+      }
+      self.scheduleReloadAfterSave();
+    });
+  },
+  scheduleReloadAfterSave: function () {
+    if (this.saveReloadTimeoutId !== null) {
+      window.clearTimeout(this.saveReloadTimeoutId);
+    }
+    var self = this;
+    this.saveReloadTimeoutId = window.setTimeout(function () {
+      self.saveReloadTimeoutId = null;
+      self.loadFromConfig();
+    }, 200);
   }
 };
 
@@ -709,6 +790,7 @@ $(document).on('change', '#vigieauCommuneValue', function () {
 $(document).ready(function () {
   vigieauUsageFilterManager.refresh(false);
   vigieauCommuneManager.startValueWatcher();
+  vigieauCommuneManager.monitorEqSaveRequests();
   setTimeout(function () {
     vigieauCommuneManager.loadFromConfig();
   }, 0);
