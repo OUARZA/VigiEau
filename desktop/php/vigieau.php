@@ -3,7 +3,8 @@ if (!isConnect('admin')) {
 	throw new Exception('{{401 - Accès non autorisé}}');
 }
 // Déclaration des variables obligatoires
-$plugin = plugin::byId('vigieau');
+$pluginName = 'vigieau';
+$plugin = plugin::byId($pluginName);
 sendVarToJS('eqType', $plugin->getId());
 $eqLogics = eqLogic::byType($plugin->getId());
 ?>
@@ -264,7 +265,7 @@ $eqLogics = eqLogic::byType($plugin->getId());
 			<!-- Onglet des commandes de l'équipement -->
 			<div role="tabpanel" class="tab-pane" id="commandtab">
 				<legend>
-					<center class="title_cmdtable">{{Tableau de commandes <?php echo $plugName.' : ';?>}}
+						<center class="title_cmdtable">{{Tableau de commandes <?php echo $pluginName.' : ';?>}}
 						<span class="eqName"></span>
 					</center>
 				</legend>
@@ -310,6 +311,6 @@ $eqLogics = eqLogic::byType($plugin->getId());
 </div><!-- /.row row-overflow -->
 
 <!-- Inclusion du fichier javascript du plugin (dossier, nom_du_fichier, extension_du_fichier, id_du_plugin) -->
-<?php include_file('desktop', 'vigieau', 'js', 'vigieau');?>
+<?php include_file('desktop', $pluginName, 'js', $pluginName);?>
 <!-- Inclusion du fichier javascript du core - NE PAS MODIFIER NI SUPPRIMER -->
 <?php include_file('core', 'plugin.template', 'js');?>
