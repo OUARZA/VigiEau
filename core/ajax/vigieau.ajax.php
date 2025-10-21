@@ -30,6 +30,30 @@ try {
     ajax::init();
 
     switch (init('action')) {
+      case 'getInsee':
+        $zipCode = init('zipCode');
+        if (!preg_match('/^\d{5}$/', $zipCode)) {
+            ajax::error('Le code postal doit avoir 5 chiffres');
+        }
+
+        $url = 'https://geo.api.gouv.fr/communes?codePostal=' . urlencode($zipCode) . '&fields=nom,code,codeEpci&format=json';
+        $response = @file_get_contents($url);
+
+        if ($response === false) {
+            ajax::error('Erreur lors de l’appel à l’API geo');
+        }
+
+        $communes = json_decode($response, true);
+        $formatted = array_map(function ($commune) {
+            return [
+                'code' => $commune['code'],
+                'codeEpci' => $commune['codeEpci'],
+                'nom' => $commune['nom']
+            ];
+        }, $communes);
+
+        ajax::success($formatted);
+        break;
       case 'getUsageOptions':
         $eqId = init('id');
         if (empty($eqId)) {
