@@ -18,13 +18,11 @@
 /* * ***************************Includes********************************* */
 require_once __DIR__  . '/../../../../core/php/core.inc.php';
 
-class vigieau extends eqLogic {  
+class vigieau extends eqLogic {
 
-  
-  
-  
-  
   /*     * *************************Attributs****************************** */
+
+  private static $autoRefreshLocks = array();
 
   /*
   * Permet de définir les possibilités de personnalisation du widget (en cas d'utilisation de la fonction 'toHtml' par exemple)
@@ -198,6 +196,33 @@ class vigieau extends eqLogic {
     $refresh->setSubType('other');
     $refresh->setOrder(99);
     $refresh->save();
+
+    if ($this->getIsEnable() != 1) {
+      return;
+    }
+
+    $eqId = $this->getId();
+    if ($eqId === null || $eqId === '') {
+      return;
+    }
+
+    $codeInseeCommune = trim((string) $this->getConfiguration('codeInseeCommune'));
+    if ($codeInseeCommune === '') {
+      return;
+    }
+
+    if (self::isAutoRefreshLocked($eqId)) {
+      return;
+    }
+
+    self::pushAutoRefreshLock($eqId);
+    try {
+      $this->pullvigieau();
+    } catch (Exception $e) {
+      log::add(__CLASS__, 'error', 'Actualisation automatique après sauvegarde impossible : ' . $e->getMessage());
+    } finally {
+      self::popAutoRefreshLock($eqId);
+    }
   }
 
   private function createOrUpdateInfoCommand($logicalId, $definition) {
@@ -986,7 +1011,13 @@ class vigieau extends eqLogic {
         log::add(__CLASS__, 'error', 'le site \'https://api.vigieau.beta.gouv.fr\' renvoie une erreur ou n\'est pas accessible');
     } else {
       //sauvegarde date et heure de récupérations des info VigiEau
-      $this->setConfiguration('lastActuVigiEau', time())->save();
+      $this->setConfiguration('lastActuVigiEau', time());
+      self::pushAutoRefreshLock($this->getId());
+      try {
+        $this->save();
+      } finally {
+        self::popAutoRefreshLock($this->getId());
+      }
       if (count($jsonData) === 0) {
         log::add(__CLASS__, 'info', 'Aucune donnée trouvée à la date du '.$dateFormat. ' pour la commune '.$nomCommune);
 
@@ -1376,6 +1407,33 @@ class vigieau extends eqLogic {
   */
 
   /*     * **********************Getteur Setteur*************************** */
+
+  private static function pushAutoRefreshLock($eqId) {
+    if ($eqId === null || $eqId === '') {
+      return;
+    }
+    if (!isset(self::$autoRefreshLocks[$eqId])) {
+      self::$autoRefreshLocks[$eqId] = 0;
+    }
+    self::$autoRefreshLocks[$eqId]++;
+  }
+
+  private static function popAutoRefreshLock($eqId) {
+    if ($eqId === null || $eqId === '') {
+      return;
+    }
+    if (!isset(self::$autoRefreshLocks[$eqId])) {
+      return;
+    }
+    self::$autoRefreshLocks[$eqId]--;
+    if (self::$autoRefreshLocks[$eqId] <= 0) {
+      unset(self::$autoRefreshLocks[$eqId]);
+    }
+  }
+
+  private static function isAutoRefreshLocked($eqId) {
+    return isset(self::$autoRefreshLocks[$eqId]) && self::$autoRefreshLocks[$eqId] > 0;
+  }
 
 }
 
