@@ -244,13 +244,18 @@ $eqLogics = eqLogic::byType($plugin->getId());
 						<div class="col-lg-6">
 							<legend><i class="fas fa-info"></i> {{Informations}}</legend>
 							
-                            	<div class="form-group">
-									<label class="col-sm-3 control-label">{{Département :}}</label>
-                                	<span class="eqLogicAttr control-label" style="font-size:1em;cursor: default;" data-l1key="configuration" data-l2key="departement"></span>	
+                                <div class="form-group">
+                                        <label class="col-sm-3 control-label">{{Département :}}</label>
+                                        <span class="eqLogicAttr control-label" style="font-size:1em;cursor: default;" data-l1key="configuration" data-l2key="departement"></span>
                                 </div>
                                 <div class="form-group">
-                                	<label class="col-sm-3 control-label">{{Commune :}}</label>
-                                	<span class="eqLogicAttr control-label" style="font-size:1em;cursor: default;" data-l1key="configuration" data-l2key="commune"></span>												</div>
+                                        <label class="col-sm-3 control-label">{{Commune :}}</label>
+                                        <span class="eqLogicAttr control-label" style="font-size:1em;cursor: default;" data-l1key="configuration" data-l2key="commune"></span>
+                                </div>
+                                <div class="form-group">
+                                        <label class="col-sm-3 control-label">{{Code INSEE :}}</label>
+                                        <span class="eqLogicAttr control-label" style="font-size:1em;cursor: default;" data-l1key="configuration" data-l2key="codeInseeCommune"></span>
+                                </div>
 						</div>
 					</fieldset>
 				</form>
