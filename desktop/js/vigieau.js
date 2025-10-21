@@ -148,6 +148,7 @@ var vigieauCommuneManager = {
       return;
     }
     this.lastPostalCode = postalCode;
+    var requestPostalCode = postalCode;
     $.ajax({
       url: 'plugins/vigieau/core/ajax/vigieau.ajax.php',
       type: 'POST',
@@ -157,12 +158,19 @@ var vigieauCommuneManager = {
         codePostal: postalCode
       },
       success: function (data) {
+        if (self.lastPostalCode !== requestPostalCode) {
+          return;
+        }
         if (data && data.state === 'ok') {
           var parsed = self.extractResponse(data);
           if (parsed.message) {
             self.showError(parsed.message);
           }
-          self.populateSelect(parsed.communes, selectedCode);
+          var desiredCode = self.getStoredCommuneValue();
+          if (!desiredCode && selectedCode) {
+            desiredCode = selectedCode;
+          }
+          self.populateSelect(parsed.communes, desiredCode);
           return;
         }
         if (data && data.state === 'error' && data.result) {
@@ -171,6 +179,9 @@ var vigieauCommuneManager = {
         self.populateSelect([], '');
       },
       error: function (xhr, status, error) {
+        if (self.lastPostalCode !== requestPostalCode) {
+          return;
+        }
         if (error) {
           self.showError(error);
         }
