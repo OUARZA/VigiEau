@@ -394,3 +394,187 @@ $(document).on('change', '#usageFilterCheckboxes .usage-filter-checkbox', functi
 $(document).ready(function () {
   vigieauUsageFilterManager.refresh(false);
 });
+
+
+  var isCitySelectorOpen = false;
+
+  function isValidZip(zip) {
+    return /^\d{5}$/.test(zip);
+  }
+  function showZipSuccess(message) {
+    // console.log("showZipError appelé");
+    const zipFeedback = document.getElementById('zipFeedback');
+    zipFeedback.textContent = '✅ ' + message;
+    zipFeedback.style.color = 'green';
+    // Efface le message après 3 secondes
+    setTimeout(() => {
+      if (zipFeedback.textContent.startsWith('✅')) clearZipFeedback();
+      }, 1000);
+  }
+  function showZipError(message) {
+    // console.log("showZipError appelé");
+    const zipFeedback = document.getElementById('zipFeedback');
+    zipFeedback.textContent = '❌ '+ message;
+    zipFeedback.style.color = 'red';
+    document.getElementById('zipCode').style.boxShadow = '0 0 0 2px red';
+  }
+  function clearZipFeedback() {
+    // console.log("clearZipFeedback appelé");
+    document.getElementById('zipFeedback').textContent = '';
+    document.getElementById('zipCode').style.boxShadow = '';
+  }
+
+  function fetchCity(zipCode) {
+    fetch('plugins/vigieau/core/ajax/vigieau.ajax.php', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded'
+      },
+      body: `action=getInsee&zipCode=${encodeURIComponent(zipCode)}`
+    })
+    .then(response => response.json())
+    .then(data => {
+      if (data.state !== 'ok') {
+        showZipError(data.result || 'Erreur lors de la récupération.');
+        return;
+      }
+      const communes = data.result;
+      if (communes.length === 0) {
+        showZipError('Aucune commune trouvée pour ce code postal.');
+        return;
+      }
+      // ✅ S'il n'y a qu'une seule commune, on la sélectionne automatiquement
+      if (communes.length === 1) {
+        const city = communes[0];
+        document.getElementById('codeZone').value = `${city.nom} (${city.code},${city.codeEpci ?? '----'})`;
+        showZipSuccess("Commune automatiquement renseignée.");
+        return;
+      }
+
+      // Sinon, on affiche la modale pour choisir
+      openCitySelector(communes, function (city) {
+        document.getElementById('codeZone').value = `${city.nom} (${city.code},${city.codeEpci ?? '----'})`;
+      });
+    })
+    .catch(error => {
+      showZipError(error);
+      console.error(error);
+    });
+  }
+
+  document.getElementById('zipCode').addEventListener('input', function () {
+    clearZipFeedback();
+  });
+
+  document.getElementById('btnGetInsee').addEventListener('click', function () {
+    fetchCity(document.getElementById('zipCode').value.trim());
+  });
+
+  document.getElementById('zipCode').addEventListener('keydown', function(event) {
+    if (event.target && event.key === 'Enter') {
+      event.preventDefault();
+      const zip = event.target.value.trim();
+      if (!isValidZip(zip)) {
+        showZipError('Code postal sur 5 chiffres.');
+        return;
+      }
+      clearZipFeedback();
+      fetchCity(zip);
+    }
+  });
+
+function openCitySelector(communes, onSelect) {
+  if (isCitySelectorOpen) return; // empêche d'ouvrir plusieurs modales
+  isCitySelectorOpen = true;
+  let selectedIndex = 0; // Par défaut, on commence sur le premier élément de la liste.
+  
+  const listHtml = communes.map((commune, index) =>
+    `<li data-index="${index}" style="padding:2px; cursor:pointer; list-style:none; border-bottom:1px solid var(--link-color);">${commune.nom}</li>`
+  ).join('');
+  
+  const dialog = bootbox.dialog({
+    title: 'Sélectionnez une commune',
+    message: `<ul id="commune-list" style="padding-left:0;">${listHtml}</ul>`,
+    buttons: {
+      cancel: {
+        label: 'Annuler',
+        className: 'btn-default'
+      },
+      ok: {
+        label: 'OK',
+        className: 'btn-primary',
+        callback: function () {
+          const city = communes[selectedIndex];
+          if (!city) {
+            console.warn('Erreur: aucune commune sélectionnée.');
+            return false; // Ne pas fermer la modale si aucune sélection.
+          }
+          onSelect(city); // Appeler le callback avec la commune sélectionnée.
+        }
+      }
+    },
+    onShown: function () {
+      const listItems = document.querySelectorAll('#commune-list li');
+      const list = document.getElementById('commune-list');
+      
+      if (listItems.length > 0) {
+          // Par défaut, mettre en surbrillance l'élément sélectionné
+        highlightItem(listItems[selectedIndex]);
+          // Ajouter les événements de clic et double-clic sur les éléments de la liste
+        listItems.forEach((li, idx) => {
+          li.addEventListener('click', () => {
+            selectedIndex = idx;
+            highlightItem(li);
+          });
+          li.addEventListener('dblclick', () => {
+            const city = communes[idx];
+            if (!city) return; // Vérifier que la commune est valide
+            selectedIndex = idx;
+            dialog.modal('hide');
+            onSelect(city); // Sélectionner la commune en double-cliquant
+          });
+        });
+            // Ajout de la détection par survol (roulette ou souris)
+        list.addEventListener('mousemove', function (e) {
+          const hovered = [...listItems].find(li => {
+            const rect = li.getBoundingClientRect();
+            return e.clientY >= rect.top && e.clientY <= rect.bottom;
+          });
+          if (hovered) {
+            selectedIndex = parseInt(hovered.dataset.index, 10);
+            highlightItem(hovered);
+          }
+        });
+          // Gestion des touches (flèches et Entrée)
+        document.addEventListener('keydown', handleKey);
+      }
+        // Fonction pour mettre en surbrillance l'élément sélectionné
+      function highlightItem(li) {
+        listItems.forEach(el => el.style.backgroundColor = '');
+        li.style.backgroundColor = '#88888840'; // Highlight léger
+      }
+        // Fonction de gestion des touches (flèches, entrée, échappement)
+      function handleKey(e) {
+        if (e.key === 'ArrowDown') {
+          selectedIndex = Math.min(selectedIndex + 1, listItems.length - 1);
+          highlightItem(listItems[selectedIndex]);
+        } else if (e.key === 'ArrowUp') {
+          selectedIndex = Math.max(selectedIndex - 1, 0);
+          highlightItem(listItems[selectedIndex]);
+        } else if (e.key === 'Enter') {
+          dialog.modal('hide');
+          const city = communes[selectedIndex];
+          if (city) onSelect(city); // Appel du callback
+        } else if (e.key === 'Escape') {
+          dialog.modal('hide');
+        }
+      }
+
+      // Nettoyer après la fermeture de la modale
+      dialog.on('hidden.bs.modal', () => {
+        isCitySelectorOpen = false;
+        document.removeEventListener('keydown', handleKey);
+      });
+    }
+  });
+}
