@@ -3,7 +3,8 @@ if (!isConnect('admin')) {
 	throw new Exception('{{401 - Accès non autorisé}}');
 }
 // Déclaration des variables obligatoires
-$plugin = plugin::byId('vigieau');
+$pluginName = 'vigieau';
+$plugin = plugin::byId($pluginName);
 sendVarToJS('eqType', $plugin->getId());
 $eqLogics = eqLogic::byType($plugin->getId());
 ?>
