@@ -35,7 +35,10 @@ var vigieauCommuneManager = {
     return $('.eqLogicAttr[data-l1key=configuration][data-l2key=codePostal]');
   },
   getCommuneSelect: function () {
-    return $('.eqLogicAttr[data-l1key=configuration][data-l2key=codeInseeCommune]');
+    return $('#vigieauCommuneSelect');
+  },
+  getStoredCommuneInput: function () {
+    return $('#vigieauCommuneValue');
   },
   getPostalValue: function () {
     var $postal = this.getPostalInput();
@@ -52,6 +55,26 @@ var vigieauCommuneManager = {
     }
     $postal.value(postalCode || '');
   },
+  getStoredCommuneValue: function () {
+    var $stored = this.getStoredCommuneInput();
+    if ($stored.length === 0) {
+      return '';
+    }
+    var value = $stored.value();
+    return $.trim(value || '');
+  },
+  setStoredCommuneValue: function (code) {
+    var $stored = this.getStoredCommuneInput();
+    if ($stored.length === 0) {
+      return;
+    }
+    var normalized = code || '';
+    if ($stored.value() === normalized) {
+      return;
+    }
+    $stored.value(normalized);
+    $stored.trigger('change');
+  },
   ensurePlaceholder: function ($select) {
     if ($select.length === 0) {
       return;
@@ -63,11 +86,13 @@ var vigieauCommuneManager = {
   populateSelect: function (communes, selectedCode) {
     var $select = this.getCommuneSelect();
     if ($select.length === 0) {
+      this.setStoredCommuneValue(selectedCode || '');
       return;
     }
     this.ensurePlaceholder($select);
     if (!$.isArray(communes) || communes.length === 0) {
       $select.value('');
+      this.setStoredCommuneValue('');
       $select.trigger('change');
       return;
     }
@@ -94,6 +119,7 @@ var vigieauCommuneManager = {
       toSelect = normalized[0].code;
     }
     $select.value(toSelect);
+    this.setStoredCommuneValue(toSelect);
     $select.trigger('change');
   },
   extractResponse: function (data) {
@@ -227,11 +253,11 @@ var vigieauCommuneManager = {
     if (!force && this.lastPostalCode === sanitized) {
       return;
     }
-    var selectedCode = this.getCommuneSelect().value();
+    var selectedCode = this.getStoredCommuneValue();
     this.fetchByPostalCode(sanitized, selectedCode);
   },
   loadFromConfig: function () {
-    var selectedCode = this.getCommuneSelect().value();
+    var selectedCode = this.getStoredCommuneValue();
     var postalCode = this.getPostalValue();
     if (postalCode) {
       this.fetchByPostalCode(postalCode, selectedCode);
@@ -610,6 +636,11 @@ $(document).on('change', '#usageFilterCheckboxes .usage-filter-checkbox', functi
 
 $(document).on('blur', '#vigieauPostalCode', function () {
   vigieauCommuneManager.refreshFromPostal(true);
+});
+
+$(document).on('change', '#vigieauCommuneSelect', function () {
+  var value = $(this).value();
+  vigieauCommuneManager.setStoredCommuneValue(value);
 });
 
 $(document).ready(function () {

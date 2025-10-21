@@ -188,7 +188,8 @@ $eqLogics = eqLogic::byType($plugin->getId());
                             <div class="form-group">
                                 <label class="col-sm-4 control-label">{{Commune}}</label>
                                 <div class="col-sm-5">
-                                        <select class="form-control eqLogicAttr" data-l1key="configuration" data-l2key="codeInseeCommune" id="vigieauCommuneSelect" data-placeholder="<?php echo __('Sélectionnez une commune', __FILE__); ?>">
+                                        <input type="hidden" class="eqLogicAttr" data-l1key="configuration" data-l2key="codeInseeCommune" id="vigieauCommuneValue" />
+                                        <select class="form-control" id="vigieauCommuneSelect" data-placeholder="<?php echo __('Sélectionnez une commune', __FILE__); ?>">
                                                 <option value=""><?php echo __('Sélectionnez une commune', __FILE__); ?></option>
                                         </select>
                                         <span class="help-block"><a href="https://datanova.laposte.fr/datasets/laposte-hexasmal/full" target="_blank"><?php echo __('Liste des codes INSEE', __FILE__); ?></a></span>
