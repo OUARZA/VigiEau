@@ -251,7 +251,7 @@ $eqLogics = eqLogic::byType($plugin->getId());
 			<!-- Onglet des commandes de l'équipement -->
 			<div role="tabpanel" class="tab-pane" id="commandtab">
 				<legend>
-					<center class="title_cmdtable">{{Tableau de commandes <?php echo $plugName.' : ';?>}}
+					<center class="title_cmdtable">{{Tableau de commandes <?php echo $pluginName.' : ';?>}}
 						<span class="eqName"></span>
 					</center>
 				</legend>
