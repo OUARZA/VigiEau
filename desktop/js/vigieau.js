@@ -96,6 +96,25 @@ var vigieauCommuneManager = {
     $select.value(toSelect);
     $select.trigger('change');
   },
+  extractResponse: function (data) {
+    var communes = [];
+    var message = '';
+    if (!data) {
+      return { communes: communes, message: message };
+    }
+    var payload = data.result;
+    if ($.isArray(payload)) {
+      communes = payload;
+    } else if (payload && $.isPlainObject(payload)) {
+      if ($.isArray(payload.communes)) {
+        communes = payload.communes;
+      }
+      if (payload.error) {
+        message = payload.error;
+      }
+    }
+    return { communes: communes, message: message };
+  },
   fetchByPostalCode: function (postalCode, selectedCode) {
     var self = this;
     if (!postalCode || !/^[0-9]{5}$/.test(postalCode)) {
@@ -112,14 +131,18 @@ var vigieauCommuneManager = {
         codePostal: postalCode
       },
       success: function (data) {
-        if (data && data.state === 'ok' && $.isArray(data.result)) {
-          self.populateSelect(data.result, selectedCode);
-        } else {
-          if (data && data.state === 'error' && data.result) {
-            self.showError(data.result);
+        if (data && data.state === 'ok') {
+          var parsed = self.extractResponse(data);
+          if (parsed.message) {
+            self.showError(parsed.message);
           }
-          self.populateSelect([], '');
+          self.populateSelect(parsed.communes, selectedCode);
+          return;
         }
+        if (data && data.state === 'error' && data.result) {
+          self.showError(data.result);
+        }
+        self.populateSelect([], '');
       },
       error: function (xhr, status, error) {
         if (error) {
@@ -144,21 +167,29 @@ var vigieauCommuneManager = {
         codeInsee: codeInsee
       },
       success: function (data) {
-        if (data && data.state === 'ok' && $.isArray(data.result) && data.result.length > 0) {
-          var commune = data.result[0];
-          if ($.isArray(commune.codesPostaux) && commune.codesPostaux.length > 0) {
-            var postal = commune.codesPostaux[0];
-            self.setPostalValue(postal);
-            self.fetchByPostalCode(postal, codeInsee);
+        if (data && data.state === 'ok') {
+          var parsed = self.extractResponse(data);
+          if (parsed.message) {
+            self.showError(parsed.message);
+          }
+          if ($.isArray(parsed.communes) && parsed.communes.length > 0) {
+            var commune = parsed.communes[0];
+            if ($.isArray(commune.codesPostaux) && commune.codesPostaux.length > 0) {
+              var postal = commune.codesPostaux[0];
+              self.setPostalValue(postal);
+              self.fetchByPostalCode(postal, codeInsee);
+              return;
+            }
+            self.populateSelect([commune], codeInsee);
             return;
           }
-          self.populateSelect([commune], codeInsee);
-        } else {
-          if (data && data.state === 'error' && data.result) {
-            self.showError(data.result);
-          }
           self.populateSelect([], '');
+          return;
         }
+        if (data && data.state === 'error' && data.result) {
+          self.showError(data.result);
+        }
+        self.populateSelect([], '');
       },
       error: function (xhr, status, error) {
         if (error) {
