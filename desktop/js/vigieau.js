@@ -24,10 +24,296 @@ $("#table_cmd").sortable({
   forcePlaceholderSize: true
 })
 
- $('.eqLogicAttr[data-l1key=configuration][data-l2key=datasource]').on('change',function(){
+$('.eqLogicAttr[data-l1key=configuration][data-l2key=datasource]').on('change',function(){
     $('.datasource').hide();
     $('.datasource.'+$(this).value()).show();
 });
+
+var vigieauCommuneManager = {
+  lastPostalCode: null,
+  loadTimer: null,
+  suppressStoredChange: 0,
+  loadRetryDelay: 200,
+  maxLoadRetries: 10,
+  getPostalInput: function () {
+    return $('.eqLogicAttr[data-l1key=configuration][data-l2key=codePostal]');
+  },
+  getCommuneSelect: function () {
+    return $('#vigieauCommuneSelect');
+  },
+  getStoredCommuneInput: function () {
+    return $('#vigieauCommuneValue');
+  },
+  getPostalValue: function () {
+    var $postal = this.getPostalInput();
+    if ($postal.length === 0) {
+      return '';
+    }
+    var value = $postal.value();
+    return $.trim(value || '');
+  },
+  setPostalValue: function (postalCode) {
+    var $postal = this.getPostalInput();
+    if ($postal.length === 0) {
+      return;
+    }
+    $postal.value(postalCode || '');
+  },
+  getStoredCommuneValue: function () {
+    var $stored = this.getStoredCommuneInput();
+    if ($stored.length === 0) {
+      return '';
+    }
+    var value = $stored.value();
+    return $.trim(value || '');
+  },
+  setStoredCommuneValue: function (code) {
+    var $stored = this.getStoredCommuneInput();
+    if ($stored.length === 0) {
+      return;
+    }
+    var normalized = code || '';
+    if ($stored.value() === normalized) {
+      return;
+    }
+    this.suppressStoredChange += 1;
+    $stored.value(normalized);
+    $stored.trigger('change');
+  },
+  ensurePlaceholder: function ($select) {
+    if ($select.length === 0) {
+      return;
+    }
+    var placeholder = $select.attr('data-placeholder') || '';
+    $select.empty();
+    $select.append($('<option></option>').attr('value', '').text(placeholder));
+  },
+  populateSelect: function (communes, selectedCode) {
+    var $select = this.getCommuneSelect();
+    if ($select.length === 0) {
+      this.setStoredCommuneValue(selectedCode || '');
+      return;
+    }
+    this.ensurePlaceholder($select);
+    if (!$.isArray(communes) || communes.length === 0) {
+      $select.value('');
+      this.setStoredCommuneValue('');
+      $select.trigger('change');
+      return;
+    }
+    var normalized = [];
+    for (var i = 0; i < communes.length; i++) {
+      if (communes[i] && communes[i].code && communes[i].nom) {
+        normalized.push({ code: communes[i].code, nom: communes[i].nom });
+      }
+    }
+    if (normalized.length > 1) {
+      normalized.sort(function (a, b) {
+        var nameA = (a.nom || '').toLowerCase();
+        var nameB = (b.nom || '').toLowerCase();
+        if (nameA < nameB) {
+          return -1;
+        }
+        if (nameA > nameB) {
+          return 1;
+        }
+        return 0;
+      });
+    }
+    for (var j = 0; j < normalized.length; j++) {
+      var commune = normalized[j];
+      $select.append($('<option></option>').attr('value', commune.code).text(commune.nom));
+    }
+    var toSelect = '';
+    if (selectedCode) {
+      for (var k = 0; k < normalized.length; k++) {
+        if (normalized[k].code === selectedCode) {
+          toSelect = selectedCode;
+          break;
+        }
+      }
+    }
+    if (toSelect === '' && normalized.length === 1) {
+      toSelect = normalized[0].code;
+    }
+    $select.value(toSelect);
+    this.setStoredCommuneValue(toSelect);
+    $select.trigger('change');
+  },
+  extractResponse: function (data) {
+    var communes = [];
+    var message = '';
+    if (!data) {
+      return { communes: communes, message: message };
+    }
+    var payload = data.result;
+    if ($.isArray(payload)) {
+      communes = payload;
+    } else if (payload && $.isPlainObject(payload)) {
+      if ($.isArray(payload.communes)) {
+        communes = payload.communes;
+      }
+      if (payload.error) {
+        message = payload.error;
+      }
+    }
+    return { communes: communes, message: message };
+  },
+  fetchByPostalCode: function (postalCode, selectedCode) {
+    var self = this;
+    if (!postalCode || !/^[0-9]{5}$/.test(postalCode)) {
+      this.populateSelect([], '');
+      return;
+    }
+    this.lastPostalCode = postalCode;
+    $.ajax({
+      url: 'plugins/vigieau/core/ajax/vigieau.ajax.php',
+      type: 'POST',
+      dataType: 'json',
+      data: {
+        action: 'searchCommunes',
+        codePostal: postalCode
+      },
+      success: function (data) {
+        if (data && data.state === 'ok') {
+          var parsed = self.extractResponse(data);
+          if (parsed.message) {
+            self.showError(parsed.message);
+          }
+          self.populateSelect(parsed.communes, selectedCode);
+          return;
+        }
+        if (data && data.state === 'error' && data.result) {
+          self.showError(data.result);
+        }
+        self.populateSelect([], '');
+      },
+      error: function (xhr, status, error) {
+        if (error) {
+          self.showError(error);
+        }
+        self.populateSelect([], '');
+      }
+    });
+  },
+  fetchByInsee: function (codeInsee) {
+    var self = this;
+    if (!codeInsee) {
+      this.populateSelect([], '');
+      return;
+    }
+    $.ajax({
+      url: 'plugins/vigieau/core/ajax/vigieau.ajax.php',
+      type: 'POST',
+      dataType: 'json',
+      data: {
+        action: 'searchCommunes',
+        codeInsee: codeInsee
+      },
+      success: function (data) {
+        if (data && data.state === 'ok') {
+          var parsed = self.extractResponse(data);
+          if (parsed.message) {
+            self.showError(parsed.message);
+          }
+          if ($.isArray(parsed.communes) && parsed.communes.length > 0) {
+            var commune = parsed.communes[0];
+            if ($.isArray(commune.codesPostaux) && commune.codesPostaux.length > 0) {
+              var postal = commune.codesPostaux[0];
+              self.setPostalValue(postal);
+              self.fetchByPostalCode(postal, codeInsee);
+              return;
+            }
+            self.populateSelect([commune], codeInsee);
+            return;
+          }
+          self.populateSelect([], '');
+          return;
+        }
+        if (data && data.state === 'error' && data.result) {
+          self.showError(data.result);
+        }
+        self.populateSelect([], '');
+      },
+      error: function (xhr, status, error) {
+        if (error) {
+          self.showError(error);
+        }
+        self.populateSelect([], '');
+      }
+    });
+  },
+  showError: function (message) {
+    if (!message) {
+      return;
+    }
+    var $alert = $('#div_alert');
+    if ($alert.length) {
+      $alert.showAlert({ message: message, level: 'danger' });
+    }
+  },
+  refreshFromPostal: function (force) {
+    this.cancelPendingLoad();
+    var postal = this.getPostalValue();
+    var sanitized = postal.replace(/\s+/g, '');
+    if (sanitized !== postal) {
+      this.setPostalValue(sanitized);
+    }
+    if (!sanitized) {
+      this.lastPostalCode = null;
+      this.populateSelect([], '');
+      return;
+    }
+    if (!/^[0-9]{5}$/.test(sanitized)) {
+      this.lastPostalCode = null;
+      this.populateSelect([], '');
+      return;
+    }
+    if (!force && this.lastPostalCode === sanitized) {
+      return;
+    }
+    var selectedCode = this.getStoredCommuneValue();
+    this.fetchByPostalCode(sanitized, selectedCode);
+  },
+  cancelPendingLoad: function () {
+    if (this.loadTimer) {
+      clearTimeout(this.loadTimer);
+      this.loadTimer = null;
+    }
+  },
+  loadFromConfig: function (attempt) {
+    var tries = typeof attempt === 'number' ? attempt : 0;
+    this.cancelPendingLoad();
+    var selectedCode = this.getStoredCommuneValue();
+    var postalCode = this.getPostalValue();
+    if (!postalCode && !selectedCode) {
+      if (tries < this.maxLoadRetries) {
+        var self = this;
+        this.loadTimer = setTimeout(function () {
+          self.loadFromConfig(tries + 1);
+        }, this.loadRetryDelay);
+        return;
+      }
+      this.populateSelect([], '');
+      return;
+    }
+    if (postalCode) {
+      this.fetchByPostalCode(postalCode, selectedCode);
+    } else if (selectedCode) {
+      this.fetchByInsee(selectedCode);
+    } else {
+      this.populateSelect([], '');
+    }
+  },
+  onStoredValueChanged: function () {
+    if (this.suppressStoredChange > 0) {
+      this.suppressStoredChange -= 1;
+      return;
+    }
+    this.cancelPendingLoad();
+    this.loadFromConfig();
+  }
+};
 
 /* Fonction permettant l'affichage des commandes dans l'équipement */
 function addCmdToTable(_cmd) {
@@ -365,6 +651,10 @@ var vigieauUsageFilterManager = {
 $(document).on('change', '.eqLogicAttr[data-l1key=id]', function () {
   vigieauUsageFilterManager.currentEqId = null;
   vigieauUsageFilterManager.refresh(true);
+  setTimeout(function () {
+    vigieauCommuneManager.cancelPendingLoad();
+    vigieauCommuneManager.loadFromConfig();
+  }, 0);
 });
 
 $(document).on('click', '#usageFilterReload', function (e) {
@@ -391,6 +681,23 @@ $(document).on('change', '#usageFilterCheckboxes .usage-filter-checkbox', functi
   vigieauUsageFilterManager.syncHiddenFromCheckboxes(false);
 });
 
+$(document).on('blur', '#vigieauPostalCode', function () {
+  vigieauCommuneManager.refreshFromPostal(true);
+});
+
+$(document).on('change', '#vigieauCommuneValue', function () {
+  vigieauCommuneManager.onStoredValueChanged();
+});
+
+$(document).on('change', '#vigieauCommuneSelect', function () {
+  var value = $(this).value();
+  vigieauCommuneManager.setStoredCommuneValue(value);
+});
+
 $(document).ready(function () {
   vigieauUsageFilterManager.refresh(false);
+  setTimeout(function () {
+    vigieauCommuneManager.cancelPendingLoad();
+    vigieauCommuneManager.loadFromConfig();
+  }, 0);
 });
