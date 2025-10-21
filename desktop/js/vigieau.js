@@ -102,19 +102,6 @@ var vigieauCommuneManager = {
         normalized.push({ code: communes[i].code, nom: communes[i].nom });
       }
     }
-    if (normalized.length > 1) {
-      normalized.sort(function (a, b) {
-        var nameA = (a.nom || '').toLowerCase();
-        var nameB = (b.nom || '').toLowerCase();
-        if (nameA < nameB) {
-          return -1;
-        }
-        if (nameA > nameB) {
-          return 1;
-        }
-        return 0;
-      });
-    }
     for (var j = 0; j < normalized.length; j++) {
       var commune = normalized[j];
       $select.append($('<option></option>').attr('value', commune.code).text(commune.nom));
