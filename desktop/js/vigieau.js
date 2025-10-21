@@ -38,6 +38,7 @@ var vigieauCommuneManager = {
   valueWatcherInterval: 400,
   isSaveInProgress: false,
   saveReloadTimeoutId: null,
+  saveClickGuardTimeoutId: null,
   getPostalInput: function () {
     return $('.eqLogicAttr[data-l1key=configuration][data-l2key=codePostal]');
   },
@@ -103,7 +104,9 @@ var vigieauCommuneManager = {
     this.ensurePlaceholder($select);
     if (!$.isArray(communes) || communes.length === 0) {
       $select.value('');
-      this.setStoredCommuneValue('');
+      if (!this.isSaveInProgress) {
+        this.setStoredCommuneValue('');
+      }
       $select.trigger('change');
       return;
     }
@@ -257,6 +260,9 @@ var vigieauCommuneManager = {
     }
   },
   refreshFromPostal: function (force) {
+    if (this.isSaveInProgress) {
+      return;
+    }
     var postal = this.getPostalValue();
     var sanitized = postal.replace(/\s+/g, '');
     if (sanitized !== postal) {
@@ -318,6 +324,9 @@ var vigieauCommuneManager = {
     }
   },
   loadFromConfig: function () {
+    if (this.isSaveInProgress) {
+      return;
+    }
     var selectedCode = this.getStoredCommuneValue();
     var postalCode = this.getPostalValue();
     if (postalCode) {
@@ -378,6 +387,10 @@ var vigieauCommuneManager = {
         return;
       }
       self.isSaveInProgress = true;
+      if (self.saveClickGuardTimeoutId !== null) {
+        window.clearTimeout(self.saveClickGuardTimeoutId);
+        self.saveClickGuardTimeoutId = null;
+      }
       if (self.saveReloadTimeoutId !== null) {
         window.clearTimeout(self.saveReloadTimeoutId);
         self.saveReloadTimeoutId = null;
@@ -403,6 +416,19 @@ var vigieauCommuneManager = {
       self.saveReloadTimeoutId = null;
       self.loadFromConfig();
     }, 200);
+  },
+  handleSaveButtonClick: function () {
+    this.isSaveInProgress = true;
+    if (this.saveClickGuardTimeoutId !== null) {
+      window.clearTimeout(this.saveClickGuardTimeoutId);
+    }
+    var self = this;
+    this.saveClickGuardTimeoutId = window.setTimeout(function () {
+      self.saveClickGuardTimeoutId = null;
+      if (self.isSaveInProgress) {
+        self.isSaveInProgress = false;
+      }
+    }, 1500);
   }
 };
 
@@ -784,7 +810,14 @@ $(document).on('change', '#vigieauCommuneValue', function () {
   if (vigieauCommuneManager.isSettingStoredValue) {
     return;
   }
+  if (vigieauCommuneManager.isSaveInProgress) {
+    return;
+  }
   vigieauCommuneManager.loadFromConfig();
+});
+
+$(document).on('click', '.eqLogicAction[data-action=save]', function () {
+  vigieauCommuneManager.handleSaveButtonClick();
 });
 
 $(document).ready(function () {
