@@ -249,12 +249,16 @@ $eqLogics = eqLogic::byType($plugin->getId());
                                 	<span class="eqLogicAttr control-label" style="font-size:1em;cursor: default;" data-l1key="configuration" data-l2key="departement"></span>	
                                 </div>
                                 <div class="form-group">
-                                	<label class="col-sm-3 control-label">{{Commune :}}</label>
-                                	<span class="eqLogicAttr control-label" style="font-size:1em;cursor: default;" data-l1key="configuration" data-l2key="commune"></span>
-								</div>
-						</div>
-					</fieldset>
-				</form>
+                                        <label class="col-sm-3 control-label">{{Commune :}}</label>
+                                        <span class="eqLogicAttr control-label" style="font-size:1em;cursor: default;" data-l1key="configuration" data-l2key="commune"></span>
+                                                                </div>
+                                <div class="form-group">
+                                        <label class="col-sm-3 control-label">{{Code INSEE :}}</label>
+                                        <span class="eqLogicAttr control-label" style="font-size:1em;cursor: default;" data-l1key="configuration" data-l2key="codeInseeLaposte"></span>
+                                </div>
+                                                </div>
+                                        </fieldset>
+                                </form>
 			</div><!-- /.tabpanel #eqlogictab-->
 
 			<!-- Onglet des commandes de l'équipement -->
