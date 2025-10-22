@@ -22,7 +22,10 @@ class vigieau extends eqLogic {
 
   /*     * *************************Attributs****************************** */
 
-  private static $autoRefreshLocks = array();
+  private static function &getAutoRefreshLocks() {
+    static $autoRefreshLocks = array();
+    return $autoRefreshLocks;
+  }
 
   /*
   * Permet de définir les possibilités de personnalisation du widget (en cas d'utilisation de la fonction 'toHtml' par exemple)
@@ -1418,27 +1421,30 @@ class vigieau extends eqLogic {
     if ($eqId === null || $eqId === '') {
       return;
     }
-    if (!isset(self::$autoRefreshLocks[$eqId])) {
-      self::$autoRefreshLocks[$eqId] = 0;
+    $autoRefreshLocks = &self::getAutoRefreshLocks();
+    if (!isset($autoRefreshLocks[$eqId])) {
+      $autoRefreshLocks[$eqId] = 0;
     }
-    self::$autoRefreshLocks[$eqId]++;
+    $autoRefreshLocks[$eqId]++;
   }
 
   private static function popAutoRefreshLock($eqId) {
     if ($eqId === null || $eqId === '') {
       return;
     }
-    if (!isset(self::$autoRefreshLocks[$eqId])) {
+    $autoRefreshLocks = &self::getAutoRefreshLocks();
+    if (!isset($autoRefreshLocks[$eqId])) {
       return;
     }
-    self::$autoRefreshLocks[$eqId]--;
-    if (self::$autoRefreshLocks[$eqId] <= 0) {
-      unset(self::$autoRefreshLocks[$eqId]);
+    $autoRefreshLocks[$eqId]--;
+    if ($autoRefreshLocks[$eqId] <= 0) {
+      unset($autoRefreshLocks[$eqId]);
     }
   }
 
   private static function isAutoRefreshLocked($eqId) {
-    return isset(self::$autoRefreshLocks[$eqId]) && self::$autoRefreshLocks[$eqId] > 0;
+    $autoRefreshLocks = &self::getAutoRefreshLocks();
+    return isset($autoRefreshLocks[$eqId]) && $autoRefreshLocks[$eqId] > 0;
   }
 
 }
