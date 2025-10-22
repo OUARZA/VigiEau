@@ -12,23 +12,23 @@ Ce plugin permet de remonter les informations du site de l'information sécheres
 2. Lancer le plugin qui se trouve dans la catégorie Météo.<br/>
 <img width="408" height="183" alt="image" src="https://github.com/user-attachments/assets/8049d2dd-a1e3-4486-a1b1-3ace66c58238" /></br>
 
-3. Ajouter un équipement, comme n'importe quel équipement sous Jeedom.  
-4. Configurer les paramètres généraux, puis dans les aramètres spécifiques, indiquer le code INSEE de la commune que vous souhaitez consulter.</br>
+3. Ajouter un équipement, comme n'importe quel équipement sous Jeedom.
+
+5. Configurer les paramètres généraux, puis dans les aramètres spécifiques, indiquer votre code postal, puis votre commune.</br>
    Indiquer votre profil de consommation (Particulier/Entreprise/Collectivités/Exploitation agricoles).</br>
    Indiquer le type d'eau consommé (Du robinet/D'un cours d'eau ou d'une rivière/Des nappes (puits ou forage)).</br>
    Indiquer le(s) type(s) d'usage que vous souhaitez afficher.</br>
 ![image](/docs/images/VigiEau_Conf.png)</br>
 
-5. Sauvegarder.
+6. Sauvegarder.
 
-
->**NOTE**  
+>**NOTE**
 >Type d'eau consommé :  
 >| Type | Description |
 >| --- | --- |
->| Eau potable | L’eau potable provient des nappes et des cours d'eau. Elle est traitée en plusieurs étapes afin de lui donner la qualité de l’eau potable. Elle est ensuite acheminée jusqu’à votre domicile. |
->| Eau superficielle | Il s'agit pour l'essentiel des cours d'eau, des lacs et des eaux de ruissellement. Vous êtes concernés si vous prélevez directement dans un cours d’eau. |
->| Eau souterraine | Ce sont toutes les eaux se trouvant sous la surface du sol : les nappes phréatiques, nappes profondes, etc. Vous utilisez cette eau, si vous disposez d’un puits ou d’un forage. |
+>| Du robinet/Eau potable | L’eau potable provient des nappes et des cours d'eau. Elle est traitée en plusieurs étapes afin de lui donner la qualité de l’eau potable. Elle est ensuite acheminée jusqu’à votre domicile. |
+>| D'un cours d'eau ou d'une rivière/Eau superficielle | Il s'agit pour l'essentiel des cours d'eau, des lacs et des eaux de ruissellement. Vous êtes concernés si vous prélevez directement dans un cours d’eau. |
+>| Des nappes (puits ou forage)/Eau souterraine | Ce sont toutes les eaux se trouvant sous la surface du sol : les nappes phréatiques, nappes profondes, etc. Vous utilisez cette eau, si vous disposez d’un puits ou d’un forage. |
 <!--
 >
 >Type éditorial :  
@@ -39,3 +39,7 @@ Ce plugin permet de remonter les informations du site de l'information sécheres
 
 ## Pour aller plus loin
 Dans vos scénarios, vous pouvez utiliser comme déclencheur la commande "Niveau restriction zone SUP" et/ou "Niveau restriction zone SOU".
+-->
+
+## Widget
+Il est composé de 
