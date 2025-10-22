@@ -122,6 +122,12 @@ class vigieau extends eqLogic {
 
   // Fonction exécutée automatiquement avant la création de l'équipement
   public function preInsert() {
+	if ($this->getIsEnable() != 1) {
+	$this->setIsEnable(1);
+	}
+	if ($this->getIsVisible() != 1) {
+	$this->setIsVisible(1);
+	}
   }
 
   // Fonction exécutée automatiquement après la création de l'équipement
