@@ -1045,13 +1045,19 @@ class vigieau extends eqLogic {
           }
         }
       } else {
+        $defaultLevel = array(
+          'label' => __('Pas de restriction', __FILE__),
+          'value' => 0,
+        );
+
         $levelMapping = array(
           'vigilance' => array('label' => __('Vigilance', __FILE__), 'value' => 1),
-          'alerte' => array('label' => __('Alerte', __FILE__), 'value' => 3),
-          'alerte_renforcee' => array('label' => __('Alerte renforcée', __FILE__), 'value' => 4),
-          'crise' => array('label' => __('Crise', __FILE__), 'value' => 5),
-          'crise_renforcee' => array('label' => __('Crise renforcée', __FILE__), 'value' => 5),
-          'aucune' => array('label' => __('Aucune restriction', __FILE__), 'value' => 0),
+          'alerte' => array('label' => __('Alerte', __FILE__), 'value' => 2),
+          'alerte_renforcee' => array('label' => __('Alerte renforcée', __FILE__), 'value' => 3),
+          'crise' => array('label' => __('Crise', __FILE__), 'value' => 4),
+          'crise_renforcee' => array('label' => __('Crise renforcée', __FILE__), 'value' => 4),
+          'aucune' => $defaultLevel,
+          '' => $defaultLevel,
         );
 
         $enabledUsageKeys = $this->getEnabledUsageKeys();
@@ -1177,8 +1183,8 @@ class vigieau extends eqLogic {
           $niveauGraviteKey = strtolower($niveauGraviteRaw);
           $usages = isset($zone['usages']) && is_array($zone['usages']) ? $zone['usages'] : array();
 
-          $niveauRestriction = 0;
-          $nomNiveau = '';
+          $niveauRestriction = $defaultLevel['value'];
+          $nomNiveau = $defaultLevel['label'];
           if (isset($levelMapping[$niveauGraviteKey])) {
             $niveauRestriction = $levelMapping[$niveauGraviteKey]['value'];
             $nomNiveau = $levelMapping[$niveauGraviteKey]['label'];
@@ -1303,13 +1309,13 @@ class vigieau extends eqLogic {
           case 1:
             $replace['#nom_restriction_sou_N2#'] = '<center><i class="fab fa-mixer"></i></center>';
             break;
-          case 3:
+          case 2:
             $replace['#nom_restriction_sou_N3#'] = '<center><i class="fab fa-mixer"></i></center>';
             break;
-          case 4:
+          case 3:
             $replace['#nom_restriction_sou_N4#'] = '<center><i class="fab fa-mixer"></i></center>';
             break;
-          case 5:
+          case 4:
             $replace['#nom_restriction_sou_N5#'] = '<center><i class="fab fa-mixer"></i></center>';
             break;
         }
@@ -1329,13 +1335,13 @@ class vigieau extends eqLogic {
           case 1:
             $replace['#nom_restriction_sup_N2#'] = '<center><i class="fab fa-mixer"></i></center>';
             break;
-          case 3:
+          case 2:
             $replace['#nom_restriction_sup_N3#'] = '<center><i class="fab fa-mixer"></i></center>';
             break;
-          case 4:
+          case 3:
             $replace['#nom_restriction_sup_N4#'] = '<center><i class="fab fa-mixer"></i></center>';
             break;
-          case 5:
+          case 4:
             $replace['#nom_restriction_sup_N5#'] = '<center><i class="fab fa-mixer"></i></center>';
             break;
         }
@@ -1355,13 +1361,13 @@ class vigieau extends eqLogic {
           case 1:
             $replace['#nom_restriction_aep_N2#'] = '<center><i class="fab fa-mixer"></i></center>';
             break;
-          case 3:
+          case 2:
             $replace['#nom_restriction_aep_N3#'] = '<center><i class="fab fa-mixer"></i></center>';
             break;
-          case 4:
+          case 3:
             $replace['#nom_restriction_aep_N4#'] = '<center><i class="fab fa-mixer"></i></center>';
             break;
-          case 5:
+          case 4:
             $replace['#nom_restriction_aep_N5#'] = '<center><i class="fab fa-mixer"></i></center>';
             break;
         }
