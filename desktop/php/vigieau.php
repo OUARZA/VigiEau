@@ -3,7 +3,8 @@ if (!isConnect('admin')) {
 	throw new Exception('{{401 - Accès non autorisé}}');
 }
 // Déclaration des variables obligatoires
-$plugin = plugin::byId('vigieau');
+$pluginName = 'vigieau';
+$plugin = plugin::byId($pluginName);
 sendVarToJS('eqType', $plugin->getId());
 $eqLogics = eqLogic::byType($plugin->getId());
 ?>
@@ -184,21 +185,10 @@ $eqLogics = eqLogic::byType($plugin->getId());
                                 <div class="col-sm-3">
                                 	<input type="text" class="eqLogicAttr form-control" data-l1key="configuration" data-l2key="codeInseeCommune" placeholder="{{Code INSEE}}"/>
                                 </div>
-                                <a href="http://public.opendatasoft.com/explore/dataset/correspondance-code-insee-code-postal/table/?flg=fr&location=9,45.71673,3.13522&basemap=jawg.light" target="_blank">Liste des codes INSEE</a>
+                                <a href="https://datanova.laposte.fr/datasets/laposte-hexasmal/full" target="_blank">Liste des codes INSEE</a>
 							</div>
                             <div class="form-group">
-                                <label class="col-sm-4 control-label">{{Restrictions spécifiques}}</label>
-                                <div class="col-sm-3">
-                                  <select class="form-control eqLogicAttr" data-l1key="configuration" data-l2key="typeRestriction">
-                                    <option value="aep">{{Du robinet (AEP)}}</option>
-                                    <option value="sup">{{D'un cours d'eau ou d'une rivière (SUP)}}</option>
-                                    <option value="sou">{{Des nappes (puits ou forage) (SOU)}}</option>
-                                    <option value="all">{{Toutes les ressources}}</option>
-                                  </select>
-                                </div>
-                                </div>
-                            <div class="form-group">
-                                <label class="col-sm-4 control-label">{{Profil}}</label>
+								<label class="col-sm-4 control-label">{{Profil de consommation :}}</label>
                                 <div class="col-sm-3">
                                   <select class="form-control eqLogicAttr" data-l1key="configuration" data-l2key="typeInfo">
                                     <option value="particulier">{{Particulier}}</option>
@@ -209,7 +199,18 @@ $eqLogics = eqLogic::byType($plugin->getId());
                                 </div>
                                 </div>
                             <div class="form-group">
-                                <label class="col-sm-4 control-label">{{Usages affichés}}</label>
+                                <label class="col-sm-4 control-label">{{Type d'eau consommé :}}</label>
+                                <div class="col-sm-3">
+                                  <select class="form-control eqLogicAttr" data-l1key="configuration" data-l2key="typeRestriction">
+                                    <option value="aep">{{Du robinet}}</option>
+                                    <option value="sup">{{D'un cours d'eau ou d'une rivière}}</option>
+                                    <option value="sou">{{Des nappes (puits ou forage)}}</option>
+                                    <option value="all">{{Toutes les restrictions}}</option>
+                                  </select>
+                                </div>
+                                </div>
+                            <div class="form-group">
+                                <label class="col-sm-4 control-label">{{Type d'usages à afficher :}}</label>
                                 <div class="col-sm-8">
                                         <div class="usage-filter-wrapper">
                                                 <div id="usageFilterCheckboxes" class="usage-filter-box">
@@ -220,10 +221,14 @@ $eqLogics = eqLogic::byType($plugin->getId());
                                         <div class="usage-filter-actions">
                                                 <div class="btn-group" role="group">
                                                         <a class="btn btn-default btn-sm" id="usageFilterSelectAll">{{Tout sélectionner}}</a>
+												</div>
+												<div class="btn-group" role="group">
                                                         <a class="btn btn-default btn-sm" id="usageFilterClear">{{Tout décocher}}</a>
                                                 </div>
+												<div class="btn-group" role="group">
                                                 <a class="btn btn-default btn-sm" id="usageFilterReload">{{Actualiser la liste}}</a>
-                                        </div>
+                                        		</div>
+										</div>
                                 </div>
                                 </div>
                                                 </div>
@@ -247,7 +252,7 @@ $eqLogics = eqLogic::byType($plugin->getId());
 			<!-- Onglet des commandes de l'équipement -->
 			<div role="tabpanel" class="tab-pane" id="commandtab">
 				<legend>
-					<center class="title_cmdtable">{{Tableau de commandes <?php echo $plugName.' : ';?>}}
+					<center class="title_cmdtable">{{Tableau de commandes <?php echo $pluginName.' : ';?>}}
 						<span class="eqName"></span>
 					</center>
 				</legend>
@@ -293,6 +298,6 @@ $eqLogics = eqLogic::byType($plugin->getId());
 </div><!-- /.row row-overflow -->
 
 <!-- Inclusion du fichier javascript du plugin (dossier, nom_du_fichier, extension_du_fichier, id_du_plugin) -->
-<?php include_file('desktop', 'vigieau', 'js', 'vigieau');?>
+<?php include_file('desktop', $pluginName, 'js', $pluginName);?>
 <!-- Inclusion du fichier javascript du core - NE PAS MODIFIER NI SUPPRIMER -->
 <?php include_file('core', 'plugin.template', 'js');?>

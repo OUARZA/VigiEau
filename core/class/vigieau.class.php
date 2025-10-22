@@ -41,9 +41,46 @@ class vigieau extends eqLogic {
   /*     * ***********************Methode static*************************** */
 
   /*
-  * Fonction exécutée automatiquement toutes les minutes par Jeedom
-  public static function cron()
-  */  
+  * Fonction exécutée automatiquement toutes les minutes par Jeedom */
+  public static function cron() {
+    self::ensureDailyCron();
+
+        $cronConfMinute = config::byKey('cronConfMinute', __CLASS__);
+        $cronConfHeure = config::byKey('cronConfHeure', __CLASS__);
+        if ($cronConfMinute === '' || $cronConfMinute === null || $cronConfHeure === '' || $cronConfHeure === null) {
+      log::add(__CLASS__, 'error', 'L\'heure de relevé n\'a pas été correctement configurée dans la page de configuration du plugin');
+      return;
+    }
+    $cronConfHeureEtMinute = str_pad($cronConfHeure, 2, '0', STR_PAD_LEFT) . ':' . str_pad($cronConfMinute, 2, '0', STR_PAD_LEFT);
+    if (date('G:i') != $cronConfHeureEtMinute) return;
+
+    foreach (eqLogic::byType(__CLASS__, true) as $vigieauEqLogic) {
+      $vigieauEqLogic->pullvigieau();
+      sleep(15);
+    }
+  }
+
+  public static function ensureDailyCron() {
+    $cronConfMinute = config::byKey('cronConfMinute', __CLASS__);
+    $cronConfHeure = config::byKey('cronConfHeure', __CLASS__);
+    if ($cronConfMinute === '' || $cronConfMinute === null || $cronConfHeure === '' || $cronConfHeure === null) {
+      return;
+    }
+
+    $schedule = intval($cronConfMinute) . ' ' . intval($cronConfHeure) . ' * * *';
+    $cron = cron::byClassAndFunction(__CLASS__, 'cron');
+    if (!is_object($cron)) {
+      $cron = new cron();
+      $cron->setClass(__CLASS__);
+      $cron->setFunction('cron');
+    }
+
+    if ($cron->getSchedule() !== $schedule || $cron->getEnable() != 1) {
+      $cron->setSchedule($schedule);
+      $cron->setEnable(1);
+      $cron->save();
+    }
+  }
 
   /*
   * Fonction exécutée automatiquement toutes les 5 minutes par Jeedom
@@ -67,7 +104,7 @@ class vigieau extends eqLogic {
 
   /*
   * Fonction exécutée automatiquement toutes les heures par Jeedom */
-  public static function cronHourly() {
+ /* public static function cronHourly() {
     $cronHeure = config::byKey('cronHeure', __CLASS__);
     if (!empty($cronHeure) && date('G') != $cronHeure) return;
  
@@ -76,6 +113,7 @@ class vigieau extends eqLogic {
       sleep(15);
     }  
   }
+  */
 
   /*
   * Fonction exécutée automatiquement tous les jours par Jeedom
@@ -1143,22 +1181,24 @@ class vigieau extends eqLogic {
       $replace['#nom_restriction_sou_N4#'] = '';
       $replace['#nom_restriction_sou_N5#'] = '';
 
-      switch ($replace['#niveau_restriction_sou#']) {
-        case 0:
-          $replace['#nom_restriction_sou_N1#'] = '<center><i class="fab fa-mixer"></i></center>';
-          break;
-        case 1:
-          $replace['#nom_restriction_sou_N2#'] = '<center><i class="fab fa-mixer"></i></center>';
-          break;
-        case 3:
-          $replace['#nom_restriction_sou_N3#'] = '<center><i class="fab fa-mixer"></i></center>';
-          break;
-        case 4:
-          $replace['#nom_restriction_sou_N4#'] = '<center><i class="fab fa-mixer"></i></center>';
-          break;
-        case 5:
-          $replace['#nom_restriction_sou_N5#'] = '<center><i class="fab fa-mixer"></i></center>';
-          break;
+      if(isset($replace['#niveau_restriction_sou#'])) {
+        switch ($replace['#niveau_restriction_sou#']) {
+          case 0:
+            $replace['#nom_restriction_sou_N1#'] = '<center><i class="fab fa-mixer"></i></center>';
+            break;
+          case 1:
+            $replace['#nom_restriction_sou_N2#'] = '<center><i class="fab fa-mixer"></i></center>';
+            break;
+          case 3:
+            $replace['#nom_restriction_sou_N3#'] = '<center><i class="fab fa-mixer"></i></center>';
+            break;
+          case 4:
+            $replace['#nom_restriction_sou_N4#'] = '<center><i class="fab fa-mixer"></i></center>';
+            break;
+          case 5:
+            $replace['#nom_restriction_sou_N5#'] = '<center><i class="fab fa-mixer"></i></center>';
+            break;
+        }
       }
 
       $replace['#nom_restriction_sup_N1#'] = '';
@@ -1167,22 +1207,24 @@ class vigieau extends eqLogic {
       $replace['#nom_restriction_sup_N4#'] = '';
       $replace['#nom_restriction_sup_N5#'] = '';
 
-      switch ($replace['#niveau_restriction_sup#']) {
-        case 0:
-          $replace['#nom_restriction_sup_N1#'] = '<center><i class="fab fa-mixer"></i></center>';
-          break;
-        case 1:
-          $replace['#nom_restriction_sup_N2#'] = '<center><i class="fab fa-mixer"></i></center>';
-          break;
-        case 3:
-          $replace['#nom_restriction_sup_N3#'] = '<center><i class="fab fa-mixer"></i></center>';
-          break;
-        case 4:
-          $replace['#nom_restriction_sup_N4#'] = '<center><i class="fab fa-mixer"></i></center>';
-          break;
-        case 5:
-          $replace['#nom_restriction_sup_N5#'] = '<center><i class="fab fa-mixer"></i></center>';
-          break;
+      if(isset($replace['#niveau_restriction_sup#'])) {
+        switch ($replace['#niveau_restriction_sup#']) {
+          case 0:
+            $replace['#nom_restriction_sup_N1#'] = '<center><i class="fab fa-mixer"></i></center>';
+            break;
+          case 1:
+            $replace['#nom_restriction_sup_N2#'] = '<center><i class="fab fa-mixer"></i></center>';
+            break;
+          case 3:
+            $replace['#nom_restriction_sup_N3#'] = '<center><i class="fab fa-mixer"></i></center>';
+            break;
+          case 4:
+            $replace['#nom_restriction_sup_N4#'] = '<center><i class="fab fa-mixer"></i></center>';
+            break;
+          case 5:
+            $replace['#nom_restriction_sup_N5#'] = '<center><i class="fab fa-mixer"></i></center>';
+            break;
+        }
       }
 
       $replace['#nom_restriction_aep_N1#'] = '';
@@ -1191,22 +1233,24 @@ class vigieau extends eqLogic {
       $replace['#nom_restriction_aep_N4#'] = '';
       $replace['#nom_restriction_aep_N5#'] = '';
 
-      switch ($replace['#niveau_restriction_aep#']) {
-        case 0:
-          $replace['#nom_restriction_aep_N1#'] = '<center><i class="fab fa-mixer"></i></center>';
-          break;
-        case 1:
-          $replace['#nom_restriction_aep_N2#'] = '<center><i class="fab fa-mixer"></i></center>';
-          break;
-        case 3:
-          $replace['#nom_restriction_aep_N3#'] = '<center><i class="fab fa-mixer"></i></center>';
-          break;
-        case 4:
-          $replace['#nom_restriction_aep_N4#'] = '<center><i class="fab fa-mixer"></i></center>';
-          break;
-        case 5:
-          $replace['#nom_restriction_aep_N5#'] = '<center><i class="fab fa-mixer"></i></center>';
-          break;
+      if(isset($replace['#niveau_restriction_aep#'])) {
+        switch ($replace['#niveau_restriction_aep#']) {
+          case 0:
+            $replace['#nom_restriction_aep_N1#'] = '<center><i class="fab fa-mixer"></i></center>';
+            break;
+          case 1:
+            $replace['#nom_restriction_aep_N2#'] = '<center><i class="fab fa-mixer"></i></center>';
+            break;
+          case 3:
+            $replace['#nom_restriction_aep_N3#'] = '<center><i class="fab fa-mixer"></i></center>';
+            break;
+          case 4:
+            $replace['#nom_restriction_aep_N4#'] = '<center><i class="fab fa-mixer"></i></center>';
+            break;
+          case 5:
+            $replace['#nom_restriction_aep_N5#'] = '<center><i class="fab fa-mixer"></i></center>';
+            break;
+        }
       }
 
     }

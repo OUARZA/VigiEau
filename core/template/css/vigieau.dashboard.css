@@ -1,60 +1,325 @@
-@font-face {
-	font-family: "Barcelona";
-	src: url("fonts/Barcelona.otf") format("opentype");
-	}
+/* ----- Structure de base ----- */
+.ve-card {
+  --radius: 16px;
+  --shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
+  --border: 1px solid rgba(0, 0, 0, 0.06);
+  --bg: #f7f9fc;
+  --panel: #ffffff;
+  --info: #2f6d45; /* panneau principal vert */
+  --topic: #e9f5fb;
+  --text: #0f172a;
+  --muted: #475569;
+  --link: #2563eb;
 
-        .tableau{
-                background-color: #C9EBF8 !important;
-                border: 5px solid #FFFFFF;
-                border-radius: 20px !important;
-                border-spacing:5px;
-                border-collapse: separate;
-                color: #000000 !important;
-                columns:2;
-        }
+  --level0: #ffffff;
+  --level1: #888888;
+  --level2: #ffe74d;
+  --level3: #f59e0b;
+  --level4: #ef4444;
 
-        .tableau tr,
-        .tableau th,
-        .tableau td {
-                background-color: #C9EBF8 !important;
-        }
+  background: var(--bg);
+  color: var(--text);
+  font: 14px/1.45 system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+  border-radius: var(--radius);
+  padding: 12px;
+  width: 100%;
+  box-sizing: border-box;
+}
 
-  	.tableaux{
-  		display:inline-block;
-  		vertical-align:top;
-      		padding:5px;
-	}
-	.template.vigieau{
-      		background-image: url("images/VigiEauScreen.png");
-	}
-	.demo th {
-	}
-        .tableau td {
-                padding:2px;
-        }
-	.fa-mixer{
-   		color: black;
-	}
-        .lien-arrete {
-                color: blue !important;
-                text-decoration: underline !important;
-        }
-        .lien-arrete:hover {
-                color: red !important;
-                text-decoration: underline !important;
-        }
-        .restriction-scale {
-                margin: 0 auto;
-        }
-        .tableau .mesures-row td {
-                background-color: #C9EBF8 !important;
-                color: #000000 !important;
-        }
-        .tableau .mesures-label {
-                font-weight: bold;
-        }
-        .tableau .mesures-content {
-                text-align: left;
-                white-space: normal;
-                background-color: #C9EBF8 !important;
-        }
+/* ----- Panneaux ----- */
+.ve-panel {
+  background: var(--panel);
+  border: var(--border);
+  border-radius: 14px;
+  padding: 1px 10px;
+  margin-top: 12px;
+  box-shadow: var(--shadow);
+}
+
+/* Panneau d'informations vert (haut) */
+.ve-panel--info {
+  background: var(--info);
+  color: #fff;
+  border: none;
+  box-shadow: none;
+  margin-top: 0;
+}
+
+/* Liens blancs forcés dans le panneau vert */
+.ve-panel--info a,
+.ve-panel--info a:visited,
+.ve-panel--info a:active,
+.ve-panel--info a:focus,
+.ve-panel--info .ve-link,
+.ve-panel--info .ve-link:visited,
+.ve-panel--info .ve-link:active,
+.ve-panel--info .ve-link:focus {
+  color: #fff !important;
+  text-decoration: none;
+  border-bottom: 1px dotted rgba(255, 255, 255, 0.6);
+}
+
+.ve-panel--info a:hover,
+.ve-panel--info .ve-link:hover,
+.ve-panel--info a:focus-visible,
+.ve-panel--info .ve-link:focus-visible {
+  color: #fff !important;
+  border-bottom-color: #fff;
+  text-decoration: underline;
+}
+
+/* Couleur héritée */
+.ve-panel--info .ve-line {
+  color: inherit;
+}
+
+.ve-panel--info .ve-icon svg {
+  fill: currentColor;
+}
+
+/* Panneau bleu clair */
+.ve-panel--topic {
+  background: var(--topic);
+}
+
+/* ----- Disposition interne ----- */
+.ve-row {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  margin: 8px 0;
+}
+
+.ve-row--commune {
+  justify-content: center;
+  text-align: center;
+  align-items: center;
+  gap: 0px;
+  /*margin: 12px 0 16px;*/
+}
+
+.ve-row--commune .ve-col {
+  flex: 0 1 auto;
+}
+
+.ve-row--commune .ve-line--center {
+  width: auto;
+}
+
+.ve-row--split {
+  justify-content: space-between;
+  align-items: stretch;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+.ve-row--stack {
+  margin: 0;
+}
+
+.ve-icon {
+  width: 22px;
+  height: 22px;
+  flex: 0 0 22px;
+  opacity: 0.8;
+}
+
+.ve-icon svg {
+  width: 100%;
+  height: 100%;
+  fill: var(--text);
+}
+
+.ve-col {
+  flex: 1;
+}
+
+.ve-col--center {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.ve-col--half {
+  flex: 1 1 220px;
+}
+
+.ve-line {
+  margin: 2px 0;
+}
+
+.ve-line--center {
+  text-align: center;
+  width: 100%;
+}
+
+.ve-restriction-line {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+}
+
+/* ----- Liens par défaut ----- */
+.ve-link {
+  color: var(--link);
+  text-decoration: none;
+  border-bottom: 1px dotted var(--link);
+}
+
+.ve-link:hover {
+  text-decoration: underline;
+}
+
+/* ----- Titres et sections ----- */
+.ve-topic-title {
+  font-weight: 700;
+  text-align: center;
+  margin-bottom: 10px;
+  font-size: 16px;
+}
+
+.ve-meta {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 4px;
+  /*background: rgba(255, 255, 255, 0.55);*/
+  border: var(--border);
+  border-radius: 10px;
+  padding: 10px;
+  margin-bottom: 12px;
+}
+
+/* ----- Réglette de niveau ----- */
+.ve-scale {
+  position: relative;
+  height: 22px;
+  border-radius: 8px;
+  overflow: hidden;
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 4px;
+  padding: 4px;
+  background: #fff;
+  border: var(--border);
+  margin: 6px 0 12px 0;
+}
+
+.ve-step {
+  position: relative;
+  z-index: 0;
+  height: 100%;
+  border-radius: 6px;
+  transition: box-shadow 0.25s ease, transform 0.25s ease;
+}
+
+.ve-step.is-active {
+  box-shadow: inset 0 0 0 2px var(--text);
+  transform: translateY(-1px);
+  z-index: 1;
+}
+
+.ve-step.is-active::after {
+  content: "";
+  position: absolute;
+  inset: -3px;
+  border-radius: 10px;
+  border: 2px solid rgba(15, 23, 42, 0.45);
+  box-shadow: 0 4px 10px rgba(15, 23, 42, 0.2);
+  pointer-events: none;
+}
+
+/* Couleurs par niveau */
+.ve-step[data-level="0"] {
+  background: var(--level0);
+  border: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+.ve-step[data-level="1"] {
+  background: var(--level1);
+}
+
+.ve-step[data-level="2"] {
+  background: var(--level2);
+}
+
+.ve-step[data-level="3"] {
+  background: var(--level3);
+}
+
+.ve-step[data-level="4"] {
+  background: var(--level4);
+}
+
+/* ----- Badges d’alerte ----- */
+.ve-alert-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-weight: 600;
+  background: rgba(15, 23, 42, 0.08);
+  color: var(--text);
+  border: 1px solid rgba(15, 23, 42, 0.15);
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+  font-size: 12px;
+}
+
+.ve-alert-badge[data-level="0"] {
+  background: rgba(255, 255, 255, 0.95);
+  border-color: rgba(15, 23, 42, 0.15);
+  color: var(--text);
+}
+
+.ve-alert-badge[data-level="1"] {
+  background: rgba(136, 136, 136, 0.25);
+  border-color: rgba(136, 136, 136, 0.6);
+  color: #1f2937;
+}
+
+.ve-alert-badge[data-level="2"] {
+  background: rgba(255, 231, 77, 0.35);
+  border-color: rgba(245, 158, 11, 0.6);
+  color: #92400e;
+}
+
+.ve-alert-badge[data-level="3"] {
+  background: rgba(245, 158, 11, 0.25);
+  border-color: rgba(217, 119, 6, 0.65);
+  color: #7c2d12;
+}
+
+.ve-alert-badge[data-level="4"] {
+  background: rgba(239, 68, 68, 0.2);
+  border-color: rgba(220, 38, 38, 0.65);
+  color: #7f1d1d;
+}
+
+/* ----- Mesures ----- */
+.ve-measures-title {
+  font-weight: 700;
+  margin: 8px 0 6px;
+}
+
+.ve-measures-body b {
+  font-weight: 700;
+}
+
+.ve-measures-body p {
+  margin: 0.35rem 0;
+}
+
+/* ----- Pied de carte ----- */
+.ve-footer {
+  margin-top: 8px;
+  font-size: 12px;
+  color: var(--muted);
+}
+
+/* ----- Responsive ----- */
+@media (min-width: 520px) {
+  .ve-meta {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
