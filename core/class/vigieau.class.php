@@ -1275,13 +1275,11 @@ class vigieau extends eqLogic {
 
   /** Permet de modifier l'affichage du widget (également utilisable par les commandes)*/
   public function toHtml($_version = 'dashboard') {
-  	$typeRestriction = $this->getConfiguration('typeRestriction'); //récupération de la valeur pour afficher le bon template
-    /* 
-    // a n'utiliser que si dans la config de l'eqLogic, on laisse le choix a l'user d'utiliser le widget du plugin, ou les widget par défaut du core
-     if ($this->getConfiguration('widgetTemplate') != 1) {
-      return parent::toHtml($_version);
-    } 
-    */
+        $typeRestriction = $this->getConfiguration('typeRestriction'); //récupération de la valeur pour afficher le bon template
+        $usePluginWidget = (int) $this->getConfiguration('usePluginWidget', 1);
+        if ($usePluginWidget !== 1) {
+          return parent::toHtml($_version);
+        }
     $this->emptyCacheWidget(); // a utiliser qu'en environnement de dev.
     $replace = $this->preToHtml($_version); // initialise les tag standards : #id#, #name# ...
 
