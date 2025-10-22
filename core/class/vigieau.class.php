@@ -1286,22 +1286,24 @@ class vigieau extends eqLogic {
       $replace['#nom_restriction_sou_N4#'] = '';
       $replace['#nom_restriction_sou_N5#'] = '';
 
-      switch ($replace['#niveau_restriction_sou#']) {
-        case 0:
-          $replace['#nom_restriction_sou_N1#'] = '<center><i class="fab fa-mixer"></i></center>';
-          break;
-        case 1:
-          $replace['#nom_restriction_sou_N2#'] = '<center><i class="fab fa-mixer"></i></center>';
-          break;
-        case 3:
-          $replace['#nom_restriction_sou_N3#'] = '<center><i class="fab fa-mixer"></i></center>';
-          break;
-        case 4:
-          $replace['#nom_restriction_sou_N4#'] = '<center><i class="fab fa-mixer"></i></center>';
-          break;
-        case 5:
-          $replace['#nom_restriction_sou_N5#'] = '<center><i class="fab fa-mixer"></i></center>';
-          break;
+      if(isset($replace['#niveau_restriction_sou#'])) {
+        switch ($replace['#niveau_restriction_sou#']) {
+          case 0:
+            $replace['#nom_restriction_sou_N1#'] = '<center><i class="fab fa-mixer"></i></center>';
+            break;
+          case 1:
+            $replace['#nom_restriction_sou_N2#'] = '<center><i class="fab fa-mixer"></i></center>';
+            break;
+          case 3:
+            $replace['#nom_restriction_sou_N3#'] = '<center><i class="fab fa-mixer"></i></center>';
+            break;
+          case 4:
+            $replace['#nom_restriction_sou_N4#'] = '<center><i class="fab fa-mixer"></i></center>';
+            break;
+          case 5:
+            $replace['#nom_restriction_sou_N5#'] = '<center><i class="fab fa-mixer"></i></center>';
+            break;
+        }
       }
 
       $replace['#nom_restriction_sup_N1#'] = '';
@@ -1310,22 +1312,24 @@ class vigieau extends eqLogic {
       $replace['#nom_restriction_sup_N4#'] = '';
       $replace['#nom_restriction_sup_N5#'] = '';
 
-      switch ($replace['#niveau_restriction_sup#']) {
-        case 0:
-          $replace['#nom_restriction_sup_N1#'] = '<center><i class="fab fa-mixer"></i></center>';
-          break;
-        case 1:
-          $replace['#nom_restriction_sup_N2#'] = '<center><i class="fab fa-mixer"></i></center>';
-          break;
-        case 3:
-          $replace['#nom_restriction_sup_N3#'] = '<center><i class="fab fa-mixer"></i></center>';
-          break;
-        case 4:
-          $replace['#nom_restriction_sup_N4#'] = '<center><i class="fab fa-mixer"></i></center>';
-          break;
-        case 5:
-          $replace['#nom_restriction_sup_N5#'] = '<center><i class="fab fa-mixer"></i></center>';
-          break;
+      if(isset($replace['#niveau_restriction_sup#'])) {
+        switch ($replace['#niveau_restriction_sup#']) {
+          case 0:
+            $replace['#nom_restriction_sup_N1#'] = '<center><i class="fab fa-mixer"></i></center>';
+            break;
+          case 1:
+            $replace['#nom_restriction_sup_N2#'] = '<center><i class="fab fa-mixer"></i></center>';
+            break;
+          case 3:
+            $replace['#nom_restriction_sup_N3#'] = '<center><i class="fab fa-mixer"></i></center>';
+            break;
+          case 4:
+            $replace['#nom_restriction_sup_N4#'] = '<center><i class="fab fa-mixer"></i></center>';
+            break;
+          case 5:
+            $replace['#nom_restriction_sup_N5#'] = '<center><i class="fab fa-mixer"></i></center>';
+            break;
+        }
       }
 
       $replace['#nom_restriction_aep_N1#'] = '';
@@ -1334,22 +1338,24 @@ class vigieau extends eqLogic {
       $replace['#nom_restriction_aep_N4#'] = '';
       $replace['#nom_restriction_aep_N5#'] = '';
 
-      switch ($replace['#niveau_restriction_aep#']) {
-        case 0:
-          $replace['#nom_restriction_aep_N1#'] = '<center><i class="fab fa-mixer"></i></center>';
-          break;
-        case 1:
-          $replace['#nom_restriction_aep_N2#'] = '<center><i class="fab fa-mixer"></i></center>';
-          break;
-        case 3:
-          $replace['#nom_restriction_aep_N3#'] = '<center><i class="fab fa-mixer"></i></center>';
-          break;
-        case 4:
-          $replace['#nom_restriction_aep_N4#'] = '<center><i class="fab fa-mixer"></i></center>';
-          break;
-        case 5:
-          $replace['#nom_restriction_aep_N5#'] = '<center><i class="fab fa-mixer"></i></center>';
-          break;
+      if(isset($replace['#niveau_restriction_aep#'])) {
+        switch ($replace['#niveau_restriction_aep#']) {
+          case 0:
+            $replace['#nom_restriction_aep_N1#'] = '<center><i class="fab fa-mixer"></i></center>';
+            break;
+          case 1:
+            $replace['#nom_restriction_aep_N2#'] = '<center><i class="fab fa-mixer"></i></center>';
+            break;
+          case 3:
+            $replace['#nom_restriction_aep_N3#'] = '<center><i class="fab fa-mixer"></i></center>';
+            break;
+          case 4:
+            $replace['#nom_restriction_aep_N4#'] = '<center><i class="fab fa-mixer"></i></center>';
+            break;
+          case 5:
+            $replace['#nom_restriction_aep_N5#'] = '<center><i class="fab fa-mixer"></i></center>';
+            break;
+        }
       }
 
     }
