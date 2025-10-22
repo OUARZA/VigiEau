@@ -182,7 +182,7 @@ $eqLogics = eqLogic::byType($plugin->getId());
 							<legend><i class="fas fa-cogs"></i> {{Paramètres spécifiques}}</legend>
                             <div class="form-group">
                                 <label class="col-sm-4 control-label">{{Utiliser le widget du plugin}}</label>
-                                <div class="col-sm-3">
+                                <div class="col-sm-5">
                                         <label class="checkbox-inline">
                                                 <input type="checkbox" class="eqLogicAttr" data-l1key="configuration" data-l2key="usePluginWidget" checked /> {{Utiliser le widget du plugin}}
                                         </label>
