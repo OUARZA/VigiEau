@@ -1055,7 +1055,6 @@ class vigieau extends eqLogic {
           'alerte' => array('label' => __('Alerte', __FILE__), 'value' => 2),
           'alerte_renforcee' => array('label' => __('Alerte renforcée', __FILE__), 'value' => 3),
           'crise' => array('label' => __('Crise', __FILE__), 'value' => 4),
-          'crise_renforcee' => array('label' => __('Crise renforcée', __FILE__), 'value' => 4),
           'aucune' => $defaultLevel,
           '' => $defaultLevel,
         );
