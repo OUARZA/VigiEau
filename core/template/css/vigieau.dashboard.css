@@ -11,11 +11,11 @@
   --muted: #475569;
   --link: #2563eb;
 
-  --level0: #ffffff;
-  --level1: #888888;
-  --level2: #ffe74d;
-  --level3: #f59e0b;
-  --level4: #ef4444;
+  --level0: #e8edff;
+  --level1: #ffeda0;
+  --level2: #feb24c;
+  --level3: #fc4e2a;
+  --level4: #b10526;
 
   background: var(--bg);
   color: var(--text);
