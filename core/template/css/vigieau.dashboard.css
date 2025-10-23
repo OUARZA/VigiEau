@@ -117,6 +117,14 @@
   margin: 0;
 }
 
+.ve-row--stack .ve-col {
+  text-align: left;
+}
+
+.ve-row--stack .ve-line {
+  text-align: left;
+}
+
 .ve-icon {
   width: 22px;
   height: 22px;
