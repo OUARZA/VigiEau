@@ -42,4 +42,16 @@ Dans vos scénarios, vous pouvez utiliser comme déclencheur la commande "Niveau
 -->
 
 ## Widget
-Il est composé de 
+Il est composé de 2 ou 4 parties.
+| Partie | Description |
+| --- | --- |
+| 1ère partie | La commune / Les arrêtés téléchargeables / Dates de début et fin de l'arrêté |
+| 2ème partie | Vous avez sélectionné qu'un seul type d'eau : Les informations concernant le type d'eau consommée. |
+| 2ème - 4ème partie | Vous avez sélectionné tous les types d'eau consommée : Vous affichez donc les informations sur les 3 types d'eau consommée. |
+
+Dans les pavés "Type d'eau consommée", vous retrouvez les informations.
+| Partie | Description |
+| --- | --- |
+| Titre | Le type d'eau consommée |
+| 2ème partie | Vous avez sélectionné qu'un seul type d'eau : Les informations concernant le type d'eau consommée. |
+| 2ème - 4ème partie | Vous avez sélectionné tous les types d'eau consommée : Vous affichez donc les informations sur les 3 types d'eau consommée. |
