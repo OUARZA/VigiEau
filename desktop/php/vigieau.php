@@ -221,7 +221,7 @@ $eqLogics = eqLogic::byType($plugin->getId());
                                     <option value="aep">{{Du robinet}}</option>
                                     <option value="sup">{{D'un cours d'eau ou d'une rivière}}</option>
                                     <option value="sou">{{Des nappes (puits ou forage)}}</option>
-                                    <option value="all">{{Toutes les restrictions}}</option>
+                                    <option value="all">{{Tous les types d'eau consommée}}</option>
                                   </select>
                                 </div>
                                 </div>
