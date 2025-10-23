@@ -75,6 +75,30 @@ var vigieauCommuneManager = {
     $stored.value(normalized);
     $stored.trigger('change');
   },
+  getInvalidPostalMessage: function () {
+    var defaultMessage = 'Veuillez saisir un code postal valide (5 chiffres).';
+    var $postal = this.getPostalInput();
+    if ($postal.length === 0) {
+      return defaultMessage;
+    }
+    var message = $postal.attr('data-invalid-message');
+    if (typeof message === 'string' && message !== '') {
+      return message;
+    }
+    return defaultMessage;
+  },
+  getNoCommuneMessage: function () {
+    var defaultMessage = 'Aucune commune trouvée pour ce code postal.';
+    var $select = this.getCommuneSelect();
+    if ($select.length === 0) {
+      return defaultMessage;
+    }
+    var message = $select.attr('data-no-commune-message');
+    if (typeof message === 'string' && message !== '') {
+      return message;
+    }
+    return defaultMessage;
+  },
   ensurePlaceholder: function ($select) {
     if ($select.length === 0) {
       return;
@@ -145,6 +169,9 @@ var vigieauCommuneManager = {
     var self = this;
     if (!postalCode || !/^[0-9]{5}$/.test(postalCode)) {
       this.populateSelect([], '');
+      if (postalCode) {
+        this.showError(this.getInvalidPostalMessage());
+      }
       return;
     }
     this.lastPostalCode = postalCode;
@@ -163,6 +190,9 @@ var vigieauCommuneManager = {
             self.showError(parsed.message);
           }
           self.populateSelect(parsed.communes, selectedCode);
+          if ((!$.isArray(parsed.communes) || parsed.communes.length === 0) && !parsed.message) {
+            self.showError(self.getNoCommuneMessage());
+          }
           return;
         }
         if (data && data.state === 'error' && data.result) {
@@ -234,6 +264,22 @@ var vigieauCommuneManager = {
       $alert.showAlert({ message: message, level: 'danger' });
     }
   },
+  handlePostalInputChange: function () {
+    this.lastPostalCode = null;
+    var stored = this.getStoredCommuneValue();
+    var $select = this.getCommuneSelect();
+    var currentSelectValue = '';
+    if ($select.length !== 0) {
+      currentSelectValue = $select.value();
+    }
+    var hasMultipleOptions = false;
+    if ($select.length !== 0) {
+      hasMultipleOptions = $select.find('option').length > 1;
+    }
+    if (stored !== '' || (typeof currentSelectValue === 'string' && currentSelectValue !== '') || hasMultipleOptions) {
+      this.populateSelect([], '');
+    }
+  },
   refreshFromPostal: function (force) {
     var postal = this.getPostalValue();
     var sanitized = postal.replace(/\s+/g, '');
@@ -248,6 +294,7 @@ var vigieauCommuneManager = {
     if (!/^[0-9]{5}$/.test(sanitized)) {
       this.lastPostalCode = null;
       this.populateSelect([], '');
+      this.showError(this.getInvalidPostalMessage());
       return;
     }
     if (!force && this.lastPostalCode === sanitized) {
@@ -632,6 +679,10 @@ $(document).on('click', '#usageFilterClear', function (e) {
 
 $(document).on('change', '#usageFilterCheckboxes .usage-filter-checkbox', function () {
   vigieauUsageFilterManager.syncHiddenFromCheckboxes(false);
+});
+
+$(document).on('input', '#vigieauPostalCode', function () {
+  vigieauCommuneManager.handlePostalInputChange();
 });
 
 $(document).on('blur', '#vigieauPostalCode', function () {

@@ -191,14 +191,14 @@ $eqLogics = eqLogic::byType($plugin->getId());
                             <div class="form-group">
                                 <label class="col-sm-4 control-label">{{Code postal}}</label>
                                 <div class="col-sm-3">
-                                        <input type="text" class="eqLogicAttr form-control" data-l1key="configuration" data-l2key="codePostal" placeholder="{{Code postal}}" id="vigieauPostalCode"/>
+                                        <input type="text" class="eqLogicAttr form-control" data-l1key="configuration" data-l2key="codePostal" placeholder="{{Code postal}}" id="vigieauPostalCode" data-invalid-message="<?php echo htmlspecialchars(__('Veuillez saisir un code postal valide (5 chiffres).', __FILE__), ENT_QUOTES); ?>" />
                                 </div>
                             </div>
                             <div class="form-group">
                                 <label class="col-sm-4 control-label">{{Commune}}</label>
                                 <div class="col-sm-5">
                                         <input type="hidden" class="eqLogicAttr" data-l1key="configuration" data-l2key="codeInseeCommune" id="vigieauCommuneValue" />
-                                        <select class="form-control" id="vigieauCommuneSelect" data-placeholder="<?php echo __('Sélectionnez une commune', __FILE__); ?>">
+                                        <select class="form-control" id="vigieauCommuneSelect" data-placeholder="<?php echo __('Sélectionnez une commune', __FILE__); ?>" data-no-commune-message="<?php echo htmlspecialchars(__('Aucune commune trouvée pour ce code postal.', __FILE__), ENT_QUOTES); ?>">
                                                 <option value=""><?php echo __('Sélectionnez une commune', __FILE__); ?></option>
                                         </select>
                                 </div>
