@@ -184,15 +184,15 @@ $eqLogics = eqLogic::byType($plugin->getId());
                                 <label class="col-sm-4 control-label">{{Utiliser le widget du plugin}}</label>
                                 <div class="col-sm-5">
                                         <label class="checkbox-inline">
-                                                <input type="checkbox" class="eqLogicAttr" data-l1key="configuration" data-l2key="usePluginWidget" checked /> {{Utiliser le widget du plugin}}
+                                                <input type="checkbox" class="eqLogicAttr" data-l1key="configuration" data-l2key="usePluginWidget" checked />
                                         </label>
                                 </div>
                             </div>
                             <div class="form-group">
-                                <label class="col-sm-4 control-label">{{Dimensions fixes du widget}}</label>
+                                <label class="col-sm-4 control-label">{{Dimension du widget automatique}}</label>
                                 <div class="col-sm-5">
                                         <label class="checkbox-inline">
-                                                <input type="checkbox" class="eqLogicAttr" data-l1key="configuration" data-l2key="useFixedDimensions" checked /> {{Dimension du Widget automatique}}
+                                                <input type="checkbox" class="eqLogicAttr" data-l1key="configuration" data-l2key="useFixedDimensions" checked />
                                         </label>
                                 </div>
                             </div>
