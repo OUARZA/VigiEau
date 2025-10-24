@@ -20,6 +20,7 @@ Ce plugin permet de remonter les informations du site de l'information sécheres
    - Indiquer votre profil de consommation (Particulier/Entreprise/Collectivités/Exploitation agricoles).</br>
    - Indiquer le type d'eau consommé (Du robinet/D'un cours d'eau ou d'une rivière/Des nappes (puits ou forage)).</br>
    - Indiquer le(s) type(s) d'usage que vous souhaitez afficher.</br>
+
 ![image](/docs/images/VigiEau_Conf.png)</br>
 
 6. Sauvegarder.
