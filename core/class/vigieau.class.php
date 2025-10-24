@@ -436,7 +436,7 @@ class vigieau extends eqLogic {
       if (!is_string($rawValue) || $rawValue === '') {
         continue;
       }
-      $decoded = json_decode($rawValue, true);
+      $decoded = $this->decodeUsageCommandValue($rawValue);
       if (!is_array($decoded)) {
         continue;
       }
@@ -498,6 +498,39 @@ class vigieau extends eqLogic {
       );
     }
     return $options;
+  }
+
+  private function decodeUsageCommandValue($rawValue) {
+    if (!is_string($rawValue)) {
+      return array();
+    }
+    $candidates = array();
+    $trimmed = trim($rawValue);
+    if ($trimmed !== '') {
+      $candidates[] = $trimmed;
+    }
+    $htmlDecodeFlags = defined('ENT_HTML5') ? ENT_QUOTES | ENT_HTML5 : ENT_QUOTES;
+    $htmlDecoded = html_entity_decode($trimmed, $htmlDecodeFlags, 'UTF-8');
+    if (is_string($htmlDecoded)) {
+      $htmlDecoded = trim($htmlDecoded);
+      if ($htmlDecoded !== '' && !in_array($htmlDecoded, $candidates, true)) {
+        $candidates[] = $htmlDecoded;
+      }
+    }
+    if (strpos($trimmed, '\\"') !== false) {
+      $stripped = str_replace('\\"', '"', $trimmed);
+      $stripped = trim($stripped);
+      if ($stripped !== '' && !in_array($stripped, $candidates, true)) {
+        $candidates[] = $stripped;
+      }
+    }
+    foreach ($candidates as $candidate) {
+      $decoded = json_decode($candidate, true);
+      if (is_array($decoded)) {
+        return $decoded;
+      }
+    }
+    return array();
   }
 
   private function getCommonCommandDefinitions() {
