@@ -14,10 +14,12 @@ Ce plugin permet de remonter les informations du site de l'information sécheres
 
 3. Ajouter un équipement, comme n'importe quel équipement sous Jeedom.
 
-5. Configurer les paramètres généraux, puis dans les aramètres spécifiques, indiquer votre code postal, puis votre commune.</br>
-   Indiquer votre profil de consommation (Particulier/Entreprise/Collectivités/Exploitation agricoles).</br>
-   Indiquer le type d'eau consommé (Du robinet/D'un cours d'eau ou d'une rivière/Des nappes (puits ou forage)).</br>
-   Indiquer le(s) type(s) d'usage que vous souhaitez afficher.</br>
+5. Configurer les paramètres généraux, puis dans les oaramètres spécifiques :
+   - Indiquer si vous souhaitez utiliser le widget développé pour le plugin.</br>
+   - Indiquer si vous souhaitez aavoir un dimensionnement adaptatif du widget.</br>
+   - Indiquer votre profil de consommation (Particulier/Entreprise/Collectivités/Exploitation agricoles).</br>
+   - Indiquer le type d'eau consommé (Du robinet/D'un cours d'eau ou d'une rivière/Des nappes (puits ou forage)).</br>
+   - Indiquer le(s) type(s) d'usage que vous souhaitez afficher.</br>
 ![image](/docs/images/VigiEau_Conf.png)</br>
 
 6. Sauvegarder.
