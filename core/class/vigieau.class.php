@@ -1027,6 +1027,86 @@ class vigieau extends eqLogic {
       } finally {
         self::popAutoRefreshLock($this->getId());
       }
+      $defaultLevel = array(
+        'label' => __('Pas de restriction', __FILE__),
+        'value' => 0,
+      );
+
+      $levelMapping = array(
+        'vigilance' => array('label' => __('Vigilance', __FILE__), 'value' => 1),
+        'alerte' => array('label' => __('Alerte', __FILE__), 'value' => 2),
+        'alerte_renforcee' => array('label' => __('Alerte renforcée', __FILE__), 'value' => 3),
+        'crise' => array('label' => __('Crise', __FILE__), 'value' => 4),
+        'aucune' => $defaultLevel,
+        '' => $defaultLevel,
+      );
+
+      $enabledUsageKeys = $this->getEnabledUsageKeys();
+      $audienceField = $this->getAudienceFieldForType($typeInfo);
+      $self = $this;
+      $buildEditorial = function ($usages) use ($enabledUsageKeys, $self, $audienceField) {
+        $messages = array();
+        foreach ($usages as $usage) {
+          if (!is_array($usage)) {
+            continue;
+          }
+          $usageKey = $self->buildUsageKey($usage);
+          if (!empty($enabledUsageKeys)) {
+            if ($usageKey === '' || !in_array($usageKey, $enabledUsageKeys, true)) {
+              continue;
+            }
+          }
+          $shouldAdd = true;
+          if ($audienceField !== '') {
+            $audienceValue = isset($usage[$audienceField]) ? $usage[$audienceField] : false;
+            $shouldAdd = ($audienceValue === true || $audienceValue === 1 || $audienceValue === '1' || $audienceValue === 'true');
+          }
+          if (!$shouldAdd) {
+            continue;
+          }
+          $nomUsage = isset($usage['nom']) ? trim($usage['nom']) : '';
+          $description = isset($usage['description']) ? trim($usage['description']) : '';
+          if ($nomUsage === '' && $description === '') {
+            continue;
+          }
+          if ($description !== '') {
+            $description = str_replace(array("\r\n", "\n", "\r"), ' ', $description);
+            $description = preg_replace('/\s+/u', ' ', $description);
+          }
+          if ($nomUsage !== '' && $description !== '') {
+            $messages[] = '<b>'.$nomUsage.'</b> : '.$description;
+          } else {
+            $messages[] = $nomUsage.$description;
+          }
+        }
+        if (count($messages) === 0) {
+          return __('Mesures : Aucune restriction en cours.', __FILE__);
+        }
+        return implode('<br/><br/>', $messages);
+      };
+
+      $zoneCommandDefinitions = $this->getZoneCommandDefinitions();
+      $zoneValues = array();
+      foreach ($zoneCommandDefinitions as $zoneType => $commands) {
+        $zoneValues[$zoneType] = array(
+          'nom' => '',
+          'niveau' => 0,
+          'label' => '',
+          'editorial' => '',
+          'niveauGravite' => '',
+          'id' => 0,
+          'idSandre' => 0,
+          'code' => '',
+          'type' => '',
+          'ressourceInfluencee' => 0,
+          'usages' => '[]',
+          'gid' => 0,
+          'CdZAS' => '',
+          'LbZAS' => '',
+          'TypeZAS' => '',
+        );
+      }
+
       if (count($jsonData) === 0) {
         log::add(__CLASS__, 'info', 'Aucune donnée trouvée à la date du '.$dateFormat. ' pour la commune '.$nomCommune);
 
@@ -1039,91 +1119,16 @@ class vigieau extends eqLogic {
         $this->updateCommandIfExists('urlPdf', '');
         $this->updateCommandIfExists('urlPdfCadre', '');
 
-        foreach ($this->getZoneCommandDefinitions() as $zoneType => $commands) {
-          foreach ($commands as $logicalId => $definition) {
-            $this->updateCommandIfExists($logicalId, isset($definition['default']) ? $definition['default'] : '');
-          }
+        foreach ($zoneValues as $typeZone => $initialValues) {
+          $zoneValues[$typeZone] = array_merge($initialValues, array(
+            'niveau' => $defaultLevel['value'],
+            'label' => $defaultLevel['label'],
+            'editorial' => __('Mesures : Aucune restriction en cours.', __FILE__),
+            'niveauGravite' => 'aucune',
+            'usages' => '[]',
+          ));
         }
       } else {
-        $defaultLevel = array(
-          'label' => __('Pas de restriction', __FILE__),
-          'value' => 0,
-        );
-
-        $levelMapping = array(
-          'vigilance' => array('label' => __('Vigilance', __FILE__), 'value' => 1),
-          'alerte' => array('label' => __('Alerte', __FILE__), 'value' => 2),
-          'alerte_renforcee' => array('label' => __('Alerte renforcée', __FILE__), 'value' => 3),
-          'crise' => array('label' => __('Crise', __FILE__), 'value' => 4),
-          'aucune' => $defaultLevel,
-          '' => $defaultLevel,
-        );
-
-        $enabledUsageKeys = $this->getEnabledUsageKeys();
-        $audienceField = $this->getAudienceFieldForType($typeInfo);
-        $self = $this;
-        $buildEditorial = function ($usages) use ($enabledUsageKeys, $self, $audienceField) {
-          $messages = array();
-          foreach ($usages as $usage) {
-            if (!is_array($usage)) {
-              continue;
-            }
-            $usageKey = $self->buildUsageKey($usage);
-            if (!empty($enabledUsageKeys)) {
-              if ($usageKey === '' || !in_array($usageKey, $enabledUsageKeys, true)) {
-                continue;
-              }
-            }
-            $shouldAdd = true;
-            if ($audienceField !== '') {
-              $audienceValue = isset($usage[$audienceField]) ? $usage[$audienceField] : false;
-              $shouldAdd = ($audienceValue === true || $audienceValue === 1 || $audienceValue === '1' || $audienceValue === 'true');
-            }
-            if (!$shouldAdd) {
-              continue;
-            }
-            $nomUsage = isset($usage['nom']) ? trim($usage['nom']) : '';
-            $description = isset($usage['description']) ? trim($usage['description']) : '';
-            if ($nomUsage === '' && $description === '') {
-              continue;
-            }
-            if ($description !== '') {
-              $description = str_replace(array("\r\n", "\n", "\r"), ' ', $description);
-              $description = preg_replace('/\s+/u', ' ', $description);
-            }
-            if ($nomUsage !== '' && $description !== '') {
-              $messages[] = '<b>'.$nomUsage.'</b> : '.$description;
-            } else {
-              $messages[] = $nomUsage.$description;
-            }
-          }
-          if (count($messages) === 0) {
-            return __('Aucune information disponible', __FILE__);
-          }
-          return implode('<br/><br/>', $messages);
-        };
-
-        $zoneCommandDefinitions = $this->getZoneCommandDefinitions();
-        $zoneValues = array();
-        foreach ($zoneCommandDefinitions as $zoneType => $commands) {
-          $zoneValues[$zoneType] = array(
-            'nom' => '',
-            'niveau' => 0,
-            'label' => '',
-            'editorial' => '',
-            'niveauGravite' => '',
-            'id' => 0,
-            'idSandre' => 0,
-            'code' => '',
-            'type' => '',
-            'ressourceInfluencee' => 0,
-            'usages' => '[]',
-            'gid' => 0,
-            'CdZAS' => '',
-            'LbZAS' => '',
-            'TypeZAS' => '',
-          );
-        }
 
         $codeInseeDepartement = substr($codeInseeCommune, 0, 2);
         $dateDebutValiditeArrete = '';
@@ -1241,14 +1246,14 @@ class vigieau extends eqLogic {
         $this->updateCommandIfExists('commune', $nomCommune);
         $this->updateCommandIfExists('urlPdf', $urlPdf);
         $this->updateCommandIfExists('urlPdfCadre', $urlPdfCadre);
+      }
 
-        foreach ($zoneCommandDefinitions as $zoneType => $commands) {
-          $zoneData = isset($zoneValues[$zoneType]) ? $zoneValues[$zoneType] : array();
-          foreach ($commands as $logicalId => $definition) {
-            $valueKey = isset($definition['valueKey']) ? $definition['valueKey'] : null;
-            $value = $valueKey !== null && isset($zoneData[$valueKey]) ? $zoneData[$valueKey] : (isset($definition['default']) ? $definition['default'] : '');
-            $this->updateCommandIfExists($logicalId, $value);
-          }
+      foreach ($zoneCommandDefinitions as $zoneType => $commands) {
+        $zoneData = isset($zoneValues[$zoneType]) ? $zoneValues[$zoneType] : array();
+        foreach ($commands as $logicalId => $definition) {
+          $valueKey = isset($definition['valueKey']) ? $definition['valueKey'] : null;
+          $value = $valueKey !== null && isset($zoneData[$valueKey]) ? $zoneData[$valueKey] : (isset($definition['default']) ? $definition['default'] : '');
+          $this->updateCommandIfExists($logicalId, $value);
         }
       }
     }
