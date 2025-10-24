@@ -1287,6 +1287,20 @@ class vigieau extends eqLogic {
       return $replace;
     }
 
+    $fixedDimensions = (int) $this->getConfiguration('useFixedDimensions', 1);
+    $replace['#resize_class#'] = 'allowResize';
+    if ($fixedDimensions === 1) {
+      $replace['#resize_class#'] = '';
+      $replace['#width#'] = '650px';
+      $replace['#height#'] = 'auto';
+      $extraStyle = 'min-width:650px;max-width:650px;';
+      if (isset($replace['#style#'])) {
+        $replace['#style#'] = $extraStyle . $replace['#style#'];
+      } else {
+        $replace['#style#'] = $extraStyle;
+      }
+    }
+
     $version = jeedom::versionAlias($_version);
 
     foreach ($this->getCmd('info') as $cmd) { // recherche toute les cmd de type info

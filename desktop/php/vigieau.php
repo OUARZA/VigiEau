@@ -189,6 +189,14 @@ $eqLogics = eqLogic::byType($plugin->getId());
                                 </div>
                             </div>
                             <div class="form-group">
+                                <label class="col-sm-4 control-label">{{Dimensions fixes du widget}}</label>
+                                <div class="col-sm-5">
+                                        <label class="checkbox-inline">
+                                                <input type="checkbox" class="eqLogicAttr" data-l1key="configuration" data-l2key="useFixedDimensions" checked /> {{Forcer une largeur de 650px et une hauteur automatique}}
+                                        </label>
+                                </div>
+                            </div>
+                            <div class="form-group">
                                 <label class="col-sm-4 control-label">{{Code postal}}</label>
                                 <div class="col-sm-3">
                                         <input type="text" class="eqLogicAttr form-control" data-l1key="configuration" data-l2key="codePostal" placeholder="{{Code postal}}" id="vigieauPostalCode" data-invalid-message="<?php echo htmlspecialchars(__('Veuillez saisir un code postal valide (5 chiffres).', __FILE__), ENT_QUOTES); ?>" />
