@@ -1,0 +1,848 @@
+{
+    "SUP": [
+        {
+            "id": 1898043,
+            "nom": "Activit\u00e9s cyn\u00e9g\u00e9tiques",
+            "thematique": "Pr\u00e9lever",
+            "description": "Les pr\u00e9l\u00e8vements d'eau pour la chasse sont interdits",
+            "concerneParticulier": true,
+            "concerneEntreprise": true,
+            "concerneCollectivite": true,
+            "concerneExploitation": true
+        },
+        {
+            "id": 1898044,
+            "nom": "Activit\u00e9s de loisirs (professionnelles et amateurs) en cours d'eau hors orpaillage",
+            "thematique": "Travaux et activit\u00e9s en cours d'eau",
+            "description": "Les activit\u00e9s de loisirs n\u00e9cessitant de marcher dans l\u2019eau (canyoning, ruisseling..) sont interdits dans les r\u00e9servoirs biologiques inscrits au sch\u00e9ma directeur d\u2019am\u00e9nagement et de gestion des eaux (SDAGE) 2022-2027 du bassin Rh\u00f4ne-M\u00e9diterran\u00e9e, approuv\u00e9 le 21 mars 2022.",
+            "concerneParticulier": true,
+            "concerneEntreprise": true,
+            "concerneCollectivite": true,
+            "concerneExploitation": false
+        },
+        {
+            "id": 1898163,
+            "nom": "Irrigation des productions mara\u00eech\u00e8res professionnelles",
+            "thematique": "Irriguer",
+            "description": "Interdiction de pr\u00e9lever de 8h \u00e0 20h",
+            "concerneParticulier": false,
+            "concerneEntreprise": false,
+            "concerneCollectivite": false,
+            "concerneExploitation": true
+        },
+        {
+            "id": 1898127,
+            "nom": "Irrigation des plantiers agricoles de moins de 3ans",
+            "thematique": "Irriguer",
+            "description": "Interdiction de 8h \u00e0 20h.",
+            "concerneParticulier": false,
+            "concerneEntreprise": false,
+            "concerneCollectivite": false,
+            "concerneExploitation": true
+        },
+        {
+            "id": 1898045,
+            "nom": "Activit\u00e9s industrielles et commerciales",
+            "thematique": "Activit\u00e9s \u00e9conomiques",
+            "description": "Les activit\u00e9s industrielles et commerciales devront limiter au strict n\u00e9cessaire leur consommation d\u2019eau. Le registre de pr\u00e9l\u00e8vement r\u00e9glementaire devra \u00eatre rempli hebdomadairement.",
+            "concerneParticulier": true,
+            "concerneEntreprise": true,
+            "concerneCollectivite": true,
+            "concerneExploitation": true
+        },
+        {
+            "id": 1898050,
+            "nom": "Alimentation des fontaines publiques et priv\u00e9es d\u2019ornement",
+            "thematique": "Alimenter des fontaines et autres usages de loisirs",
+            "description": "Interdiction du maintien des fontaines publiques en circuit ouvert.",
+            "concerneParticulier": true,
+            "concerneEntreprise": true,
+            "concerneCollectivite": true,
+            "concerneExploitation": false
+        },
+        {
+            "id": 1898051,
+            "nom": "Arrosage des espaces verts",
+            "thematique": "Arroser",
+            "description": "Interdiction",
+            "concerneParticulier": true,
+            "concerneEntreprise": true,
+            "concerneCollectivite": true,
+            "concerneExploitation": false
+        },
+        {
+            "id": 1898053,
+            "nom": "Arrosage des golfs",
+            "thematique": "Arroser",
+            "description": "Interdiction totale.",
+            "concerneParticulier": false,
+            "concerneEntreprise": true,
+            "concerneCollectivite": true,
+            "concerneExploitation": false
+        },
+        {
+            "id": 1898055,
+            "nom": "Arrosage des jardins potagers (y compris les serres non-agricoles)",
+            "thematique": "Arroser",
+            "description": "Interdiction de pr\u00e9lever de 8h \u00e0 20h",
+            "concerneParticulier": true,
+            "concerneEntreprise": true,
+            "concerneCollectivite": true,
+            "concerneExploitation": false
+        },
+        {
+            "id": 1898059,
+            "nom": "Arrosage des plantations d'arbre de moins de 3 ans",
+            "thematique": "Arroser",
+            "description": "Interdiction de 8h \u00e0 20h.",
+            "concerneParticulier": true,
+            "concerneEntreprise": true,
+            "concerneCollectivite": true,
+            "concerneExploitation": false
+        },
+        {
+            "id": 1898061,
+            "nom": "Arrosage des terrains de sport et de loisirs",
+            "thematique": "Arroser",
+            "description": "Interdit \u00e0 l'exception de 2 nuits par semaine (4h max par nuit), sur d\u00e9claration en DDTM (y compris \u00e0 partir d'une ressource compens\u00e9e, s\u00e9curis\u00e9e). Terrains d\u2019entrainement ou comp\u00e9tition \"Elite\" : arrosage autoris\u00e9 jusqu'\u00e0 300 m3 max par semaine et par terrain sur d\u00e9claration DDTM (y compris \u00e0 partir d'une ressource compens\u00e9e, s\u00e9curis\u00e9e). Pour tout type de terrain : Compteur volum\u00e9trique et tenue d'un registre de pr\u00e9l\u00e8vement (hebdomadaire) obligatoires.",
+            "concerneParticulier": true,
+            "concerneEntreprise": true,
+            "concerneCollectivite": true,
+            "concerneExploitation": false
+        },
+        {
+            "id": 1898064,
+            "nom": "Canaux agricoles dont ceux participant \u00e0 la recharge d\u2019aquif\u00e8res et non destin\u00e9s \u00e0 la navigation fluviale ou \u00e0 l\u2019agr\u00e9ment",
+            "thematique": "Remplir ou vidanger",
+            "description": "Interdiction des pr\u00e9l\u00e8vements sauf d\u00e9rogations pr\u00e9vues dans l\u2019arr\u00eat\u00e9 restriction.",
+            "concerneParticulier": false,
+            "concerneEntreprise": false,
+            "concerneCollectivite": false,
+            "concerneExploitation": true
+        },
+        {
+            "id": 1898066,
+            "nom": "Exploitation des installations class\u00e9es pour la protection de l\u2019environnement (ICPE)",
+            "thematique": "ICPE",
+            "description": "Respect des dispositions de l\u2019arr\u00eat\u00e9 minist\u00e9riel du 30 juin 2023 modifi\u00e9 par l\u2019arr\u00eat\u00e9 du 3 juillet 2024 ou de l'arr\u00eat\u00e9 pr\u00e9fectoral de l'ICPE s'il est plus contraignant.",
+            "concerneParticulier": false,
+            "concerneEntreprise": true,
+            "concerneCollectivite": true,
+            "concerneExploitation": true
+        },
+        {
+            "id": 1898082,
+            "nom": "Fonctionnement des douches de plages et tout autre dispositif analogue",
+            "thematique": "Alimenter des fontaines et autres usages de loisirs",
+            "description": "Interdiction totale",
+            "concerneParticulier": true,
+            "concerneEntreprise": true,
+            "concerneCollectivite": true,
+            "concerneExploitation": false
+        },
+        {
+            "id": 1898092,
+            "nom": "Installations de production d\u2019\u00e9lectricit\u00e9 d\u2019origine hydraulique",
+            "thematique": "Installations de production d'\u00e9lectricit\u00e9",
+            "description": "L\u2019exploitant informe le service police de l\u2019eau du d\u00e9partement et la DREAL de tout arr\u00eat de fonctionnement prolong\u00e9 pour des raisons techniques ou indisponibilit\u00e9 des \u00e9quipements de production \u00e9lectrique, ainsi que de toute reprise.",
+            "concerneParticulier": true,
+            "concerneEntreprise": true,
+            "concerneCollectivite": true,
+            "concerneExploitation": false
+        },
+        {
+            "id": 1898107,
+            "nom": "Interventions sur Station d'\u00e9puration",
+            "thematique": "Rejeter",
+            "description": "Toutes les interventions indispensables sur les stations sont soumises \u00e0 l\u2019autorisation pr\u00e9alable du service de la DDTM en charge de la police de l\u2019eau.",
+            "concerneParticulier": false,
+            "concerneEntreprise": true,
+            "concerneCollectivite": true,
+            "concerneExploitation": false
+        },
+        {
+            "id": 1898116,
+            "nom": "Irrigation agricole des cultures (sauf pr\u00e9l\u00e8vements d\u00e9connect\u00e9s de la ressource en eau)",
+            "thematique": "Irriguer",
+            "description": "R\u00e9duction des pr\u00e9l\u00e8vements de 70 % se traduisant par l\u2019interdiction de pr\u00e9lever de 8 heures \u00e0 20 heures quatre jours par semaine et toute la journ\u00e9e trois jours par semaine. Jours autoris\u00e9s : rive gauche les lundi, mercredi et vendredi de 20h \u00e0 8h du lendemain ; rive droite les mardi, jeudi et samedi de 20h \u00e0 8h du lendemain.",
+            "concerneParticulier": false,
+            "concerneEntreprise": false,
+            "concerneCollectivite": false,
+            "concerneExploitation": true
+        },
+        {
+            "id": 1898338,
+            "nom": "Remplissage des plans d\u2019eau sauf retenue eau potable, soutien d'\u00e9tiage et production d'\u00e9lectricit\u00e9 d'origine hydraulique",
+            "thematique": "Remplir ou vidanger",
+            "description": "Interdiction totale, hors ouvrages destin\u00e9s \u00e0 l\u2019AEP et ouvrages participant au soutien d\u2019\u00e9tiage ou pr\u00e9vus par un titre.",
+            "concerneParticulier": true,
+            "concerneEntreprise": true,
+            "concerneCollectivite": true,
+            "concerneExploitation": true
+        },
+        {
+            "id": 1898344,
+            "nom": "Travaux en cours d\u2019eau",
+            "thematique": "Travaux et activit\u00e9s en cours d'eau",
+            "description": "Interdiction totale et report des travaux sauf accord pr\u00e9alable de la DDTM pour situation d'assec, raison de s\u00e9curit\u00e9 publique ou renaturation/restauration.",
+            "concerneParticulier": true,
+            "concerneEntreprise": true,
+            "concerneCollectivite": true,
+            "concerneExploitation": true
+        },
+        {
+            "id": 1898359,
+            "nom": "Vidange de plans d\u2019eau de toute nature vers le r\u00e9seau hydrographique",
+            "thematique": "Remplir ou vidanger",
+            "description": "Interdiction totale sauf autorisation administrative",
+            "concerneParticulier": true,
+            "concerneEntreprise": true,
+            "concerneCollectivite": true,
+            "concerneExploitation": true
+        },
+        {
+            "id": 1898369,
+            "nom": "Vidange des piscines",
+            "thematique": "Remplir ou vidanger",
+            "description": "Interdiction totale, sauf imp\u00e9ratif sanitaire soumis \u00e0 la validation pr\u00e9alable de l\u2019ARS.",
+            "concerneParticulier": true,
+            "concerneEntreprise": true,
+            "concerneCollectivite": true,
+            "concerneExploitation": false
+        },
+        {
+            "id": 1898170,
+            "nom": "Lavage de v\u00e9hicules et engins nautiques par les professionnels",
+            "thematique": "Nettoyer",
+            "description": "Interdiction hors installations professionnelles disposant d\u2019un recyclage de l\u2019eau \u00e0 70 %, sauf v\u00e9hicules soumis \u00e0 obligation r\u00e9glementaire et organismes de s\u00e9curit\u00e9 publique. Affichage obligatoire des mesures par les stations.",
+            "concerneParticulier": true,
+            "concerneEntreprise": true,
+            "concerneCollectivite": true,
+            "concerneExploitation": true
+        },
+        {
+            "id": 1898213,
+            "nom": "Lavage de v\u00e9hicules et engins nautiques priv\u00e9s chez les particuliers",
+            "thematique": "Nettoyer",
+            "description": "Interdiction totale",
+            "concerneParticulier": true,
+            "concerneEntreprise": false,
+            "concerneCollectivite": false,
+            "concerneExploitation": false
+        },
+        {
+            "id": 1898236,
+            "nom": "L\u2019\u00e9clusage ou la man\u0153uvre des vannes d\u2019ouvrages hydrauliques",
+            "thematique": "Ouvrages hydrauliques",
+            "description": "Interdiction totale sauf pour franchissement piscicole, s\u00e9curit\u00e9 des ouvrages, restitution du d\u00e9bit entrant, soutien d\u2019\u00e9tiage et alimentation des piscicultures ou ouvrages pr\u00e9vus par r\u00e8glement ou concession.",
+            "concerneParticulier": true,
+            "concerneEntreprise": true,
+            "concerneCollectivite": true,
+            "concerneExploitation": false
+        },
+        {
+            "id": 1898247,
+            "nom": "Navigation fluviale",
+            "thematique": "Travaux et activit\u00e9s en cours d'eau",
+            "description": "Mesures d\u00e9finies \u00e0 l\u2019article 10 de l\u2019arr\u00eat\u00e9 pr\u00e9fectoral portant plan d'action s\u00e9cheresse de l\u2019Aude.",
+            "concerneParticulier": false,
+            "concerneEntreprise": true,
+            "concerneCollectivite": true,
+            "concerneExploitation": false
+        },
+        {
+            "id": 1898256,
+            "nom": "Nettoyage des fa\u00e7ades, toitures, trottoirs, voiries et autres surfaces imperm\u00e9abilis\u00e9es",
+            "thematique": "Nettoyer",
+            "description": "Interdiction totale sauf imp\u00e9ratifs sanitaires ou s\u00e9curitaires",
+            "concerneParticulier": true,
+            "concerneEntreprise": true,
+            "concerneCollectivite": true,
+            "concerneExploitation": true
+        },
+        {
+            "id": 1898273,
+            "nom": "Orpaillage et activit\u00e9s impactant les milieux aquatiques",
+            "thematique": "Travaux et activit\u00e9s en cours d'eau",
+            "description": "Interdiction totale",
+            "concerneParticulier": true,
+            "concerneEntreprise": true,
+            "concerneCollectivite": false,
+            "concerneExploitation": false
+        },
+        {
+            "id": 1898280,
+            "nom": "Pr\u00e9l\u00e8vements destin\u00e9s au fonctionnement des milieux naturels",
+            "thematique": "Pr\u00e9lever",
+            "description": "Interdiction totale",
+            "concerneParticulier": true,
+            "concerneEntreprise": true,
+            "concerneCollectivite": true,
+            "concerneExploitation": false
+        },
+        {
+            "id": 1898286,
+            "nom": "R\u00e9alisation de seuils provisoires",
+            "thematique": "Pr\u00e9lever",
+            "description": "Interdiction totale sauf autorisation administrative",
+            "concerneParticulier": true,
+            "concerneEntreprise": true,
+            "concerneCollectivite": true,
+            "concerneExploitation": true
+        },
+        {
+            "id": 1898307,
+            "nom": "Remplissage citerne, r\u00e9serve, cuve \u00e0 eau",
+            "thematique": "Pr\u00e9lever",
+            "description": "Interdiction des pr\u00e9l\u00e8vements sauf d\u00e9rogations pr\u00e9vues dans l\u2019arr\u00eat\u00e9 restriction (abreuvement des troupeaux).",
+            "concerneParticulier": true,
+            "concerneEntreprise": true,
+            "concerneCollectivite": true,
+            "concerneExploitation": true
+        },
+        {
+            "id": 1898308,
+            "nom": "Remplissage de piscines de classification A et B",
+            "thematique": "Remplir ou vidanger",
+            "description": "Remise en eau et renouvellement sanitaire autoris\u00e9s.",
+            "concerneParticulier": true,
+            "concerneEntreprise": true,
+            "concerneCollectivite": true,
+            "concerneExploitation": false
+        },
+        {
+            "id": 1898318,
+            "nom": "Remplissage des piscines unifamiliales et de cat\u00e9gories C et D",
+            "thematique": "Remplir ou vidanger",
+            "description": "Remise \u00e0 niveau autoris\u00e9e entre 20h et 8h.",
+            "concerneParticulier": true,
+            "concerneEntreprise": false,
+            "concerneCollectivite": false,
+            "concerneExploitation": false
+        },
+        {
+            "id": 1898332,
+            "nom": "Remplissage des plans d'eau et canaux d'agr\u00e9ment",
+            "thematique": "Remplir ou vidanger",
+            "description": "Interdiction du premier remplissage et du maintien du niveau des plans d\u2019eau et canaux d\u2019agr\u00e9ment.",
+            "concerneParticulier": true,
+            "concerneEntreprise": true,
+            "concerneCollectivite": true,
+            "concerneExploitation": false
+        }
+    ],
+    "SOU": [
+        {
+            "id": 1898043,
+            "nom": "Activit\u00e9s cyn\u00e9g\u00e9tiques",
+            "thematique": "Pr\u00e9lever",
+            "description": "Les pr\u00e9l\u00e8vements d'eau pour la chasse sont interdits",
+            "concerneParticulier": true,
+            "concerneEntreprise": true,
+            "concerneCollectivite": true,
+            "concerneExploitation": true
+        },
+        {
+            "id": 1898044,
+            "nom": "Activit\u00e9s de loisirs (professionnelles et amateurs) en cours d'eau hors orpaillage",
+            "thematique": "Travaux et activit\u00e9s en cours d'eau",
+            "description": "Les activit\u00e9s de loisirs n\u00e9cessitant de marcher dans l\u2019eau (canyoning, ruisseling..) sont interdits dans les r\u00e9servoirs biologiques inscrits au sch\u00e9ma directeur d\u2019am\u00e9nagement et de gestion des eaux (SDAGE) 2022-2027 du bassin Rh\u00f4ne-M\u00e9diterran\u00e9e, approuv\u00e9 le 21 mars 2022.",
+            "concerneParticulier": true,
+            "concerneEntreprise": true,
+            "concerneCollectivite": true,
+            "concerneExploitation": false
+        },
+        {
+            "id": 1898163,
+            "nom": "Irrigation des productions mara\u00eech\u00e8res professionnelles",
+            "thematique": "Irriguer",
+            "description": "Interdiction de pr\u00e9lever de 8h \u00e0 20h",
+            "concerneParticulier": false,
+            "concerneEntreprise": false,
+            "concerneCollectivite": false,
+            "concerneExploitation": true
+        },
+        {
+            "id": 1898127,
+            "nom": "Irrigation des plantiers agricoles de moins de 3ans",
+            "thematique": "Irriguer",
+            "description": "Interdiction de 8h \u00e0 20h.",
+            "concerneParticulier": false,
+            "concerneEntreprise": false,
+            "concerneCollectivite": false,
+            "concerneExploitation": true
+        },
+        {
+            "id": 1898045,
+            "nom": "Activit\u00e9s industrielles et commerciales",
+            "thematique": "Activit\u00e9s \u00e9conomiques",
+            "description": "Les activit\u00e9s industrielles et commerciales devront limiter au strict n\u00e9cessaire leur consommation d\u2019eau. Le registre de pr\u00e9l\u00e8vement r\u00e9glementaire devra \u00eatre rempli hebdomadairement.",
+            "concerneParticulier": true,
+            "concerneEntreprise": true,
+            "concerneCollectivite": true,
+            "concerneExploitation": true
+        },
+        {
+            "id": 1898050,
+            "nom": "Alimentation des fontaines publiques et priv\u00e9es d\u2019ornement",
+            "thematique": "Alimenter des fontaines et autres usages de loisirs",
+            "description": "Interdiction du maintien des fontaines publiques en circuit ouvert.",
+            "concerneParticulier": true,
+            "concerneEntreprise": true,
+            "concerneCollectivite": true,
+            "concerneExploitation": false
+        },
+        {
+            "id": 1898051,
+            "nom": "Arrosage des espaces verts",
+            "thematique": "Arroser",
+            "description": "Interdiction",
+            "concerneParticulier": true,
+            "concerneEntreprise": true,
+            "concerneCollectivite": true,
+            "concerneExploitation": false
+        },
+        {
+            "id": 1898053,
+            "nom": "Arrosage des golfs",
+            "thematique": "Arroser",
+            "description": "Interdiction totale.",
+            "concerneParticulier": false,
+            "concerneEntreprise": true,
+            "concerneCollectivite": true,
+            "concerneExploitation": false
+        },
+        {
+            "id": 1898055,
+            "nom": "Arrosage des jardins potagers (y compris les serres non-agricoles)",
+            "thematique": "Arroser",
+            "description": "Interdiction de pr\u00e9lever de 8h \u00e0 20h",
+            "concerneParticulier": true,
+            "concerneEntreprise": true,
+            "concerneCollectivite": true,
+            "concerneExploitation": false
+        },
+        {
+            "id": 1898059,
+            "nom": "Arrosage des plantations d'arbre de moins de 3 ans",
+            "thematique": "Arroser",
+            "description": "Interdiction de 8h \u00e0 20h.",
+            "concerneParticulier": true,
+            "concerneEntreprise": true,
+            "concerneCollectivite": true,
+            "concerneExploitation": false
+        },
+        {
+            "id": 1898061,
+            "nom": "Arrosage des terrains de sport et de loisirs",
+            "thematique": "Arroser",
+            "description": "Interdit \u00e0 l'exception de 2 nuits par semaine (4h max par nuit), sur d\u00e9claration en DDTM (y compris \u00e0 partir d'une ressource compens\u00e9e, s\u00e9curis\u00e9e). Terrains d\u2019entrainement ou comp\u00e9tition \"Elite\" : arrosage autoris\u00e9 jusqu'\u00e0 300 m3 max par semaine et par terrain sur d\u00e9claration DDTM (y compris \u00e0 partir d'une ressource compens\u00e9e, s\u00e9curis\u00e9e). Pour tout type de terrain : Compteur volum\u00e9trique et tenue d'un registre de pr\u00e9l\u00e8vement (hebdomadaire) obligatoires.",
+            "concerneParticulier": true,
+            "concerneEntreprise": true,
+            "concerneCollectivite": true,
+            "concerneExploitation": false
+        },
+        {
+            "id": 1898064,
+            "nom": "Canaux agricoles dont ceux participant \u00e0 la recharge d\u2019aquif\u00e8res et non destin\u00e9s \u00e0 la navigation fluviale ou \u00e0 l\u2019agr\u00e9ment",
+            "thematique": "Remplir ou vidanger",
+            "description": "Interdiction des pr\u00e9l\u00e8vements sauf d\u00e9rogations pr\u00e9vues dans l\u2019arr\u00eat\u00e9 restriction.",
+            "concerneParticulier": false,
+            "concerneEntreprise": false,
+            "concerneCollectivite": false,
+            "concerneExploitation": true
+        },
+        {
+            "id": 1898066,
+            "nom": "Exploitation des installations class\u00e9es pour la protection de l\u2019environnement (ICPE)",
+            "thematique": "ICPE",
+            "description": "Respect des dispositions de l\u2019arr\u00eat\u00e9 minist\u00e9riel du 30 juin 2023 modifi\u00e9 par l\u2019arr\u00eat\u00e9 du 3 juillet 2024 ou de l'arr\u00eat\u00e9 pr\u00e9fectoral de l'ICPE s'il est plus contraignant.",
+            "concerneParticulier": false,
+            "concerneEntreprise": true,
+            "concerneCollectivite": true,
+            "concerneExploitation": true
+        },
+        {
+            "id": 1898082,
+            "nom": "Fonctionnement des douches de plages et tout autre dispositif analogue",
+            "thematique": "Alimenter des fontaines et autres usages de loisirs",
+            "description": "Interdiction totale",
+            "concerneParticulier": true,
+            "concerneEntreprise": true,
+            "concerneCollectivite": true,
+            "concerneExploitation": false
+        },
+        {
+            "id": 1898092,
+            "nom": "Installations de production d\u2019\u00e9lectricit\u00e9 d\u2019origine hydraulique",
+            "thematique": "Installations de production d'\u00e9lectricit\u00e9",
+            "description": "L\u2019exploitant informe le service police de l\u2019eau du d\u00e9partement et la DREAL de tout arr\u00eat de fonctionnement prolong\u00e9 pour des raisons techniques ou indisponibilit\u00e9 des \u00e9quipements de production \u00e9lectrique, ainsi que de toute reprise.",
+            "concerneParticulier": true,
+            "concerneEntreprise": true,
+            "concerneCollectivite": true,
+            "concerneExploitation": false
+        },
+        {
+            "id": 1898116,
+            "nom": "Irrigation agricole des cultures (sauf pr\u00e9l\u00e8vements d\u00e9connect\u00e9s de la ressource en eau)",
+            "thematique": "Irriguer",
+            "description": "R\u00e9duction des pr\u00e9l\u00e8vements de 70 % se traduisant par l\u2019interdiction de pr\u00e9lever de 8 heures \u00e0 20 heures quatre jours par semaine et toute la journ\u00e9e trois jours par semaine. Jours autoris\u00e9s : rive gauche les lundi, mercredi et vendredi de 20h \u00e0 8h du lendemain ; rive droite les mardi, jeudi et samedi de 20h \u00e0 8h du lendemain.",
+            "concerneParticulier": false,
+            "concerneEntreprise": false,
+            "concerneCollectivite": false,
+            "concerneExploitation": true
+        },
+        {
+            "id": 1898338,
+            "nom": "Remplissage des plans d\u2019eau sauf retenue eau potable, soutien d'\u00e9tiage et production d'\u00e9lectricit\u00e9 d'origine hydraulique",
+            "thematique": "Remplir ou vidanger",
+            "description": "Interdiction totale, hors ouvrages destin\u00e9s \u00e0 l\u2019AEP et ouvrages participant au soutien d\u2019\u00e9tiage ou pr\u00e9vus par un titre.",
+            "concerneParticulier": true,
+            "concerneEntreprise": true,
+            "concerneCollectivite": true,
+            "concerneExploitation": true
+        },
+        {
+            "id": 1898359,
+            "nom": "Vidange de plans d\u2019eau de toute nature vers le r\u00e9seau hydrographique",
+            "thematique": "Remplir ou vidanger",
+            "description": "Interdiction totale sauf autorisation administrative",
+            "concerneParticulier": true,
+            "concerneEntreprise": true,
+            "concerneCollectivite": true,
+            "concerneExploitation": true
+        },
+        {
+            "id": 1898369,
+            "nom": "Vidange des piscines",
+            "thematique": "Remplir ou vidanger",
+            "description": "Interdiction totale, sauf imp\u00e9ratif sanitaire soumis \u00e0 la validation pr\u00e9alable de l\u2019ARS.",
+            "concerneParticulier": true,
+            "concerneEntreprise": true,
+            "concerneCollectivite": true,
+            "concerneExploitation": false
+        },
+        {
+            "id": 1898170,
+            "nom": "Lavage de v\u00e9hicules et engins nautiques par les professionnels",
+            "thematique": "Nettoyer",
+            "description": "Interdiction hors installations professionnelles disposant d\u2019un recyclage de l\u2019eau \u00e0 70 %, sauf v\u00e9hicules soumis \u00e0 obligation r\u00e9glementaire et organismes de s\u00e9curit\u00e9 publique. Affichage obligatoire des mesures par les stations.",
+            "concerneParticulier": true,
+            "concerneEntreprise": true,
+            "concerneCollectivite": true,
+            "concerneExploitation": true
+        },
+        {
+            "id": 1898213,
+            "nom": "Lavage de v\u00e9hicules et engins nautiques priv\u00e9s chez les particuliers",
+            "thematique": "Nettoyer",
+            "description": "Interdiction totale",
+            "concerneParticulier": true,
+            "concerneEntreprise": false,
+            "concerneCollectivite": false,
+            "concerneExploitation": false
+        },
+        {
+            "id": 1898236,
+            "nom": "L\u2019\u00e9clusage ou la man\u0153uvre des vannes d\u2019ouvrages hydrauliques",
+            "thematique": "Ouvrages hydrauliques",
+            "description": "Interdiction totale sauf pour franchissement piscicole, s\u00e9curit\u00e9 des ouvrages, restitution du d\u00e9bit entrant, soutien d\u2019\u00e9tiage et alimentation des piscicultures ou ouvrages pr\u00e9vus par r\u00e8glement ou concession.",
+            "concerneParticulier": true,
+            "concerneEntreprise": true,
+            "concerneCollectivite": true,
+            "concerneExploitation": false
+        },
+        {
+            "id": 1898256,
+            "nom": "Nettoyage des fa\u00e7ades, toitures, trottoirs, voiries et autres surfaces imperm\u00e9abilis\u00e9es",
+            "thematique": "Nettoyer",
+            "description": "Interdiction totale sauf imp\u00e9ratifs sanitaires ou s\u00e9curitaires",
+            "concerneParticulier": true,
+            "concerneEntreprise": true,
+            "concerneCollectivite": true,
+            "concerneExploitation": true
+        },
+        {
+            "id": 1898280,
+            "nom": "Pr\u00e9l\u00e8vements destin\u00e9s au fonctionnement des milieux naturels",
+            "thematique": "Pr\u00e9lever",
+            "description": "Interdiction totale",
+            "concerneParticulier": true,
+            "concerneEntreprise": true,
+            "concerneCollectivite": true,
+            "concerneExploitation": false
+        },
+        {
+            "id": 1898286,
+            "nom": "R\u00e9alisation de seuils provisoires",
+            "thematique": "Pr\u00e9lever",
+            "description": "Interdiction totale sauf autorisation administrative",
+            "concerneParticulier": true,
+            "concerneEntreprise": true,
+            "concerneCollectivite": true,
+            "concerneExploitation": true
+        },
+        {
+            "id": 1898307,
+            "nom": "Remplissage citerne, r\u00e9serve, cuve \u00e0 eau",
+            "thematique": "Pr\u00e9lever",
+            "description": "Interdiction des pr\u00e9l\u00e8vements sauf d\u00e9rogations pr\u00e9vues dans l\u2019arr\u00eat\u00e9 restriction (abreuvement des troupeaux).",
+            "concerneParticulier": true,
+            "concerneEntreprise": true,
+            "concerneCollectivite": true,
+            "concerneExploitation": true
+        },
+        {
+            "id": 1898308,
+            "nom": "Remplissage de piscines de classification A et B",
+            "thematique": "Remplir ou vidanger",
+            "description": "Remise en eau et renouvellement sanitaire autoris\u00e9s.",
+            "concerneParticulier": true,
+            "concerneEntreprise": true,
+            "concerneCollectivite": true,
+            "concerneExploitation": false
+        },
+        {
+            "id": 1898318,
+            "nom": "Remplissage des piscines unifamiliales et de cat\u00e9gories C et D",
+            "thematique": "Remplir ou vidanger",
+            "description": "Remise \u00e0 niveau autoris\u00e9e entre 20h et 8h.",
+            "concerneParticulier": true,
+            "concerneEntreprise": false,
+            "concerneCollectivite": false,
+            "concerneExploitation": false
+        },
+        {
+            "id": 1898332,
+            "nom": "Remplissage des plans d'eau et canaux d'agr\u00e9ment",
+            "thematique": "Remplir ou vidanger",
+            "description": "Interdiction du premier remplissage et du maintien du niveau des plans d\u2019eau et canaux d\u2019agr\u00e9ment.",
+            "concerneParticulier": true,
+            "concerneEntreprise": true,
+            "concerneCollectivite": true,
+            "concerneExploitation": false
+        }
+    ],
+    "AEP": [
+        {
+            "id": 1898043,
+            "nom": "Activit\u00e9s cyn\u00e9g\u00e9tiques",
+            "thematique": "Pr\u00e9lever",
+            "description": "Les pr\u00e9l\u00e8vements d'eau pour la chasse sont interdits",
+            "concerneParticulier": true,
+            "concerneEntreprise": true,
+            "concerneCollectivite": true,
+            "concerneExploitation": true
+        },
+        {
+            "id": 1898044,
+            "nom": "Activit\u00e9s de loisirs (professionnelles et amateurs) en cours d'eau hors orpaillage",
+            "thematique": "Travaux et activit\u00e9s en cours d'eau",
+            "description": "Les activit\u00e9s de loisirs n\u00e9cessitant de marcher dans l\u2019eau (canyoning, ruisseling..) sont interdits dans les r\u00e9servoirs biologiques inscrits au sch\u00e9ma directeur d\u2019am\u00e9nagement et de gestion des eaux (SDAGE) 2022-2027 du bassin Rh\u00f4ne-M\u00e9diterran\u00e9e, approuv\u00e9 le 21 mars 2022.",
+            "concerneParticulier": true,
+            "concerneEntreprise": true,
+            "concerneCollectivite": true,
+            "concerneExploitation": false
+        },
+        {
+            "id": 1898045,
+            "nom": "Activit\u00e9s industrielles et commerciales",
+            "thematique": "Activit\u00e9s \u00e9conomiques",
+            "description": "Les activit\u00e9s industrielles et commerciales devront limiter au strict n\u00e9cessaire leur consommation d\u2019eau. Le registre de pr\u00e9l\u00e8vement r\u00e9glementaire devra \u00eatre rempli hebdomadairement.",
+            "concerneParticulier": true,
+            "concerneEntreprise": true,
+            "concerneCollectivite": true,
+            "concerneExploitation": true
+        },
+        {
+            "id": 1898050,
+            "nom": "Alimentation des fontaines publiques et priv\u00e9es d\u2019ornement",
+            "thematique": "Alimenter des fontaines et autres usages de loisirs",
+            "description": "Interdiction du maintien des fontaines publiques en circuit ouvert.",
+            "concerneParticulier": true,
+            "concerneEntreprise": true,
+            "concerneCollectivite": true,
+            "concerneExploitation": false
+        },
+        {
+            "id": 1898051,
+            "nom": "Arrosage des espaces verts",
+            "thematique": "Arroser",
+            "description": "Interdiction",
+            "concerneParticulier": true,
+            "concerneEntreprise": true,
+            "concerneCollectivite": true,
+            "concerneExploitation": false
+        },
+        {
+            "id": 1898053,
+            "nom": "Arrosage des golfs",
+            "thematique": "Arroser",
+            "description": "Interdiction totale.",
+            "concerneParticulier": false,
+            "concerneEntreprise": true,
+            "concerneCollectivite": true,
+            "concerneExploitation": false
+        },
+        {
+            "id": 1898055,
+            "nom": "Arrosage des jardins potagers (y compris les serres non-agricoles)",
+            "thematique": "Arroser",
+            "description": "Interdiction de pr\u00e9lever de 8h \u00e0 20h",
+            "concerneParticulier": true,
+            "concerneEntreprise": true,
+            "concerneCollectivite": true,
+            "concerneExploitation": false
+        },
+        {
+            "id": 1898059,
+            "nom": "Arrosage des plantations d'arbre de moins de 3 ans",
+            "thematique": "Arroser",
+            "description": "Interdiction de 8h \u00e0 20h.",
+            "concerneParticulier": true,
+            "concerneEntreprise": true,
+            "concerneCollectivite": true,
+            "concerneExploitation": false
+        },
+        {
+            "id": 1898061,
+            "nom": "Arrosage des terrains de sport et de loisirs",
+            "thematique": "Arroser",
+            "description": "Interdit \u00e0 l'exception de 2 nuits par semaine (4h max par nuit), sur d\u00e9claration en DDTM (y compris \u00e0 partir d'une ressource compens\u00e9e, s\u00e9curis\u00e9e). Terrains d\u2019entrainement ou comp\u00e9tition \"Elite\" : arrosage autoris\u00e9 jusqu'\u00e0 300 m3 max par semaine et par terrain sur d\u00e9claration DDTM (y compris \u00e0 partir d'une ressource compens\u00e9e, s\u00e9curis\u00e9e). Pour tout type de terrain : Compteur volum\u00e9trique et tenue d'un registre de pr\u00e9l\u00e8vement (hebdomadaire) obligatoires.",
+            "concerneParticulier": true,
+            "concerneEntreprise": true,
+            "concerneCollectivite": true,
+            "concerneExploitation": false
+        },
+        {
+            "id": 1898064,
+            "nom": "Canaux agricoles dont ceux participant \u00e0 la recharge d\u2019aquif\u00e8res et non destin\u00e9s \u00e0 la navigation fluviale ou \u00e0 l\u2019agr\u00e9ment",
+            "thematique": "Remplir ou vidanger",
+            "description": "Interdiction des pr\u00e9l\u00e8vements sauf d\u00e9rogations pr\u00e9vues dans l\u2019arr\u00eat\u00e9 restriction.",
+            "concerneParticulier": false,
+            "concerneEntreprise": false,
+            "concerneCollectivite": false,
+            "concerneExploitation": true
+        },
+        {
+            "id": 1898066,
+            "nom": "Exploitation des installations class\u00e9es pour la protection de l\u2019environnement (ICPE)",
+            "thematique": "ICPE",
+            "description": "Respect des dispositions de l\u2019arr\u00eat\u00e9 minist\u00e9riel du 30 juin 2023 modifi\u00e9 par l\u2019arr\u00eat\u00e9 du 3 juillet 2024 ou de l'arr\u00eat\u00e9 pr\u00e9fectoral de l'ICPE s'il est plus contraignant.",
+            "concerneParticulier": false,
+            "concerneEntreprise": true,
+            "concerneCollectivite": true,
+            "concerneExploitation": true
+        },
+        {
+            "id": 1898082,
+            "nom": "Fonctionnement des douches de plages et tout autre dispositif analogue",
+            "thematique": "Alimenter des fontaines et autres usages de loisirs",
+            "description": "Interdiction totale",
+            "concerneParticulier": true,
+            "concerneEntreprise": true,
+            "concerneCollectivite": true,
+            "concerneExploitation": false
+        },
+        {
+            "id": 1898092,
+            "nom": "Installations de production d\u2019\u00e9lectricit\u00e9 d\u2019origine hydraulique",
+            "thematique": "Installations de production d'\u00e9lectricit\u00e9",
+            "description": "L\u2019exploitant informe le service police de l\u2019eau du d\u00e9partement et la DREAL de tout arr\u00eat de fonctionnement prolong\u00e9 pour des raisons techniques ou indisponibilit\u00e9 des \u00e9quipements de production \u00e9lectrique, ainsi que de toute reprise.",
+            "concerneParticulier": true,
+            "concerneEntreprise": true,
+            "concerneCollectivite": true,
+            "concerneExploitation": false
+        },
+        {
+            "id": 1898369,
+            "nom": "Vidange des piscines",
+            "thematique": "Remplir ou vidanger",
+            "description": "Interdiction totale, sauf imp\u00e9ratif sanitaire soumis \u00e0 la validation pr\u00e9alable de l\u2019ARS.",
+            "concerneParticulier": true,
+            "concerneEntreprise": true,
+            "concerneCollectivite": true,
+            "concerneExploitation": false
+        },
+        {
+            "id": 1898170,
+            "nom": "Lavage de v\u00e9hicules et engins nautiques par les professionnels",
+            "thematique": "Nettoyer",
+            "description": "Interdiction hors installations professionnelles disposant d\u2019un recyclage de l\u2019eau \u00e0 70 %, sauf v\u00e9hicules soumis \u00e0 obligation r\u00e9glementaire et organismes de s\u00e9curit\u00e9 publique. Affichage obligatoire des mesures par les stations.",
+            "concerneParticulier": true,
+            "concerneEntreprise": true,
+            "concerneCollectivite": true,
+            "concerneExploitation": true
+        },
+        {
+            "id": 1898213,
+            "nom": "Lavage de v\u00e9hicules et engins nautiques priv\u00e9s chez les particuliers",
+            "thematique": "Nettoyer",
+            "description": "Interdiction totale",
+            "concerneParticulier": true,
+            "concerneEntreprise": false,
+            "concerneCollectivite": false,
+            "concerneExploitation": false
+        },
+        {
+            "id": 1898236,
+            "nom": "L\u2019\u00e9clusage ou la man\u0153uvre des vannes d\u2019ouvrages hydrauliques",
+            "thematique": "Ouvrages hydrauliques",
+            "description": "Interdiction totale sauf pour franchissement piscicole, s\u00e9curit\u00e9 des ouvrages, restitution du d\u00e9bit entrant, soutien d\u2019\u00e9tiage et alimentation des piscicultures ou ouvrages pr\u00e9vus par r\u00e8glement ou concession.",
+            "concerneParticulier": true,
+            "concerneEntreprise": true,
+            "concerneCollectivite": true,
+            "concerneExploitation": false
+        },
+        {
+            "id": 1898256,
+            "nom": "Nettoyage des fa\u00e7ades, toitures, trottoirs, voiries et autres surfaces imperm\u00e9abilis\u00e9es",
+            "thematique": "Nettoyer",
+            "description": "Interdiction totale sauf imp\u00e9ratifs sanitaires ou s\u00e9curitaires",
+            "concerneParticulier": true,
+            "concerneEntreprise": true,
+            "concerneCollectivite": true,
+            "concerneExploitation": true
+        },
+        {
+            "id": 1898286,
+            "nom": "R\u00e9alisation de seuils provisoires",
+            "thematique": "Pr\u00e9lever",
+            "description": "Interdiction totale sauf autorisation administrative",
+            "concerneParticulier": true,
+            "concerneEntreprise": true,
+            "concerneCollectivite": true,
+            "concerneExploitation": true
+        },
+        {
+            "id": 1898307,
+            "nom": "Remplissage citerne, r\u00e9serve, cuve \u00e0 eau",
+            "thematique": "Pr\u00e9lever",
+            "description": "Interdiction des pr\u00e9l\u00e8vements sauf d\u00e9rogations pr\u00e9vues dans l\u2019arr\u00eat\u00e9 restriction (abreuvement des troupeaux).",
+            "concerneParticulier": true,
+            "concerneEntreprise": true,
+            "concerneCollectivite": true,
+            "concerneExploitation": true
+        },
+        {
+            "id": 1898308,
+            "nom": "Remplissage de piscines de classification A et B",
+            "thematique": "Remplir ou vidanger",
+            "description": "Remise en eau et renouvellement sanitaire autoris\u00e9s.",
+            "concerneParticulier": true,
+            "concerneEntreprise": true,
+            "concerneCollectivite": true,
+            "concerneExploitation": false
+        },
+        {
+            "id": 1898318,
+            "nom": "Remplissage des piscines unifamiliales et de cat\u00e9gories C et D",
+            "thematique": "Remplir ou vidanger",
+            "description": "Remise \u00e0 niveau autoris\u00e9e entre 20h et 8h.",
+            "concerneParticulier": true,
+            "concerneEntreprise": false,
+            "concerneCollectivite": false,
+            "concerneExploitation": false
+        }
+    ]
+}
