@@ -202,11 +202,11 @@ $eqLogics = eqLogic::byType($plugin->getId());
                                 </div>
                             </div>
                             <div class="form-group">
-                                <label class="col-sm-4 control-label">{{Dimensions fixes du widget}}</label>
+                                <label class="col-sm-4 control-label">{{Dimensions adaptatives du widget}}</label>
                                 <div class="col-sm-5">
                                         <label class="checkbox-inline checkbox-inline--icon-only">
                                                 <input type="checkbox" class="eqLogicAttr" data-l1key="configuration" data-l2key="useFixedDimensions" checked />
-                                                <span class="sr-only">{{Forcer une largeur de 650px et une hauteur automatique}}</span>
+                                                <span class="sr-only">{{Dimensions adaptatives du widget}}</span>
                                         </label>
                                 </div>
                             </div>
