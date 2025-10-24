@@ -504,33 +504,86 @@ class vigieau extends eqLogic {
     if (!is_string($rawValue)) {
       return array();
     }
-    $candidates = array();
+
+    $queue = array();
+    $seen = array();
+    $addCandidate = function ($value) use (&$queue, &$seen) {
+      if (!is_string($value)) {
+        return;
+      }
+      $normalized = trim($value);
+      if ($normalized === '') {
+        return;
+      }
+      if (isset($seen[$normalized])) {
+        return;
+      }
+      $seen[$normalized] = true;
+      $queue[] = $normalized;
+    };
+
     $trimmed = trim($rawValue);
-    if ($trimmed !== '') {
-      $candidates[] = $trimmed;
-    }
+    $addCandidate($trimmed);
+
     $htmlDecodeFlags = defined('ENT_HTML5') ? ENT_QUOTES | ENT_HTML5 : ENT_QUOTES;
     $htmlDecoded = html_entity_decode($trimmed, $htmlDecodeFlags, 'UTF-8');
-    if (is_string($htmlDecoded)) {
-      $htmlDecoded = trim($htmlDecoded);
-      if ($htmlDecoded !== '' && !in_array($htmlDecoded, $candidates, true)) {
-        $candidates[] = $htmlDecoded;
+    if (is_string($htmlDecoded) && $htmlDecoded !== $trimmed) {
+      $addCandidate($htmlDecoded);
+    }
+
+    if (strpos($trimmed, '\\') !== false) {
+      $unescaped = stripcslashes($trimmed);
+      if ($unescaped !== $trimmed) {
+        $addCandidate($unescaped);
       }
     }
-    if (strpos($trimmed, '\\"') !== false) {
-      $stripped = str_replace('\\"', '"', $trimmed);
-      $stripped = trim($stripped);
-      if ($stripped !== '' && !in_array($stripped, $candidates, true)) {
-        $candidates[] = $stripped;
+
+    while (!empty($queue)) {
+      $candidate = array_shift($queue);
+      if ($candidate === '') {
+        continue;
       }
-    }
-    foreach ($candidates as $candidate) {
+
       $decoded = json_decode($candidate, true);
       if (is_array($decoded)) {
         return $decoded;
       }
+
+      if (is_string($decoded)) {
+        $addCandidate($decoded);
+      }
+
+      $unwrapped = $this->unwrapJsonContainer($candidate);
+      if ($unwrapped !== null) {
+        $addCandidate($unwrapped);
+      }
+
+      if (strpos($candidate, '\\"') !== false) {
+        $addCandidate(str_replace('\\"', '"', $candidate));
+      }
+
+      if (strpos($candidate, '\\\\') !== false) {
+        $addCandidate(str_replace('\\\\', '\\', $candidate));
+      }
     }
+
     return array();
+  }
+
+  private function unwrapJsonContainer($value) {
+    if (!is_string($value)) {
+      return null;
+    }
+    $length = strlen($value);
+    if ($length < 2) {
+      return null;
+    }
+    $first = $value[0];
+    $last = $value[$length - 1];
+    if (($first === '"' && $last === '"') || ($first === "'" && $last === "'")) {
+      return substr($value, 1, -1);
+    }
+    return null;
   }
 
   private function getCommonCommandDefinitions() {
