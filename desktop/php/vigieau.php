@@ -192,7 +192,7 @@ $eqLogics = eqLogic::byType($plugin->getId());
                                 <label class="col-sm-4 control-label">{{Dimensions fixes du widget}}</label>
                                 <div class="col-sm-5">
                                         <label class="checkbox-inline">
-                                                <input type="checkbox" class="eqLogicAttr" data-l1key="configuration" data-l2key="useFixedDimensions" checked /> {{Forcer une largeur de 650px et une hauteur automatique}}
+                                                <input type="checkbox" class="eqLogicAttr" data-l1key="configuration" data-l2key="useFixedDimensions" checked /> {{Dimension du Widget automatique}}
                                         </label>
                                 </div>
                             </div>
