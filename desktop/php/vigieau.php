@@ -59,6 +59,18 @@ $eqLogics = eqLogic::byType($plugin->getId());
 .usage-filter-actions .btn-group {
   display: inline-flex;
 }
+
+.checkbox-inline--icon-only {
+  display: inline-flex;
+  align-items: center;
+  padding-left: 0;
+  margin-left: 0;
+}
+
+.checkbox-inline--icon-only input[type="checkbox"] {
+  position: static;
+  margin: 0;
+}
 </style>
 
 <div class="row row-overflow">
@@ -183,8 +195,18 @@ $eqLogics = eqLogic::byType($plugin->getId());
                             <div class="form-group">
                                 <label class="col-sm-4 control-label">{{Utiliser le widget du plugin}}</label>
                                 <div class="col-sm-5">
-                                        <label class="checkbox-inline">
-                                                <input type="checkbox" class="eqLogicAttr" data-l1key="configuration" data-l2key="usePluginWidget" checked /> {{Utiliser le widget du plugin}}
+                                        <label class="checkbox-inline checkbox-inline--icon-only">
+                                                <input type="checkbox" class="eqLogicAttr" data-l1key="configuration" data-l2key="usePluginWidget" checked />
+                                                <span class="sr-only">{{Utiliser le widget du plugin}}</span>
+                                        </label>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-sm-4 control-label">{{Dimensions fixes du widget}}</label>
+                                <div class="col-sm-5">
+                                        <label class="checkbox-inline checkbox-inline--icon-only">
+                                                <input type="checkbox" class="eqLogicAttr" data-l1key="configuration" data-l2key="useFixedDimensions" checked />
+                                                <span class="sr-only">{{Forcer une largeur de 650px et une hauteur automatique}}</span>
                                         </label>
                                 </div>
                             </div>
