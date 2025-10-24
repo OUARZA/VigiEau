@@ -348,38 +348,6 @@ class vigieau extends eqLogic {
     return '';
   }
 
-  private function getFallbackUsageCatalog() {
-    static $catalog = null;
-    if ($catalog !== null) {
-      return $catalog;
-    }
-
-    $catalog = array();
-    $path = __DIR__ . '/../../resources/fallback_measures.json';
-    if (!is_file($path)) {
-      return $catalog;
-    }
-
-    $contents = @file_get_contents($path);
-    if ($contents === false) {
-      return $catalog;
-    }
-
-    $decoded = json_decode($contents, true);
-    if (!is_array($decoded)) {
-      return $catalog;
-    }
-
-    foreach ($decoded as $zoneType => $usages) {
-      if (!is_string($zoneType) || !is_array($usages)) {
-        continue;
-      }
-      $catalog[strtoupper($zoneType)] = $usages;
-    }
-
-    return $catalog;
-  }
-
   private function slugifyUsageLabel($label) {
     $label = trim((string) $label);
     if ($label === '') {
@@ -1112,7 +1080,7 @@ class vigieau extends eqLogic {
           }
         }
         if (count($messages) === 0) {
-          return __('Aucune information disponible', __FILE__);
+          return __('Mesures : Aucune restriction en cours.', __FILE__);
         }
         return implode('<br/><br/>', $messages);
       };
@@ -1151,31 +1119,13 @@ class vigieau extends eqLogic {
         $this->updateCommandIfExists('urlPdf', '');
         $this->updateCommandIfExists('urlPdfCadre', '');
 
-        $fallbackCatalog = $this->getFallbackUsageCatalog();
-        if (!empty($fallbackCatalog)) {
-          log::add(__CLASS__, 'debug', 'Utilisation du catalogue de mesures par défaut en absence de restriction active.');
-        }
-
         foreach ($zoneValues as $typeZone => $initialValues) {
-          $fallbackUsages = isset($fallbackCatalog[$typeZone]) && is_array($fallbackCatalog[$typeZone]) ? $fallbackCatalog[$typeZone] : array();
-          $editorialContent = $buildEditorial($fallbackUsages);
-          $editorial = $editorialContent;
-          $referencePrefix = __('Aucune restriction en cours. Mesures de référence :', __FILE__);
-          if ($editorialContent !== '' && $editorialContent !== __('Aucune information disponible', __FILE__)) {
-            $editorial = '<i>'.$referencePrefix.'</i><br/><br/>'.$editorialContent;
-          }
-          $usagesJson = json_encode($fallbackUsages, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
-          if ($usagesJson === false) {
-            $usagesJson = '[]';
-          }
-
           $zoneValues[$typeZone] = array_merge($initialValues, array(
-            'nom' => !empty($fallbackUsages) ? __('Mesures de référence', __FILE__) : $initialValues['nom'],
             'niveau' => $defaultLevel['value'],
             'label' => $defaultLevel['label'],
-            'editorial' => $editorial,
+            'editorial' => __('Mesures : Aucune restriction en cours.', __FILE__),
             'niveauGravite' => 'aucune',
-            'usages' => $usagesJson,
+            'usages' => '[]',
           ));
         }
       } else {
