@@ -22,7 +22,7 @@ Ce plugin permet de remonter les informations du site de l'information sécheres
 
 6. Sauvegarder.
 
->**NOTE**
+> [!NOTE]
 >Type d'eau consommé :  
 >| Type | Description |
 >| --- | --- |
@@ -53,5 +53,6 @@ Dans les pavés "Type d'eau consommée", vous retrouvez les informations.
 | Partie | Description |
 | --- | --- |
 | Titre | Le type d'eau consommée |
-| 2ème partie | Vous avez sélectionné qu'un seul type d'eau : Les informations concernant le type d'eau consommée. |
-| 2ème - 4ème partie | Vous avez sélectionné tous les types d'eau consommée : Vous affichez donc les informations sur les 3 types d'eau consommée. |
+| Nom | Nom de la zone d'alerte |
+| Restriction | Le type de restriction : Pas de restrictions / Vigilance / Alerte / Alerte renforcée / Crise |
+| Mesures | Les différentes mesures en lien avec les restrictions |
