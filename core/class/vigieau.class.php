@@ -427,7 +427,24 @@ class vigieau extends eqLogic {
 
   private function getStoredUsageGroups() {
     $stored = $this->getConfiguration('usageOptionsCache', array());
-    return is_array($stored) ? $stored : array();
+    if (is_array($stored)) {
+      return $stored;
+    }
+    if (is_string($stored)) {
+      $trimmed = trim($stored);
+      if ($trimmed === '') {
+        return array();
+      }
+      $decoded = json_decode($trimmed, true);
+      if (is_array($decoded)) {
+        return $decoded;
+      }
+      $unserialized = @unserialize($trimmed);
+      if (is_array($unserialized)) {
+        return $unserialized;
+      }
+    }
+    return array();
   }
 
   private function slugifyUsageLabel($label) {
