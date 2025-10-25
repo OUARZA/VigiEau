@@ -22,6 +22,8 @@ class vigieau extends eqLogic {
 
   /*     * *************************Attributs****************************** */
 
+  private static $fallbackUsageCache = null;
+
   private static function &getAutoRefreshLocks() {
     static $autoRefreshLocks = array();
     return $autoRefreshLocks;
@@ -420,6 +422,67 @@ class vigieau extends eqLogic {
     }
   }
 
+  private function addUsageToGroups(&$usageGroups, $usage) {
+    if (!is_array($usage)) {
+      return;
+    }
+    $key = $this->buildUsageKey($usage);
+    if ($key === '') {
+      return;
+    }
+    $displayKey = $this->buildUsageDisplayKey($usage);
+    if ($displayKey === '') {
+      $displayKey = $key;
+    }
+    if (!isset($usageGroups[$displayKey])) {
+      $usageGroups[$displayKey] = array(
+        'displayKey' => $displayKey,
+        'keys' => array(),
+        'nom' => isset($usage['nom']) ? $usage['nom'] : '',
+        'thematique' => isset($usage['thematique']) ? $usage['thematique'] : '',
+      );
+    } else {
+      if ($usageGroups[$displayKey]['nom'] === '' && !empty($usage['nom'])) {
+        $usageGroups[$displayKey]['nom'] = $usage['nom'];
+      }
+      if ($usageGroups[$displayKey]['thematique'] === '' && !empty($usage['thematique'])) {
+        $usageGroups[$displayKey]['thematique'] = $usage['thematique'];
+      }
+    }
+    if (!in_array($key, $usageGroups[$displayKey]['keys'], true)) {
+      $usageGroups[$displayKey]['keys'][] = $key;
+    }
+  }
+
+  private function getFallbackUsageData() {
+    if (self::$fallbackUsageCache !== null) {
+      return self::$fallbackUsageCache;
+    }
+    $filePath = dirname(dirname(__DIR__)) . '/resources/demond/fallback_measures.json';
+    if (!is_readable($filePath)) {
+      self::$fallbackUsageCache = array();
+      return self::$fallbackUsageCache;
+    }
+    $rawContent = file_get_contents($filePath);
+    if ($rawContent === false || $rawContent === '') {
+      self::$fallbackUsageCache = array();
+      return self::$fallbackUsageCache;
+    }
+    $decoded = json_decode($rawContent, true);
+    if (!is_array($decoded)) {
+      self::$fallbackUsageCache = array();
+      return self::$fallbackUsageCache;
+    }
+    $usages = array();
+    foreach ($decoded as $usage) {
+      if (is_array($usage)) {
+        $usages[] = $usage;
+      }
+    }
+    self::$fallbackUsageCache = $usages;
+    return self::$fallbackUsageCache;
+  }
+
   public function getUsageOptionsForConfig() {
     $usageGroups = array();
     $usageCommands = array('usages_zone_sup', 'usages_zone_sou', 'usages_zone_aep');
@@ -441,36 +504,12 @@ class vigieau extends eqLogic {
         continue;
       }
       foreach ($decoded as $usage) {
-        if (!is_array($usage)) {
-          continue;
-        }
-        $key = $this->buildUsageKey($usage);
-        if ($key === '') {
-          continue;
-        }
-        $displayKey = $this->buildUsageDisplayKey($usage);
-        if ($displayKey === '') {
-          $displayKey = $key;
-        }
-        if (!isset($usageGroups[$displayKey])) {
-          $usageGroups[$displayKey] = array(
-            'displayKey' => $displayKey,
-            'keys' => array(),
-            'nom' => isset($usage['nom']) ? $usage['nom'] : '',
-            'thematique' => isset($usage['thematique']) ? $usage['thematique'] : '',
-          );
-        } else {
-          if ($usageGroups[$displayKey]['nom'] === '' && !empty($usage['nom'])) {
-            $usageGroups[$displayKey]['nom'] = $usage['nom'];
-          }
-          if ($usageGroups[$displayKey]['thematique'] === '' && !empty($usage['thematique'])) {
-            $usageGroups[$displayKey]['thematique'] = $usage['thematique'];
-          }
-        }
-        if (!in_array($key, $usageGroups[$displayKey]['keys'], true)) {
-          $usageGroups[$displayKey]['keys'][] = $key;
-        }
+        $this->addUsageToGroups($usageGroups, $usage);
       }
+    }
+
+    foreach ($this->getFallbackUsageData() as $fallbackUsage) {
+      $this->addUsageToGroups($usageGroups, $fallbackUsage);
     }
     if (empty($usageGroups)) {
       return array();
