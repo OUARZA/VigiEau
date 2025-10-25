@@ -163,9 +163,17 @@
 
 .ve-restriction-line {
   display: flex;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
   align-items: center;
   gap: 6px;
+  white-space: nowrap;
+}
+
+@media (max-width: 520px) {
+  .ve-restriction-line {
+    flex-wrap: wrap;
+    white-space: normal;
+  }
 }
 
 /* ----- Liens par défaut ----- */
