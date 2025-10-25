@@ -263,9 +263,6 @@ $eqLogics = eqLogic::byType($plugin->getId());
 												<div class="btn-group" role="group">
                                                         <a class="btn btn-default btn-sm" id="usageFilterClear">{{Tout décocher}}</a>
                                                 </div>
-												<div class="btn-group" role="group">
-                                                <a class="btn btn-default btn-sm" id="usageFilterReload">{{Actualiser la liste}}</a>
-                                        		</div>
 										</div>
                                 </div>
                                 </div>

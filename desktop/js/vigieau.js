@@ -657,12 +657,6 @@ $(document).on('change', '.eqLogicAttr[data-l1key=id]', function () {
   }, 0);
 });
 
-$(document).on('click', '#usageFilterReload', function (e) {
-  e.preventDefault();
-  vigieauUsageFilterManager.currentEqId = null;
-  vigieauUsageFilterManager.refresh(true);
-});
-
 $(document).on('click', '#usageFilterSelectAll', function (e) {
   e.preventDefault();
   var $container = $('#usageFilterCheckboxes');
