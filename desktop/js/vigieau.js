@@ -435,6 +435,31 @@ function addCmdToTable(_cmd) {
 
 var vigieauUsageFilterManager = {
   currentEqId: null,
+  eqIdWatcher: null,
+  lastObservedEqId: null,
+  init: function () {
+    this.startEqIdWatcher();
+    this.refresh(false);
+  },
+  startEqIdWatcher: function () {
+    if (this.eqIdWatcher !== null) {
+      return;
+    }
+    var self = this;
+    this.eqIdWatcher = setInterval(function () {
+      var $eqIdInput = $('.eqLogicAttr[data-l1key=id]');
+      if ($eqIdInput.length === 0) {
+        return;
+      }
+      var observedId = $eqIdInput.value();
+      if (observedId === self.lastObservedEqId) {
+        return;
+      }
+      self.lastObservedEqId = observedId;
+      self.currentEqId = null;
+      self.refresh(true);
+    }, 750);
+  },
   refresh: function (force) {
     var $eqIdInput = $('.eqLogicAttr[data-l1key=id]');
     if ($eqIdInput.length === 0) {
@@ -695,7 +720,7 @@ $(document).on('change', '#vigieauCommuneSelect', function () {
 });
 
 $(document).ready(function () {
-  vigieauUsageFilterManager.refresh(false);
+  vigieauUsageFilterManager.init();
   setTimeout(function () {
     vigieauCommuneManager.loadFromConfig();
   }, 0);
