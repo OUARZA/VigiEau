@@ -1,0 +1,200 @@
+[
+  {
+    "id": 1898043,
+    "thematique": "Prélever",
+    "nom": "Activités cynégétiques",
+    "description": "Les prélèvements d'eau pour la chasse sont interdits"
+  },
+  {
+    "id": 1898044,
+    "thematique": "Travaux et activités en cours d'eau",
+    "nom": "Activités de loisirs (professionnelles et amateurs) en cours d'eau hors orpaillage",
+    "description": "Les activités de loisirs nécessitant de marcher dans l’eau (canyoning, ruisseling..) sont interdits dans les réservoirs biologiques inscrits au schéma directeur d’aménagement et de gestion des eaux (SDAGE) 2022-2027 du bassin Rhône-Méditerranée, approuvé le 21 mars 2022."
+  },
+  {
+    "id": 1898045,
+    "thematique": "Activités économiques",
+    "nom": "Activités industrielles et commerciales",
+    "description": "Les activités industrielles et commerciales devront limiter au strict nécessaire leur consommation d’eau. Le registre de prélèvement réglementaire devra être rempli hebdomadairement."
+  },
+  {
+    "id": 1898050,
+    "thematique": "Alimenter des fontaines et autres usages de loisirs",
+    "nom": "Alimentation des fontaines publiques et privées d’ornement",
+    "description": "Interdiction du maintien des fontaines publiques en circuit ouvert."
+  },
+  {
+    "id": 1898051,
+    "thematique": "Arroser",
+    "nom": "Arrosage des espaces verts",
+    "description": "Interdiction"
+  },
+  {
+    "id": 1898053,
+    "thematique": "Arroser",
+    "nom": "Arrosage des golfs",
+    "description": "Interdiction totale."
+  },
+  {
+    "id": 1898055,
+    "thematique": "Arroser",
+    "nom": "Arrosage des jardins potagers (y compris les serres non-agricoles)",
+    "description": "Interdiction de prélever de 8h à 20h"
+  },
+  {
+    "id": 1898059,
+    "thematique": "Arroser",
+    "nom": "Arrosage des plantations d'arbre de moins de 3 ans",
+    "description": "Interdiction de 8h à 20h."
+  },
+  {
+    "id": 1898061,
+    "thematique": "Arroser",
+    "nom": "Arrosage des terrains de sport et de loisirs",
+    "description": "Interdit à l'exception de 2 nuits par semaine (4h max par nuit), sur déclaration en DDTM (y compris à partir d'une ressource compensée, sécurisée). Terrains d’entrainement ou compétition \"Elite\" : arrosage autorisé jusqu'à 300 m3 max par semaine et par terrain sur déclaration DDTM (y compris à partir d'une ressource compensée, sécurisée). Pour tout type de terrain : Compteur volumétrique et tenue d'un registre de prélèvement (hebdomadaire) obligatoires."
+  },
+  {
+    "id": 1898064,
+    "thematique": "Remplir ou vidanger",
+    "nom": "Canaux agricoles dont ceux participant à la recharge d’aquifères et non destinés à la navigation fluviale ou à l’agrément",
+    "description": "Interdiction des prélèvements sauf dérogations prévues dans l’arrêté restriction."
+  },
+  {
+    "id": 1898066,
+    "thematique": "ICPE",
+    "nom": "Exploitation des installations classées pour la protection de l’environnement (ICPE)",
+    "description": "Respect des dispositions de l’arrêté ministériel du 30 juin 2023 modifié par l’arrêté du 3 juillet 2024 ou de l'arrêté préfectoral de l'ICPE s'il est plus contraignant."
+  },
+  {
+    "id": 1898082,
+    "thematique": "Alimenter des fontaines et autres usages de loisirs",
+    "nom": "Fonctionnement des douches de plages et tout autre dispositif analogue",
+    "description": "Interdiction totale"
+  },
+  {
+    "id": 1898092,
+    "thematique": "Installations de production d'électricité",
+    "nom": "Installations de production d’électricité d’origine hydraulique",
+    "description": "L’exploitant informe le service police de l’eau du département et la DREAL de tout arrêt de fonctionnement prolongé pour des raisons techniques ou indisponibilité des équipements de production électrique, ainsi que de toute reprise."
+  },
+  {
+    "id": 1898107,
+    "thematique": "Rejeter",
+    "nom": "Interventions sur Station d'épuration",
+    "description": "Toutes les interventions indispensables sur les stations sont soumises à l’autorisation préalable du service de la DDTM en charge de la police de l’eau."
+  },
+  {
+    "id": 1898116,
+    "thematique": "Irriguer",
+    "nom": "Irrigation agricole des cultures (sauf prélèvements déconnectés de la ressource en eau)",
+    "description": "Réduction des prélèvements de 70 % se traduisant par l’interdiction de prélever de 8 heures à 20 heures quatre jours par semaine et toute la journée trois jours par semaine. Jours autorisés : rive gauche les lundi, mercredi et vendredi de 20h à 8h du lendemain ; rive droite les mardi, jeudi et samedi de 20h à 8h du lendemain."
+  },
+  {
+    "id": 1898127,
+    "thematique": "Irriguer",
+    "nom": "Irrigation des plantiers agricoles de moins de 3ans",
+    "description": "Interdiction de 8h à 20h."
+  },
+  {
+    "id": 1898163,
+    "thematique": "Irriguer",
+    "nom": "Irrigation des productions maraîchères professionnelles",
+    "description": "Interdiction de prélever de 8h à 20h"
+  },
+  {
+    "id": 1898170,
+    "thematique": "Nettoyer",
+    "nom": "Lavage de véhicules et engins nautiques par les professionnels",
+    "description": "Interdiction hors installations professionnelles disposant d’un recyclage de l’eau à 70 %, sauf véhicules soumis à obligation réglementaire et organismes de sécurité publique. Affichage obligatoire des mesures par les stations."
+  },
+  {
+    "id": 1898213,
+    "thematique": "Nettoyer",
+    "nom": "Lavage de véhicules et engins nautiques privés chez les particuliers",
+    "description": "Interdiction totale"
+  },
+  {
+    "id": 1898236,
+    "thematique": "Ouvrages hydrauliques",
+    "nom": "L’éclusage ou la manœuvre des vannes d’ouvrages hydrauliques",
+    "description": "Interdiction totale sauf pour franchissement piscicole, sécurité des ouvrages, restitution du débit entrant, soutien d’étiage et alimentation des piscicultures ou ouvrages prévus par règlement ou concession."
+  },
+  {
+    "id": 1898247,
+    "thematique": "Travaux et activités en cours d'eau",
+    "nom": "Navigation fluviale",
+    "description": "Mesures définies à l’article 10 de l’arrêté préfectoral portant plan d'action sécheresse de l’Aude."
+  },
+  {
+    "id": 1898256,
+    "thematique": "Nettoyer",
+    "nom": "Nettoyage des façades, toitures, trottoirs, voiries et autres surfaces imperméabilisées",
+    "description": "Interdiction totale sauf impératifs sanitaires ou sécuritaires"
+  },
+  {
+    "id": 1898273,
+    "thematique": "Travaux et activités en cours d'eau",
+    "nom": "Orpaillage et activités impactant les milieux aquatiques",
+    "description": "Interdiction totale"
+  },
+  {
+    "id": 1898280,
+    "thematique": "Prélever",
+    "nom": "Prélèvements destinés au fonctionnement des milieux naturels",
+    "description": "Interdiction totale"
+  },
+  {
+    "id": 1898286,
+    "thematique": "Prélever",
+    "nom": "Réalisation de seuils provisoires",
+    "description": "Interdiction totale sauf autorisation administrative"
+  },
+  {
+    "id": 1898307,
+    "thematique": "Prélever",
+    "nom": "Remplissage citerne, réserve, cuve à eau",
+    "description": "Interdiction des prélèvements sauf dérogations prévues dans l’arrêté restriction (abreuvement des troupeaux)."
+  },
+  {
+    "id": 1898308,
+    "thematique": "Remplir ou vidanger",
+    "nom": "Remplissage de piscines de classification A et B",
+    "description": "Remise en eau et renouvellement sanitaire autorisés."
+  },
+  {
+    "id": 1898318,
+    "thematique": "Remplir ou vidanger",
+    "nom": "Remplissage des piscines unifamiliales et de catégories C et D",
+    "description": "Remise à niveau autorisée entre 20h et 8h."
+  },
+  {
+    "id": 1898332,
+    "thematique": "Remplir ou vidanger",
+    "nom": "Remplissage des plans d'eau et canaux d'agrément",
+    "description": "Interdiction du premier remplissage et du maintien du niveau des plans d’eau et canaux d’agrément."
+  },
+  {
+    "id": 1898338,
+    "thematique": "Remplir ou vidanger",
+    "nom": "Remplissage des plans d’eau sauf retenue eau potable, soutien d'étiage et production d'électricité d'origine hydraulique",
+    "description": "Interdiction totale, hors ouvrages destinés à l’AEP et ouvrages participant au soutien d’étiage ou prévus par un titre."
+  },
+  {
+    "id": 1898344,
+    "thematique": "Travaux et activités en cours d'eau",
+    "nom": "Travaux en cours d’eau",
+    "description": "Interdiction totale et report des travaux sauf accord préalable de la DDTM pour situation d'assec, raison de sécurité publique ou renaturation/restauration."
+  },
+  {
+    "id": 1898359,
+    "thematique": "Remplir ou vidanger",
+    "nom": "Vidange de plans d’eau de toute nature vers le réseau hydrographique",
+    "description": "Interdiction totale sauf autorisation administrative"
+  },
+  {
+    "id": 1898369,
+    "thematique": "Remplir ou vidanger",
+    "nom": "Vidange des piscines",
+    "description": "Interdiction totale, sauf impératif sanitaire soumis à la validation préalable de l’ARS."
+  }
+]
