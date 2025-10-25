@@ -348,6 +348,88 @@ class vigieau extends eqLogic {
     return '';
   }
 
+  private function addUsageToGroupMap(&$usageGroups, $usage) {
+    if (!is_array($usage)) {
+      return;
+    }
+    $key = $this->buildUsageKey($usage);
+    if ($key === '') {
+      return;
+    }
+    $displayKey = $this->buildUsageDisplayKey($usage);
+    if ($displayKey === '') {
+      $displayKey = $key;
+    }
+    if (!isset($usageGroups[$displayKey])) {
+      $usageGroups[$displayKey] = array(
+        'displayKey' => $displayKey,
+        'keys' => array(),
+        'nom' => '',
+        'thematique' => '',
+      );
+    }
+    if ($usageGroups[$displayKey]['nom'] === '' && !empty($usage['nom'])) {
+      $usageGroups[$displayKey]['nom'] = $usage['nom'];
+    }
+    if ($usageGroups[$displayKey]['thematique'] === '' && !empty($usage['thematique'])) {
+      $usageGroups[$displayKey]['thematique'] = $usage['thematique'];
+    }
+    if (!isset($usageGroups[$displayKey]['keys']) || !is_array($usageGroups[$displayKey]['keys'])) {
+      $usageGroups[$displayKey]['keys'] = array();
+    }
+    if (!in_array($key, $usageGroups[$displayKey]['keys'], true)) {
+      $usageGroups[$displayKey]['keys'][] = $key;
+    }
+  }
+
+  private function mergeStoredUsageGroups(&$usageGroups, $storedGroups) {
+    if (!is_array($storedGroups)) {
+      return;
+    }
+    foreach ($storedGroups as $group) {
+      if (!is_array($group)) {
+        continue;
+      }
+      $displayKey = isset($group['displayKey']) ? trim((string) $group['displayKey']) : '';
+      if ($displayKey === '') {
+        continue;
+      }
+      if (!isset($usageGroups[$displayKey])) {
+        $usageGroups[$displayKey] = array(
+          'displayKey' => $displayKey,
+          'keys' => array(),
+          'nom' => '',
+          'thematique' => '',
+        );
+      }
+      if (!empty($group['nom']) && $usageGroups[$displayKey]['nom'] === '') {
+        $usageGroups[$displayKey]['nom'] = $group['nom'];
+      }
+      if (!empty($group['thematique']) && $usageGroups[$displayKey]['thematique'] === '') {
+        $usageGroups[$displayKey]['thematique'] = $group['thematique'];
+      }
+      if (!isset($usageGroups[$displayKey]['keys']) || !is_array($usageGroups[$displayKey]['keys'])) {
+        $usageGroups[$displayKey]['keys'] = array();
+      }
+      if (isset($group['keys']) && is_array($group['keys'])) {
+        foreach ($group['keys'] as $key) {
+          $normalizedKey = trim((string) $key);
+          if ($normalizedKey === '') {
+            continue;
+          }
+          if (!in_array($normalizedKey, $usageGroups[$displayKey]['keys'], true)) {
+            $usageGroups[$displayKey]['keys'][] = $normalizedKey;
+          }
+        }
+      }
+    }
+  }
+
+  private function getStoredUsageGroups() {
+    $stored = $this->getConfiguration('usageOptionsCache', array());
+    return is_array($stored) ? $stored : array();
+  }
+
   private function slugifyUsageLabel($label) {
     $label = trim((string) $label);
     if ($label === '') {
@@ -441,36 +523,12 @@ class vigieau extends eqLogic {
         continue;
       }
       foreach ($decoded as $usage) {
-        if (!is_array($usage)) {
-          continue;
-        }
-        $key = $this->buildUsageKey($usage);
-        if ($key === '') {
-          continue;
-        }
-        $displayKey = $this->buildUsageDisplayKey($usage);
-        if ($displayKey === '') {
-          $displayKey = $key;
-        }
-        if (!isset($usageGroups[$displayKey])) {
-          $usageGroups[$displayKey] = array(
-            'displayKey' => $displayKey,
-            'keys' => array(),
-            'nom' => isset($usage['nom']) ? $usage['nom'] : '',
-            'thematique' => isset($usage['thematique']) ? $usage['thematique'] : '',
-          );
-        } else {
-          if ($usageGroups[$displayKey]['nom'] === '' && !empty($usage['nom'])) {
-            $usageGroups[$displayKey]['nom'] = $usage['nom'];
-          }
-          if ($usageGroups[$displayKey]['thematique'] === '' && !empty($usage['thematique'])) {
-            $usageGroups[$displayKey]['thematique'] = $usage['thematique'];
-          }
-        }
-        if (!in_array($key, $usageGroups[$displayKey]['keys'], true)) {
-          $usageGroups[$displayKey]['keys'][] = $key;
-        }
+        $this->addUsageToGroupMap($usageGroups, $usage);
       }
+    }
+    $cachedUsageGroups = $this->getStoredUsageGroups();
+    if (!empty($cachedUsageGroups)) {
+      $this->mergeStoredUsageGroups($usageGroups, $cachedUsageGroups);
     }
     if (empty($usageGroups)) {
       return array();
@@ -1148,12 +1206,14 @@ class vigieau extends eqLogic {
         $enabledUsageKeys = $this->getEnabledUsageKeys();
         $audienceField = $this->getAudienceFieldForType($typeInfo);
         $self = $this;
-        $buildEditorial = function ($usages) use ($enabledUsageKeys, $self, $audienceField) {
+        $usageGroupsForCache = array();
+        $buildEditorial = function ($usages) use ($enabledUsageKeys, $self, $audienceField, &$usageGroupsForCache) {
           $messages = array();
           foreach ($usages as $usage) {
             if (!is_array($usage)) {
               continue;
             }
+            $self->addUsageToGroupMap($usageGroupsForCache, $usage);
             $usageKey = $self->buildUsageKey($usage);
             if (!empty($enabledUsageKeys)) {
               if ($usageKey === '' || !in_array($usageKey, $enabledUsageKeys, true)) {
@@ -1184,7 +1244,7 @@ class vigieau extends eqLogic {
             }
           }
           if (count($messages) === 0) {
-            return __('Aucune information disponible', __FILE__);
+            return '';
           }
           return implode('<br/><br/>', $messages);
         };
@@ -1334,6 +1394,19 @@ class vigieau extends eqLogic {
             $valueKey = isset($definition['valueKey']) ? $definition['valueKey'] : null;
             $value = $valueKey !== null && isset($zoneData[$valueKey]) ? $zoneData[$valueKey] : (isset($definition['default']) ? $definition['default'] : '');
             $this->updateCommandIfExists($logicalId, $value);
+          }
+        }
+        if (!empty($usageGroupsForCache)) {
+          $newGroups = array_values($usageGroupsForCache);
+          $storedGroups = $this->getStoredUsageGroups();
+          if ($storedGroups !== $newGroups) {
+            $this->setConfiguration('usageOptionsCache', $newGroups);
+            self::pushAutoRefreshLock($this->getId());
+            try {
+              $this->save();
+            } finally {
+              self::popAutoRefreshLock($this->getId());
+            }
           }
         }
       }
