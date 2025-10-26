@@ -271,10 +271,10 @@ $eqLogics = eqLogic::byType($plugin->getId());
                                                 <!-- Partie droite de l'onglet "Équipement" -->
 						<div class="col-lg-6">
 							<legend><i class="fas fa-info"></i> {{Informations}}</legend>
-
+							
                             	<div class="form-group">
 									<label class="col-sm-3 control-label">{{Département :}}</label>
-                                	<span class="eqLogicAttr control-label" style="font-size:1em;cursor: default;" data-l1key="configuration" data-l2key="departement"></span>
+                                	<span class="eqLogicAttr control-label" style="font-size:1em;cursor: default;" data-l1key="configuration" data-l2key="departement"></span>	
                                 </div>
                                 <div class="form-group">
                                         <label class="col-sm-3 control-label">{{Commune :}}</label>
@@ -315,7 +315,7 @@ $eqLogics = eqLogic::byType($plugin->getId());
                         </tbody>
       				</table>
 				</div><!-- table-responsive -->
-
+                          
 				<legend><i class="fa fa-list-alt"></i>  {{Commandes Actions}}</legend>
       				<table id="table_actions" class="table table-bordered table-condensed">
         				<thead>
@@ -330,7 +330,7 @@ $eqLogics = eqLogic::byType($plugin->getId());
         				</thead>
       					<tbody>
       					</tbody>
-      				</table>
+      				</table> 
            		 </div><!-- commandtab -->
 
 		</div><!-- /.tab-content -->
