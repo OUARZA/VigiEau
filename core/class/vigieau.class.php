@@ -110,11 +110,11 @@ class vigieau extends eqLogic {
  /* public static function cronHourly() {
     $cronHeure = config::byKey('cronHeure', __CLASS__);
     if (!empty($cronHeure) && date('G') != $cronHeure) return;
- 
+
     foreach (eqLogic::byType(__CLASS__, true) as $vigieau) {
       $vigieau->pullvigieau();
       sleep(15);
-    }  
+    }
   }
   */
 
@@ -1004,22 +1004,22 @@ class vigieau extends eqLogic {
     $eqName = $this->getName();
     log::add(__CLASS__, 'debug', ' ');
     log::add(__CLASS__, 'debug', '*********** VigiEau ['.$eqName.'] ***********');
-    
+
     //récupération nom commune
     $url = 'https://geo.api.gouv.fr/communes?code='.$codeInseeCommune.'&fields=code,nom,departement';
     $ch = curl_init();
 	curl_setopt($ch, CURLOPT_URL, $url);
  	curl_setopt($ch, CURLOPT_HEADER, false);
 	curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-	curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 5);   
-	curl_setopt($ch, CURLOPT_TIMEOUT, 15);         
+	curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 5);
+	curl_setopt($ch, CURLOPT_TIMEOUT, 15);
 	curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
 	curl_setopt($ch, CURLOPT_MAXREDIRS, 1);
 	curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, true);
 	$response = curl_exec($ch);
 	curl_close($ch);
-  	$jsonData = json_decode($response, true);  
-    
+  	$jsonData = json_decode($response, true);
+
     if(is_array($jsonData)){
       $nomCommune = $jsonData['0']['nom'];
     } else {
@@ -1046,15 +1046,15 @@ class vigieau extends eqLogic {
         curl_setopt($ch, CURLOPT_URL, $url);
         curl_setopt($ch, CURLOPT_HEADER, false);
 	curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-	curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 5);   
-	curl_setopt($ch, CURLOPT_TIMEOUT, 15);         
+	curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 5);
+	curl_setopt($ch, CURLOPT_TIMEOUT, 15);
 	curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
 	curl_setopt($ch, CURLOPT_MAXREDIRS, 1);
 	curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, true);
 	$response = curl_exec($ch);
 	curl_close($ch);
-  	$jsonData = json_decode($response, true);  
-     
+  	$jsonData = json_decode($response, true);
+
     if(!is_array($jsonData)){
         log::add(__CLASS__, 'error', 'le site \'https://api.vigieau.beta.gouv.fr\' renvoie une erreur ou n\'est pas accessible');
     } else {
@@ -1297,7 +1297,7 @@ class vigieau extends eqLogic {
       }
     }
   }
-  
+
   // Fonction exécutée automatiquement avant la suppression de l'équipement
   public function preRemove() {
   }
@@ -1457,12 +1457,12 @@ class vigieau extends eqLogic {
       $postToHtml = $this->postToHtml($_version,$template_replace); // on met en cache le widget, si la config de l'user le permet.
       return $postToHtml; // renvoie le code du template du widget.
     }
-  
-  /* 
-  // Ces 4 lignes ci-dessus peuvent être concaténer comme ceci : 
+
+  /*
+  // Ces 4 lignes ci-dessus peuvent être concaténer comme ceci :
   return $this->postToHtml($_version, template_replace($replace, getTemplate('core', $version, 'vigieau.template' , __CLASS__)));
   */
-  
+
   }
 
   /*

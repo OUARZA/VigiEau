@@ -26,7 +26,7 @@ Ce plugin permet de remonter les informations du site de l'information sécheres
 6. Sauvegarder.
 
 > [!NOTE]
->Type d'eau consommé :  
+>Type d'eau consommé :
 >| Type | Description |
 >| --- | --- |
 >| Du robinet/Eau potable | L’eau potable provient des nappes et des cours d'eau. Elle est traitée en plusieurs étapes afin de lui donner la qualité de l’eau potable. Elle est ensuite acheminée jusqu’à votre domicile. |
@@ -34,7 +34,7 @@ Ce plugin permet de remonter les informations du site de l'information sécheres
 >| Des nappes (puits ou forage)/Eau souterraine | Ce sont toutes les eaux se trouvant sous la surface du sol : les nappes phréatiques, nappes profondes, etc. Vous utilisez cette eau, si vous disposez d’un puits ou d’un forage. |
 <!--
 >
->Type éditorial :  
+>Type éditorial :
 >| Type | Description |
 >| --- | --- |
 >| Particulier | Utilisation de l'eau à titre personnel (arrosage du jardin, des fleurs, piscine...) |

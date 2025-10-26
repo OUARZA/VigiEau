@@ -328,14 +328,14 @@ function addCmdToTable(_cmd) {
 	tr += '<td>';
     	tr += '<span class="cmdAttr" data-l1key="id" title="' + init(_cmd.logicalId) + '"></span>';
     tr += '</td>';
-    
+
    	tr += '<td>';
     tr += '<div class="input-group" style="width: 90%;">';
     	tr += '<input class="cmdAttr form-control input-sm roundedLeft" data-l1key="name" placeholder="{{Nom}}">';
     	tr += '<span class="input-group-btn"><a class="cmdAction btn btn-sm btn-default" data-l1key="chooseIcon" title="{{Choisir une icône}}"><i class="fas fa-icons"></i></a></span>';
     	tr += '<span class="cmdAttr input-group-addon roundedRight" data-l1key="display" data-l2key="icon" style="font-size:19px;padding:0 5px 0 0!important;"></span>';
     tr += '</div>';
-  	
+
   	if (_cmd.type == 'action' && _cmd.value != ''){
       tr += '<select class="cmdAttr form-control input-sm" data-l1key="value" disabled style="margin-top:5px;width: calc(90% - 35px);display:none" title="{{Commande info liée}}">';
       tr += '<option value="">{{Aucune}}</option>';
@@ -349,8 +349,8 @@ function addCmdToTable(_cmd) {
   	tr += '<span class=" cmdAttr subType" subType="' + init(_cmd.subType) + '" data-l1key="subType"></span>'
   	tr += '</td>';
 
-  
-  
+
+
   	tr += '<td>';
     tr += '<label class="checkbox-inline"><input type="checkbox" class="cmdAttr" data-l1key="isVisible" checked/>{{Afficher}}</label> ';
     if (_cmd.subType == "binary") {
@@ -363,24 +363,24 @@ function addCmdToTable(_cmd) {
   	else if (_cmd.subType == "slider") {
         tr += '<input class="tooltips cmdAttr form-control input-sm" data-l1key="configuration" data-l2key="minValue" placeholder="{{Min}}" title="{{Min}}" style="width:30%; max-width: 60px;display:inline-block;margin-left: 10px;">';
         tr += '<input class="tooltips cmdAttr form-control input-sm" data-l1key="configuration" data-l2key="maxValue" placeholder="{{Max}}" title="{{Max}}" style="width:30%;max-width: 60px;display:inline-block;margin-left:2px;">';
-        
+
     }
 	tr += '</td>';
   	tr += '<td>';
     if (typeof jeeFrontEnd !== 'undefined' && jeeFrontEnd.jeedomVersion !== 'undefined') {
         var cmdCible_Name = "";
-        if (_cmd.type == 'action' && _cmd.value != undefined){        
-            
+        if (_cmd.type == 'action' && _cmd.value != undefined){
+
         }
       	tr += '<span class="cmdAttr" data-l1key="htmlstate">'+cmdCible_Name+'</span>';
-        
+
     }
 	tr += '</td>';
     tr += '<td>';
     if (is_numeric(_cmd.id)) {
         tr += '<a class="btn btn-default btn-xs cmdAction" data-action="configure"><i class="fas fa-cogs"></i></a> ';
     }
-  	if (_cmd.type == 'action'){        
+  	if (_cmd.type == 'action'){
         tr += '<a class="btn btn-default btn-xs cmdAction" data-action="test"><i class="fas fa-rss"></i> {{Tester}}</a>';
     }
     tr += '</td>';
@@ -418,12 +418,12 @@ function addCmdToTable(_cmd) {
                     $tr.find('.cmdAttr[data-l1key=htmlstate]').html(spanValue);
                 }
             })
-          	        
+
         }
       	$tr.setValues(_cmd, '.cmdAttr');
-            
+
       	/**/
-      
+
       /*jeedom.cmd.byId({
 			id: _cmd.value,
 			success: function (data) {
