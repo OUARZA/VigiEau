@@ -29,6 +29,8 @@ $('.eqLogicAttr[data-l1key=configuration][data-l2key=datasource]').on('change',f
     $('.datasource.'+$(this).value()).show();
 });
 
+var VIGIEAU_ALERT_TIMEOUT = 10000;
+
 var vigieauCommuneManager = {
   lastPostalCode: null,
   getPostalInput: function () {
@@ -261,7 +263,7 @@ var vigieauCommuneManager = {
     }
     var $alert = $('#div_alert');
     if ($alert.length) {
-      $alert.showAlert({ message: message, level: 'danger' });
+      $alert.showAlert({ message: message, level: 'danger', timeout: VIGIEAU_ALERT_TIMEOUT });
     }
   },
   handlePostalInputChange: function () {
@@ -401,7 +403,7 @@ function addCmdToTable(_cmd) {
                 id: $('.eqLogicAttr[data-l1key=id]').value(),
                 filter: { type: 'info' },
                 error: function (error) {
-                    $('#div_alert').showAlert({ message: error.message, level: 'danger' });
+                    $('#div_alert').showAlert({ message: error.message, level: 'danger', timeout: VIGIEAU_ALERT_TIMEOUT });
                 },
                 success: function (result) {
                     $tr.find('.cmdAttr[data-l1key=value]').append(result);//.show();
