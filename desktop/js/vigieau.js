@@ -29,6 +29,104 @@ $('.eqLogicAttr[data-l1key=configuration][data-l2key=datasource]').on('change',f
     $('.datasource.'+$(this).value()).show();
 });
 
+// Délai en millisecondes pour la fermeture automatique des alertes
+var VIGIEAU_ALERT_TIMEOUT = 10000;
+
+function vigieauShowTimedAlert(options) {
+  if (!options || !options.message) {
+    return;
+  }
+
+  var settings = $.extend(
+    {
+      title: '',
+      level: 'info',
+      emptyBefore: false,
+      timeOut: VIGIEAU_ALERT_TIMEOUT,
+      attachTo: '#div_alert'
+    },
+    options
+  );
+
+  var $container = $(settings.attachTo || '#div_alert');
+  if ($container.length === 0) {
+    return;
+  }
+
+  var alertWasRenderedByJeedom =
+    typeof jeedomUtils !== 'undefined' &&
+    typeof jeedomUtils.showAlert === 'function';
+
+  if (alertWasRenderedByJeedom) {
+    jeedomUtils.showAlert({
+      title: settings.title,
+      message: settings.message,
+      level: settings.level,
+      emptyBefore: settings.emptyBefore,
+      timeOut: settings.timeOut,
+      attachTo: settings.attachTo
+    });
+  } else {
+    if (settings.emptyBefore) {
+      $container.empty();
+    }
+    var $alert = $('<div></div>')
+      .addClass('alert alert-' + settings.level + ' alert-dismissible')
+      .attr('role', 'alert');
+    var $closeButton = $('<button type="button" class="close" data-dismiss="alert" aria-label="Close"></button>')
+      .append($('<span aria-hidden="true">&times;</span>'));
+    $alert.append($closeButton);
+    if (settings.title) {
+      $alert.append($('<strong></strong>').text(settings.title + ' '));
+    }
+    $alert.append($('<span></span>').text(settings.message));
+    $container.append($alert).show();
+  }
+
+  if (settings.timeOut <= 0) {
+    return;
+  }
+
+  var $renderedAlert = $container.find('.alert').last();
+  if ($renderedAlert.length === 0) {
+    return;
+  }
+
+  var clearTimer = function () {
+    var existingTimer = $renderedAlert.data('vigieauAlertTimer');
+    if (existingTimer) {
+      window.clearTimeout(existingTimer);
+      $renderedAlert.removeData('vigieauAlertTimer');
+    }
+  };
+  clearTimer();
+
+  var timeoutHandle = window.setTimeout(function () {
+    clearTimer();
+    var $close = $renderedAlert.find('[data-dismiss="alert"], .close').first();
+    if ($close.length) {
+      $close.trigger('click');
+      return;
+    }
+    if (typeof $renderedAlert.alert === 'function') {
+      $renderedAlert.alert('close');
+      return;
+    }
+    $renderedAlert.fadeOut(200, function () {
+      var $self = $(this);
+      $self.remove();
+      if ($container.children().length === 0) {
+        $container.hide();
+      }
+    });
+  }, settings.timeOut);
+
+  $renderedAlert.data('vigieauAlertTimer', timeoutHandle);
+  $renderedAlert.one('click', '[data-dismiss="alert"], .close', clearTimer);
+  $renderedAlert.one('close.bs.alert', clearTimer);
+  $renderedAlert.one('closed.bs.alert', clearTimer);
+}
+
 var vigieauCommuneManager = {
   lastPostalCode: null,
   getPostalInput: function () {
@@ -259,10 +357,7 @@ var vigieauCommuneManager = {
     if (!message) {
       return;
     }
-    var $alert = $('#div_alert');
-    if ($alert.length) {
-      $alert.showAlert({ message: message, level: 'danger' });
-    }
+    vigieauShowTimedAlert({ message: message, level: 'danger' });
   },
   handlePostalInputChange: function () {
     this.lastPostalCode = null;
@@ -401,7 +496,7 @@ function addCmdToTable(_cmd) {
                 id: $('.eqLogicAttr[data-l1key=id]').value(),
                 filter: { type: 'info' },
                 error: function (error) {
-                    $('#div_alert').showAlert({ message: error.message, level: 'danger' });
+                    vigieauShowTimedAlert({ message: error.message, level: 'danger' });
                 },
                 success: function (result) {
                     $tr.find('.cmdAttr[data-l1key=value]').append(result);//.show();
