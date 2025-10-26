@@ -262,10 +262,12 @@ var vigieauCommuneManager = {
     if (!message) {
       return;
     }
-    var $alert = $('#div_alert');
-    if ($alert.length) {
-      $alert.showAlert({ message: message, level: 'danger', timeout: VIGIEAU_ALERT_TIMEOUT });
-    }
+    jeedomUtils.showAlert({
+      message: message,
+      level: 'danger',
+      timeOut: VIGIEAU_ALERT_TIMEOUT,
+      attachTo: '#div_alert'
+    });
   },
   handlePostalInputChange: function () {
     this.lastPostalCode = null;
@@ -404,7 +406,12 @@ function addCmdToTable(_cmd) {
                 id: $('.eqLogicAttr[data-l1key=id]').value(),
                 filter: { type: 'info' },
                 error: function (error) {
-                    $('#div_alert').showAlert({ message: error.message, level: 'danger', timeout: VIGIEAU_ALERT_TIMEOUT });
+                    jeedomUtils.showAlert({
+                      message: error.message,
+                      level: 'danger',
+                      timeOut: VIGIEAU_ALERT_TIMEOUT,
+                      attachTo: '#div_alert'
+                    });
                 },
                 success: function (result) {
                     $tr.find('.cmdAttr[data-l1key=value]').append(result);//.show();
