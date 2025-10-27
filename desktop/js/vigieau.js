@@ -262,9 +262,18 @@ var vigieauCommuneManager = {
     if (!message) {
       return;
     }
-    var $alert = $('#div_alert');
-    if ($alert.length) {
-      $alert.showAlert({ message: message, level: 'danger', timeout: VIGIEAU_ALERT_TIMEOUT });
+    var attachTarget = document.querySelector('#div_alert') || undefined;
+    if (typeof jeedomUtils !== 'undefined' && typeof jeedomUtils.showAlert === 'function') {
+      jeedomUtils.showAlert({
+        message: message,
+        level: 'danger',
+        timeOut: VIGIEAU_ALERT_TIMEOUT,
+        attachTo: attachTarget
+      });
+      return;
+    }
+    if (attachTarget) {
+      $(attachTarget).showAlert({ message: message, level: 'danger', timeout: VIGIEAU_ALERT_TIMEOUT });
     }
   },
   handlePostalInputChange: function () {
@@ -400,11 +409,19 @@ function addCmdToTable(_cmd) {
      	$('#table_actions tbody').append(tr)
         const $tr = $('#table_actions tbody tr:last');
     	if(_cmd.value != null && _cmd.value != ''){
-          	jeedom.eqLogic.buildSelectCmd({
+                jeedom.eqLogic.buildSelectCmd({
                 id: $('.eqLogicAttr[data-l1key=id]').value(),
                 filter: { type: 'info' },
                 error: function (error) {
-                    $('#div_alert').showAlert({ message: error.message, level: 'danger', timeout: VIGIEAU_ALERT_TIMEOUT });
+                    var message = '';
+                    if (error) {
+                      if (typeof error.message === 'string' && error.message !== '') {
+                        message = error.message;
+                      } else if (typeof error === 'string') {
+                        message = error;
+                      }
+                    }
+                    vigieauCommuneManager.showError(message);
                 },
                 success: function (result) {
                     $tr.find('.cmdAttr[data-l1key=value]').append(result);//.show();
