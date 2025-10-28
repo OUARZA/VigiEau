@@ -32,9 +32,6 @@ $('.eqLogicAttr[data-l1key=configuration][data-l2key=datasource]').on('change',f
 // Délai en millisecondes, conformément à la documentation Jeedom de showAlert
 var VIGIEAU_ALERT_TIMEOUT = 10000;
 
-// Stocke l'identifiant du timer utilisé pour fermer automatiquement l'alerte Jeedom.
-var VIGIEAU_ALERT_TIMER = null;
-
 var vigieauCommuneManager = {
   lastPostalCode: null,
   getPostalInput: function () {
@@ -265,32 +262,10 @@ var vigieauCommuneManager = {
     if (!message) {
       return;
     }
-    if (typeof jeedomUtils !== 'undefined' && typeof jeedomUtils.showAlert === 'function') {
-      var level = 'warning';
-      if (typeof this.getInvalidPostalMessage === 'function' && message === this.getInvalidPostalMessage()) {
-        level = 'danger';
-      }
-      jeedomUtils.showAlert({ message: message, level: level, timeout: VIGIEAU_ALERT_TIMEOUT });
-      if (typeof window !== 'undefined' && typeof window.clearTimeout === 'function' && typeof window.setTimeout === 'function' && typeof VIGIEAU_ALERT_TIMEOUT === 'number' && !isNaN(VIGIEAU_ALERT_TIMEOUT)) {
-        window.clearTimeout(VIGIEAU_ALERT_TIMER);
-        VIGIEAU_ALERT_TIMER = window.setTimeout(function () {
-          if (typeof jeedomUtils !== 'undefined' && typeof jeedomUtils.hideAlert === 'function') {
-            jeedomUtils.hideAlert();
-            return;
-          }
-          var $alertContainer = $('#div_alert');
-          if ($alertContainer.length) {
-            if (typeof $alertContainer.hideAlert === 'function') {
-              $alertContainer.hideAlert();
-            } else {
-              $alertContainer.empty();
-              $alertContainer.hide();
-            }
-          }
-        }, VIGIEAU_ALERT_TIMEOUT);
-      }
+   }
+	if (typeof jeedomUtils !== 'undefined' && typeof jeedomUtils.showAlert === 'function') {
+      jeedomUtils.showAlert({ message: message, level: 'warning', timeout: VIGIEAU_ALERT_TIMEOUT });
       return;
-    }
     var $alert = $('#div_alert');
     if ($alert.length) {
       $alert.showAlert({ message: message, level: 'danger', timeout: VIGIEAU_ALERT_TIMEOUT });
