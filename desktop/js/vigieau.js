@@ -173,7 +173,7 @@ var vigieauCommuneManager = {
     if (!postalCode || !/^[0-9]{5}$/.test(postalCode)) {
       this.populateSelect([], '');
       if (postalCode) {
-        this.showError(this.getInvalidPostalMessage());
+        this.showWarning(this.getInvalidPostalMessage());
       }
       return;
     }
@@ -258,18 +258,25 @@ var vigieauCommuneManager = {
       }
     });
   },
-  showError: function (message) {
+  showAlertMessage: function (message, level) {
     if (!message) {
       return;
     }
-	if (typeof jeedomUtils !== 'undefined' && typeof jeedomUtils.showAlert === 'function') {
-      jeedomUtils.showAlert({ message: message, level: 'warning', timeout: VIGIEAU_ALERT_TIMEOUT });
+    var normalizedLevel = level || 'warning';
+    if (typeof jeedomUtils !== 'undefined' && typeof jeedomUtils.showAlert === 'function') {
+      jeedomUtils.showAlert({ message: message, level: normalizedLevel, timeout: VIGIEAU_ALERT_TIMEOUT });
       return;
-}
+    }
     var $alert = $('#div_alert');
     if ($alert.length) {
-      $alert.showAlert({ message: message, level: 'danger', timeout: VIGIEAU_ALERT_TIMEOUT });
+      $alert.showAlert({ message: message, level: normalizedLevel, timeout: VIGIEAU_ALERT_TIMEOUT });
     }
+  },
+  showError: function (message) {
+    this.showAlertMessage(message, 'danger');
+  },
+  showWarning: function (message) {
+    this.showAlertMessage(message, 'warning');
   },
   handlePostalInputChange: function () {
     this.lastPostalCode = null;
@@ -301,7 +308,7 @@ var vigieauCommuneManager = {
     if (!/^[0-9]{5}$/.test(sanitized)) {
       this.lastPostalCode = null;
       this.populateSelect([], '');
-      this.showError(this.getInvalidPostalMessage());
+      this.showWarning(this.getInvalidPostalMessage());
       return;
     }
     if (!force && this.lastPostalCode === sanitized) {
