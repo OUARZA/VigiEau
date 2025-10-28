@@ -262,7 +262,6 @@ var vigieauCommuneManager = {
     if (!message) {
       return;
     }
-   }
 	if (typeof jeedomUtils !== 'undefined' && typeof jeedomUtils.showAlert === 'function') {
       jeedomUtils.showAlert({ message: message, level: 'warning', timeout: VIGIEAU_ALERT_TIMEOUT });
       return;
