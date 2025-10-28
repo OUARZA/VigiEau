@@ -262,8 +262,12 @@ var vigieauCommuneManager = {
     if (!message) {
       return;
     }
-	if (typeof jeedomUtils !== 'undefined' && typeof jeedomUtils.showAlert === 'function') {
-      jeedomUtils.showAlert({ message: message, level: 'warning', timeout: VIGIEAU_ALERT_TIMEOUT });
+    if (typeof jeedomUtils !== 'undefined' && typeof jeedomUtils.showAlert === 'function') {
+      var level = 'warning';
+      if (typeof this.getInvalidPostalMessage === 'function' && message === this.getInvalidPostalMessage()) {
+        level = 'danger';
+      }
+      jeedomUtils.showAlert({ message: message, level: level, timeout: VIGIEAU_ALERT_TIMEOUT });
       return;
     }
     var $alert = $('#div_alert');
